@@ -1,0 +1,26 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#include "EWN_MenuWidget.h"
+
+//
+#include "Navigation/EWN_WidgetNavigationSubsystem.h"
+
+void UEWN_MenuWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	if ( auto* WidgetNavigationSubsystem = UEWN_WidgetNavigationSubsystem::Get( this ) )
+	{
+		WidgetNavigationSubsystem->MenuConstruct();
+	}
+}
+
+void UEWN_MenuWidget::NativeDestruct()
+{
+	if ( auto* WidgetNavigationSubsystem = UEWN_WidgetNavigationSubsystem::Get( this ) )
+	{
+		WidgetNavigationSubsystem->MenuDestruct();
+	}
+
+	Super::NativeDestruct();
+}
