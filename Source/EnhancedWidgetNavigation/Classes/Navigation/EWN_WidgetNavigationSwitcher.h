@@ -14,6 +14,11 @@ class ENHANCEDWIDGETNAVIGATION_API UEWN_WidgetNavigationSwitcher : public UObjec
 {
 	GENERATED_BODY()
 
+	struct FWidgetNavigation
+	{
+		bool bConnectNavigation = false;
+	};
+
 	struct FWidgetWithNavigation
 	{
 		class UEWN_WidgetNavigation* Navigation = nullptr;
@@ -42,7 +47,19 @@ public:
 	class UEWN_WidgetNavigation* TickNavigation( float DeltaTime, EEWN_WidgetInputType& OutInputType );
 
 	UFUNCTION( BlueprintCallable )
-	void Register( class UEWN_WidgetNavigation* WidgetNavigation );
+	bool IsActive( class UEWN_WidgetNavigation* WidgetNavigation ) const;
+
+	UFUNCTION( BlueprintCallable )
+	int32 GetNavigationCount() const;
+
+	UFUNCTION( BlueprintCallable )
+	class UEWN_WidgetNavigation* GetNavigationAt( int32 Index ) const;
+
+	UFUNCTION( BlueprintCallable )
+	TArray<class UEWN_WidgetNavigation*> GetAllNavigations() const;
+
+	UFUNCTION( BlueprintCallable, meta = ( AdvancedDisplay = 1 ) )
+	void Register( class UEWN_WidgetNavigation* WidgetNavigation, bool bConnectNavigation = true );
 
 	UFUNCTION( BlueprintCallable )
 	void Unregister( class UEWN_WidgetNavigation* WidgetNavigation );
@@ -71,8 +88,11 @@ private:
 	void OnNavigationFocusUpdated( class UEWN_WidgetNavigation* Navigation, int32 OldIndex, int32 NewIndex, bool bFromOperation );
 
 private:
+	UPROPERTY( Transient )
+	TArray<class UEWN_WidgetNavigation*> WidgetNavigations;
+
 	TWeakObjectPtr<class UEWN_WidgetNavigation> LastActiveNavigation;
-	TArray<TWeakObjectPtr<class UEWN_WidgetNavigation>> WidgetNavigations;
+	TMap<TObjectKey<class UEWN_WidgetNavigation>, FWidgetNavigation> WidgetNavigationKeys;
 	TMultiMap<FWidgetNavigationOverride, TWeakObjectPtr<class UEWN_WidgetNavigation>> WidgetNavigationOverrides;
 
 	bool bLoopNavigation = false;

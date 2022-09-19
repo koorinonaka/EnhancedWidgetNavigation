@@ -25,6 +25,8 @@ public:
 
 UEWN_WidgetNavigation* UEWN_WidgetNavigationSwitcher::TickNavigation( float DeltaTime, EEWN_WidgetInputType& OutInputType )
 {
+	OutInputType = EEWN_WidgetInputType::None;
+
 	auto* WidgetInputSubsystem = UEWN_WidgetInputSubsystem::Get( GetTypedOuter<UWidget>() );
 	if ( !WidgetInputSubsystem )
 	{
@@ -35,13 +37,8 @@ UEWN_WidgetNavigation* UEWN_WidgetNavigationSwitcher::TickNavigation( float Delt
 	{
 	case EEWN_WidgetInputMode::Mouse:
 	{
-		for ( TWeakObjectPtr<UEWN_WidgetNavigation> WidgetNavigation : WidgetNavigations )
+		for ( UEWN_WidgetNavigation* WidgetNavigation : WidgetNavigations )
 		{
-			if ( !WidgetNavigation.IsValid() )
-			{
-				continue;
-			}
-
 			int32 FoundIndex = WidgetNavigation->FindHoveredIndex();
 			if ( FoundIndex != INDEX_NONE )
 			{
@@ -54,7 +51,7 @@ UEWN_WidgetNavigation* UEWN_WidgetNavigationSwitcher::TickNavigation( float Delt
 
 	if ( LastActiveNavigation.IsValid() )
 	{
-		check( WidgetNavigations.Contains( LastActiveNavigation ) );
+		check( WidgetNavigations.Contains( LastActiveNavigation.Get() ) );
 
 		EEWN_WidgetInputType InputResult = LastActiveNavigation->TickNavigation( DeltaTime );
 		if ( InputResult != EEWN_WidgetInputType::None )
@@ -67,7 +64,27 @@ UEWN_WidgetNavigation* UEWN_WidgetNavigationSwitcher::TickNavigation( float Delt
 	return nullptr;
 }
 
-void UEWN_WidgetNavigationSwitcher::Register( UEWN_WidgetNavigation* WidgetNavigation )
+bool UEWN_WidgetNavigationSwitcher::IsActive( UEWN_WidgetNavigation* WidgetNavigation ) const
+{
+	return WidgetNavigation && WidgetNavigation == LastActiveNavigation;
+}
+
+int32 UEWN_WidgetNavigationSwitcher::GetNavigationCount() const
+{
+	return WidgetNavigations.Num();
+}
+
+UEWN_WidgetNavigation* UEWN_WidgetNavigationSwitcher::GetNavigationAt( int32 Index ) const
+{
+	return Index < WidgetNavigations.Num() ? WidgetNavigations[Index] : nullptr;
+}
+
+TArray<UEWN_WidgetNavigation*> UEWN_WidgetNavigationSwitcher::GetAllNavigations() const
+{
+	return WidgetNavigations;
+}
+
+void UEWN_WidgetNavigationSwitcher::Register( UEWN_WidgetNavigation* WidgetNavigation, bool bConnectNavigation )
 {
 	if ( ensureAlways( WidgetNavigation ) )
 	{
@@ -75,6 +92,9 @@ void UEWN_WidgetNavigationSwitcher::Register( UEWN_WidgetNavigation* WidgetNavig
 		WidgetNavigation->SetMoveFocusFallback(
 			UEWN_WidgetNavigation::FMoveFocusDelegate::CreateUObject( this, &ThisClass::MoveFocusFallback ) );
 		WidgetNavigations.Emplace( WidgetNavigation );
+
+		FWidgetNavigation& NavigationInfo = WidgetNavigationKeys.Emplace( WidgetNavigation );
+		NavigationInfo.bConnectNavigation = bConnectNavigation;
 	}
 }
 
@@ -85,6 +105,8 @@ void UEWN_WidgetNavigationSwitcher::Unregister( UEWN_WidgetNavigation* WidgetNav
 		WidgetNavigation->OnFocusUpdatedDelegate.RemoveDynamic( this, &ThisClass::OnNavigationFocusUpdated );
 		WidgetNavigation->SetMoveFocusFallback( UEWN_WidgetNavigation::FMoveFocusDelegate() );
 		WidgetNavigations.Remove( WidgetNavigation );
+
+		WidgetNavigationKeys.Remove( WidgetNavigation );
 	}
 }
 
@@ -194,9 +216,10 @@ bool UEWN_WidgetNavigationSwitcher::MoveFocusFallback(
 	check( CurrentWidget );
 
 	TMap<UWidget*, FWidgetWithNavigation> WidgetsWithNavigation;
-	for ( TWeakObjectPtr<UEWN_WidgetNavigation> WidgetNavigation : WidgetNavigations )
+	for ( const TPair<TObjectKey<UEWN_WidgetNavigation>, FWidgetNavigation>& KVP : WidgetNavigationKeys )
 	{
-		if ( !WidgetNavigation.IsValid() || WidgetNavigation == Navigation )
+		UEWN_WidgetNavigation* WidgetNavigation = KVP.Key.ResolveObjectPtr();
+		if ( !WidgetNavigation || WidgetNavigation == Navigation || !KVP.Value.bConnectNavigation )
 		{
 			continue;
 		}
@@ -208,7 +231,7 @@ bool UEWN_WidgetNavigationSwitcher::MoveFocusFallback(
 				check( ChildWidget );
 
 				FWidgetWithNavigation& Info = WidgetsWithNavigation.Emplace( ChildWidget );
-				Info.Navigation = WidgetNavigation.Get();
+				Info.Navigation = WidgetNavigation;
 				Info.Index = i;
 				Info.Position = ChildWidget->GetCachedGeometry().GetAbsolutePosition();
 			} );
@@ -356,9 +379,9 @@ void UEWN_WidgetNavigationSwitcher::OnNavigationFocusUpdated(
 	{
 		LastActiveNavigation = Navigation;
 
-		for ( TWeakObjectPtr<UEWN_WidgetNavigation> WidgetNavigation : WidgetNavigations )
+		for ( UEWN_WidgetNavigation* WidgetNavigation : WidgetNavigations )
 		{
-			if ( WidgetNavigation.IsValid() && WidgetNavigation != LastActiveNavigation )
+			if ( WidgetNavigation && WidgetNavigation != LastActiveNavigation )
 			{
 				// WidgetSwitcher has only one focus.
 				WidgetNavigation->UpdateFocusIndex( INDEX_NONE, false );
