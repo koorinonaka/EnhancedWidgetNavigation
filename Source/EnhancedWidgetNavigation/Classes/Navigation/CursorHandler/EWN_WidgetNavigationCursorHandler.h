@@ -8,22 +8,20 @@
 #include "EWN_WidgetTypes.h"
 #include "Interfaces/EWN_Interface_WidgetNavigationChild.h"
 
-#include "EWN_WidgetNavigationCursorHandler.generated.h"
-
 class FEWN_WidgetNavigationCursorFactory
 {
 public:
-	static UEWN_WidgetNavigationCursorHandler* CreateHandler( class UEWN_WidgetNavigation* Navigation );
+	static TSharedPtr<class FEWN_WidgetNavigationCursorHandler> CreateHandler( class UEWN_WidgetNavigation* Navigation );
 };
 
-UCLASS( Abstract )
-class ENHANCEDWIDGETNAVIGATION_API UEWN_WidgetNavigationCursorHandler : public UObject
+class ENHANCEDWIDGETNAVIGATION_API FEWN_WidgetNavigationCursorHandler
 {
-	GENERATED_BODY()
+public:
+	FEWN_WidgetNavigationCursorHandler( class UEWN_WidgetNavigation* Navigation );
+	virtual ~FEWN_WidgetNavigationCursorHandler() {}
 
 public:
-	virtual int32 GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor )
-		PURE_VIRTUAL( ThisClass::GetNextIndex, return INDEX_NONE; );
+	virtual int32 GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const = 0;
 
 	int32 GetForwardIndex( int32 CurrentIndex ) const;
 	int32 GetBackwardIndex( int32 CurrentIndex ) const;
@@ -33,14 +31,18 @@ protected:
 
 protected:
 	bool IsLoopNavigation() const;
+	bool IsDistanceBasedNavigation() const;
 	bool IsWrapLines() const;
+
+private:
+	TWeakObjectPtr<class UEWN_WidgetNavigation> OuterNavigation;
 };
 
-UCLASS()
-class ENHANCEDWIDGETNAVIGATION_API UEWN_WidgetNavigationCursorHandler_Default : public UEWN_WidgetNavigationCursorHandler
+class ENHANCEDWIDGETNAVIGATION_API FEWN_WidgetNavigationCursorHandler_Default : public FEWN_WidgetNavigationCursorHandler
 {
-	GENERATED_BODY()
+public:
+	FEWN_WidgetNavigationCursorHandler_Default( class UEWN_WidgetNavigation* Navigation );
 
 public:
-	virtual int32 GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) override { return CurrentIndex; }
+	virtual int32 GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const override { return CurrentIndex; }
 };

@@ -19,13 +19,6 @@ class ENHANCEDWIDGETNAVIGATION_API UEWN_WidgetNavigationSwitcher : public UObjec
 		bool bConnectNavigation = false;
 	};
 
-	struct FWidgetWithNavigation
-	{
-		class UEWN_WidgetNavigation* Navigation = nullptr;
-		int32 Index = INDEX_NONE;
-		FVector2D Position;
-	};
-
 	struct FWidgetNavigationOverride
 	{
 		TObjectKey<class UEWN_WidgetNavigation> Navigation;
@@ -78,11 +71,6 @@ public:
 private:
 	bool MoveFocusOverride( class UEWN_WidgetNavigation* Navigation, EEWN_WidgetCursor WidgetCursor, bool bFromOperation );
 	bool MoveFocusFallback( class UEWN_WidgetNavigation* Navigation, EEWN_WidgetCursor WidgetCursor, bool bFromOperation );
-
-	UWidget* FindFocusToNearest( UWidget* CurrentWidget, EEWN_WidgetCursor WidgetCursor,
-		const TMap<UWidget*, FWidgetWithNavigation>& WidgetsWithNavigation ) const;
-	UWidget* FindFocusToFarthest( UWidget* CurrentWidget, EEWN_WidgetCursor WidgetCursor,
-		const TMap<UWidget*, FWidgetWithNavigation>& WidgetsWithNavigation ) const;
 
 	UFUNCTION()
 	void OnNavigationFocusUpdated( class UEWN_WidgetNavigation* Navigation, int32 OldIndex, int32 NewIndex, bool bFromOperation );

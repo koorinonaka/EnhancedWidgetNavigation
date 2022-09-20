@@ -10,6 +10,7 @@
 #include "EWN_WidgetInputSettings.h"
 #include "EWN_WidgetInputSubsystem.h"
 #include "Navigation/CursorHandler/EWN_WidgetNavigationCursorHandler.h"
+#include "Navigation/EWN_WidgetNavigationHelper.h"
 #include "Navigation/EWN_WidgetNavigationSubsystem.h"
 
 namespace EWNUtil
@@ -191,41 +192,22 @@ UWidget* UEWN_WidgetNavigation::GetChildAt( int32 Index ) const
 	return ensure( PanelWidget ) ? PanelWidget->GetChildAt( Index ) : nullptr;
 }
 
-void UEWN_WidgetNavigation::ForEachFocusableIndex( const TFunctionRef<void( int32 )> Callback )
-{
-	auto* PanelWidget = GetTypedOuter<UPanelWidget>();
-	if ( ensure( PanelWidget ) )
-	{
-		int32 ChildrenCount = PanelWidget->GetChildrenCount();
-		for ( int32 i = 0; i < ChildrenCount; ++i )
-		{
-			Callback( i );
-		}
-	}
-}
-
 int32 UEWN_WidgetNavigation::FindHoveredIndex() const
 {
-	auto* PanelWidget = GetTypedOuter<UPanelWidget>();
-	if ( ensure( PanelWidget ) )
-	{
-		int32 ChildrenCount = PanelWidget->GetChildrenCount();
-		for ( int32 i = 0; i < ChildrenCount; ++i )
-		{
-			UWidget* ChildWidget = PanelWidget->GetChildAt( i );
-			if ( !ChildWidget->IsHovered() )
-			{
-				continue;
-			}
+	return EWN::WidgetNavigationHelper::FindPanelIndex( GetTypedOuter<UPanelWidget>(), [&]( int32 i, UWidget* ChildWidget )
+		{ return ChildWidget->IsHovered() && IEWN_Interface_WidgetNavigationChild::IsNavigationFocusable( ChildWidget ); } );
+}
 
+void UEWN_WidgetNavigation::ForEachFocusable( const TFunctionRef<void( int32, UWidget* )> Callback ) const
+{
+	EWN::WidgetNavigationHelper::ForEachPanelChildren( GetTypedOuter<UPanelWidget>(),
+		[&]( int32 i, UWidget* ChildWidget )
+		{
 			if ( IEWN_Interface_WidgetNavigationChild::IsNavigationFocusable( ChildWidget ) )
 			{
-				return i;
+				Callback( i, ChildWidget );
 			}
-		}
-	}
-
-	return INDEX_NONE;
+		} );
 }
 
 ETriggerEvent UEWN_WidgetNavigation::GetTriggerEvent( EEWN_WidgetInputType InputType ) const

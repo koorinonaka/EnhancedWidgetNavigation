@@ -5,12 +5,17 @@
 //
 #include "Components/HorizontalBox.h"
 
-bool UEWN_WidgetNavigationCursorHandler_Horizontal::IsHorizontal( UPanelWidget* PanelWidget )
+bool FEWN_WidgetNavigationCursorHandler_Horizontal::IsHorizontal( UPanelWidget* PanelWidget )
 {
 	return PanelWidget->IsA<UHorizontalBox>();
 }
 
-int32 UEWN_WidgetNavigationCursorHandler_Horizontal::GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor )
+FEWN_WidgetNavigationCursorHandler_Horizontal::FEWN_WidgetNavigationCursorHandler_Horizontal( UEWN_WidgetNavigation* Navigation )
+	: FEWN_WidgetNavigationCursorHandler( Navigation )
+{
+}
+
+int32 FEWN_WidgetNavigationCursorHandler_Horizontal::GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const
 {
 	int32 ResultIndex = CurrentIndex;
 

@@ -18,7 +18,7 @@ class ENHANCEDWIDGETNAVIGATION_API UEWN_WidgetNavigation : public UObject
 {
 	GENERATED_BODY()
 
-	friend class UEWN_WidgetNavigationCursorHandler;
+	friend class FEWN_WidgetNavigationCursorHandler;
 	friend class UEWN_WidgetNavigationSwitcher;
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams( FFocusDelegate, class UEWN_WidgetNavigation*, Navigation,	//
@@ -64,10 +64,10 @@ public:
 	UFUNCTION( BlueprintCallable )
 	void SetFocusIndex( int32 NewIndex ) { UpdateFocusIndex( NewIndex, false ); }
 
-	void ForEachFocusableIndex( const TFunctionRef<void( int32 )> Callback );
-
 	UFUNCTION( BlueprintCallable )
 	int32 FindHoveredIndex() const;
+
+	void ForEachFocusable( const TFunctionRef<void( int32, UWidget* )> Callback ) const;
 
 	UFUNCTION( BlueprintCallable )
 	void ResetNavigation( bool bResetIndex = false );
@@ -94,6 +94,12 @@ public:
 	void SetLoopNavigation( bool bNewFlag ) { bLoopNavigation = bNewFlag; }
 
 	UFUNCTION( BlueprintCallable )
+	bool IsDistanceBasedNavigation() const { return bDistanceBasedNavigation; }
+
+	UFUNCTION( BlueprintCallable )
+	void SetDistanceBasedNavigation( bool bNewFlag ) { bDistanceBasedNavigation = bNewFlag; }
+
+	UFUNCTION( BlueprintCallable )
 	bool IsWrapLines() const { return bWrapLines; }
 
 	UFUNCTION( BlueprintCallable )
@@ -116,11 +122,15 @@ public:
 	FAcceptDelegate OnFocusAcceptedDelegate;
 
 protected:
-	// 縦横の循環ナビゲーション
+	// navigation that loops horizontally and vertically.
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
 	bool bLoopNavigation = false;
 
-	// GridPanel: 折り返しでナビゲーションを改行するか
+	// navigation by distance based on each cell.
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
+	bool bDistanceBasedNavigation = false;
+
+	// whether to wrap navigation on line breaks such as grid panels.
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
 	bool bWrapLines = false;
 
@@ -132,9 +142,7 @@ private:
 	int32 FocusIndex = INDEX_NONE;
 	int32 LastValidFocusIndex = INDEX_NONE;
 	TWeakObjectPtr<class UEWN_WidgetNavigationInputMappingContext> NavigationIMC;
-
-	UPROPERTY( Transient )
-	TObjectPtr<class UEWN_WidgetNavigationCursorHandler> CursorHandler;
+	TSharedPtr<class FEWN_WidgetNavigationCursorHandler> CursorHandler;
 
 	UPROPERTY( Transient )
 	TObjectPtr<class UInputMappingContext> IMC_Navigation;

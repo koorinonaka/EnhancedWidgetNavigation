@@ -9,6 +9,7 @@
 #include "EWN_WidgetInputSubsystem.h"
 #include "Navigation/CursorHandler/EWN_WidgetNavigationCursorHandler.h"
 #include "Navigation/EWN_WidgetNavigation.h"
+#include "Navigation/EWN_WidgetNavigationHelper.h"
 
 class FScopedFinalizer
 {
@@ -150,6 +151,8 @@ void UEWN_WidgetNavigationSwitcher::RemoveRoute(
 bool UEWN_WidgetNavigationSwitcher::MoveFocusOverride(
 	UEWN_WidgetNavigation* Navigation, EEWN_WidgetCursor WidgetCursor, bool bFromOperation )
 {
+	using namespace EWN::WidgetNavigationHelper;
+
 	FWidgetNavigationOverride Key;
 	Key.Navigation = Navigation;
 	Key.WidgetCursor = WidgetCursor;
@@ -184,16 +187,13 @@ bool UEWN_WidgetNavigationSwitcher::MoveFocusOverride(
 				continue;
 			}
 
-			Destination->ForEachFocusableIndex(
-				[&]( int32 i )
+			Destination->ForEachFocusable(
+				[&]( int32 i, UWidget* ChildWidget )
 				{
-					UWidget* ChildWidget = Destination->GetChildAt( i );
-					check( ChildWidget );
-
 					FWidgetWithNavigation& Info = WidgetsWithNavigation.Emplace( ChildWidget );
 					Info.Navigation = Destination.Get();
 					Info.Index = i;
-					Info.Position = ChildWidget->GetCachedGeometry().GetAbsolutePosition();
+					Info.Position = GetCursorPosition( ChildWidget->GetCachedGeometry(), EEWN_WidgetCursor::None );
 				} );
 		}
 
@@ -212,6 +212,8 @@ bool UEWN_WidgetNavigationSwitcher::MoveFocusOverride(
 bool UEWN_WidgetNavigationSwitcher::MoveFocusFallback(
 	UEWN_WidgetNavigation* Navigation, EEWN_WidgetCursor WidgetCursor, bool bFromOperation )
 {
+	using namespace EWN::WidgetNavigationHelper;
+
 	UWidget* CurrentWidget = Navigation->GetChildAt( Navigation->GetFocusIndex() );
 	check( CurrentWidget );
 
@@ -224,16 +226,13 @@ bool UEWN_WidgetNavigationSwitcher::MoveFocusFallback(
 			continue;
 		}
 
-		WidgetNavigation->ForEachFocusableIndex(
-			[&]( int32 i )
+		WidgetNavigation->ForEachFocusable(
+			[&]( int32 i, UWidget* ChildWidget )
 			{
-				UWidget* ChildWidget = WidgetNavigation->GetChildAt( i );
-				check( ChildWidget );
-
 				FWidgetWithNavigation& Info = WidgetsWithNavigation.Emplace( ChildWidget );
 				Info.Navigation = WidgetNavigation;
 				Info.Index = i;
-				Info.Position = ChildWidget->GetCachedGeometry().GetAbsolutePosition();
+				Info.Position = GetCursorPosition( ChildWidget->GetCachedGeometry(), EEWN_WidgetCursor::None );
 			} );
 	}
 
@@ -255,121 +254,6 @@ bool UEWN_WidgetNavigationSwitcher::MoveFocusFallback(
 	}
 
 	return false;
-}
-
-UWidget* UEWN_WidgetNavigationSwitcher::FindFocusToNearest( UWidget* CurrentWidget, EEWN_WidgetCursor WidgetCursor,
-	const TMap<UWidget*, FWidgetWithNavigation>& WidgetsWithNavigation ) const
-{
-	float Nearest = FLT_MAX;
-	UWidget* FoundWidget = nullptr;
-
-	const FVector2D& SourcePosition = CurrentWidget->GetCachedGeometry().GetAbsolutePosition();
-
-	TArray<UWidget*> Widgets;
-	WidgetsWithNavigation.GetKeys( Widgets );
-
-	for ( UWidget* Widget : Widgets )
-	{
-		const FWidgetWithNavigation& WidgetInfo = WidgetsWithNavigation[Widget];
-		FVector2D SourceToTarget = WidgetInfo.Position - SourcePosition;
-
-		float DistSquared = SourceToTarget.SizeSquared();
-		if ( DistSquared < Nearest )
-		{
-			bool bMatchCursor = [&]
-			{
-#if 1
-				bool bResult = false;
-				switch ( WidgetCursor )
-				{
-				case EEWN_WidgetCursor::Up: bResult = SourceToTarget.Y < 0.f; break;
-				case EEWN_WidgetCursor::Down: bResult = SourceToTarget.Y > 0.f; break;
-				case EEWN_WidgetCursor::Left: bResult = SourceToTarget.X < 0.f; break;
-				case EEWN_WidgetCursor::Right: bResult = SourceToTarget.X > 0.f; break;
-				}
-				return bResult;
-#else
-				EEWN_WidgetCursor DesiredCursor = EEWN_WidgetCursor::None;
-				if ( FMath::Abs( SourceToTarget.X ) < FMath::Abs( SourceToTarget.Y ) )
-				{
-					DesiredCursor = SourceToTarget.Y < 0 ? EEWN_WidgetCursor::Up : EEWN_WidgetCursor::Down;
-				}
-				else
-				{
-					DesiredCursor = SourceToTarget.X < 0 ? EEWN_WidgetCursor::Left : EEWN_WidgetCursor::Right;
-				}
-				return DesiredCursor == WidgetCursor;
-#endif
-			}();
-			if ( bMatchCursor )
-			{
-				FoundWidget = Widget;
-				Nearest = DistSquared;
-			}
-		}
-	}
-
-	return FoundWidget;
-}
-
-UWidget* UEWN_WidgetNavigationSwitcher::FindFocusToFarthest( UWidget* CurrentWidget, EEWN_WidgetCursor WidgetCursor,
-	const TMap<UWidget*, FWidgetWithNavigation>& WidgetsWithNavigation ) const
-{
-	UWidget* FoundWidget = nullptr;
-
-	const FVector2D& SourcePosition = CurrentWidget->GetCachedGeometry().GetAbsolutePosition();
-
-	TArray<UWidget*> Widgets;
-	WidgetsWithNavigation.GetKeys( Widgets );
-
-	// step1: カーソルと反対側の一番遠いWidgetを探す
-	float Farthest = 0.f;
-	for ( UWidget* Widget : Widgets )
-	{
-		const FWidgetWithNavigation& WidgetInfo = WidgetsWithNavigation[Widget];
-		FVector2D SourceToTarget = WidgetInfo.Position - SourcePosition;
-
-		float Score = 0.f;
-
-		switch ( WidgetCursor )
-		{
-		case EEWN_WidgetCursor::Up: Score = SourceToTarget.Y > 0.f ? SourceToTarget.Y : 0.f; break;
-		case EEWN_WidgetCursor::Down: Score = SourceToTarget.Y < 0.f ? SourceToTarget.Y : 0.f; break;
-		case EEWN_WidgetCursor::Left: Score = SourceToTarget.X > 0.f ? SourceToTarget.X : 0.f; break;
-		case EEWN_WidgetCursor::Right: Score = SourceToTarget.X < 0.f ? SourceToTarget.X : 0.f; break;
-		}
-
-		if ( FMath::Abs( Farthest ) < FMath::Abs( Score ) )
-		{
-			Farthest = Score;
-		}
-	}
-
-	// step2: カーソルから基準点を決める
-	FVector2D BasePosition;
-	switch ( WidgetCursor )
-	{
-	case EEWN_WidgetCursor::Up: BasePosition = FVector2D( SourcePosition.X, SourcePosition.Y + Farthest ); break;
-	case EEWN_WidgetCursor::Down: BasePosition = FVector2D( SourcePosition.X, SourcePosition.Y + Farthest ); break;
-	case EEWN_WidgetCursor::Left: BasePosition = FVector2D( SourcePosition.X + Farthest, SourcePosition.Y ); break;
-	case EEWN_WidgetCursor::Right: BasePosition = FVector2D( SourcePosition.X + Farthest, SourcePosition.Y ); break;
-	}
-
-	// step3: 基準点から一番近いWidgetを選択
-	float Nearest = FLT_MAX;
-	for ( UWidget* Widget : Widgets )
-	{
-		const FWidgetWithNavigation& WidgetInfo = WidgetsWithNavigation[Widget];
-
-		float DistSquared = FVector2D::DistSquared( WidgetInfo.Position, BasePosition );
-		if ( DistSquared < Nearest )
-		{
-			FoundWidget = Widget;
-			Nearest = DistSquared;
-		}
-	}
-
-	return FoundWidget;
 }
 
 void UEWN_WidgetNavigationSwitcher::OnNavigationFocusUpdated(
