@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "Components/Widget.h"
 
 #include "EWN_WidgetTypes.generated.h"
 

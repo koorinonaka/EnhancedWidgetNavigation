@@ -3,7 +3,6 @@
 #include "EWN_WidgetNavigationCursorHandler_Grid.h"
 
 //
-#include "Interfaces/EWN_Interface_WidgetNavigationChild.h"
 #include "Navigation/EWN_WidgetNavigationHelper.h"
 
 class FEWN_WidgetNavigationCursorHandler_Grid::FDistanceBasedNav
@@ -47,7 +46,7 @@ public:
 		}
 		else if ( OwnerHandler.IsLoopNavigation() )
 		{
-			if ( UWidget* FarthestWidget = FindFocusToFarthest( CurrentWidget, WidgetCursor, WidgetsWithNavigation ) )
+			if ( UWidget* FarthestWidget = FindFocusToOpposite( CurrentWidget, WidgetCursor, WidgetsWithNavigation ) )
 			{
 				ResultIndex = WidgetsWithNavigation[FarthestWidget].Index;
 			}

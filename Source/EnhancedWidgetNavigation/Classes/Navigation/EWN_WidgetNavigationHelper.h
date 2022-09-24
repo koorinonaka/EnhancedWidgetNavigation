@@ -22,6 +22,6 @@ static FVector2D GetCursorPosition( const FGeometry& Geometry, EEWN_WidgetCursor
 
 static UWidget* FindFocusToNearest(
 	UWidget* CurrentWidget, EEWN_WidgetCursor WidgetCursor, const TMap<UWidget*, FWidgetWithNavigation>& WidgetsWithNavigation );
-static UWidget* FindFocusToFarthest(
+static UWidget* FindFocusToOpposite(
 	UWidget* CurrentWidget, EEWN_WidgetCursor WidgetCursor, const TMap<UWidget*, FWidgetWithNavigation>& WidgetsWithNavigation );
 };	  // namespace EWN::WidgetNavigationHelper

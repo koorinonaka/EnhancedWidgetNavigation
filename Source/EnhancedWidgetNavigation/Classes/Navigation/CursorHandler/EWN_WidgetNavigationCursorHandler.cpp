@@ -6,7 +6,6 @@
 #include "Components/PanelWidget.h"
 
 //
-#include "Interfaces/EWN_Interface_WidgetNavigationChild.h"
 #include "Navigation/EWN_WidgetNavigation.h"
 
 //

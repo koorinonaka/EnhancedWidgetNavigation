@@ -50,7 +50,7 @@ FVector2D GetCursorPosition( const FGeometry& Geometry, EEWN_WidgetCursor Widget
 
 	return Position;
 }
-PRAGMA_DISABLE_OPTIMIZATION
+
 UWidget* FindFocusToNearest(
 	UWidget* CurrentWidget, EEWN_WidgetCursor WidgetCursor, const TMap<UWidget*, FWidgetWithNavigation>& WidgetsWithNavigation )
 {
@@ -118,24 +118,25 @@ UWidget* FindFocusToNearest(
 
 				// checks if either end of the geometry intersects.
 				// add 1.f due to miscalculation.
+				{
+					switch ( WidgetCursor )
+					{
+					case EEWN_WidgetCursor::Up:
+					case EEWN_WidgetCursor::Down:
+					{
+						SortInfo.bExtLinesIntersect = ( TargetP1.X < SourceP1.X + 1.f && SourceP1.X - 1.f < TargetP2.X ) ||
+													  ( TargetP1.X < SourceP2.X + 1.f && SourceP2.X - 1.f < TargetP2.X );
+					}
+					break;
 
-				switch ( WidgetCursor )
-				{
-				case EEWN_WidgetCursor::Up:
-				case EEWN_WidgetCursor::Down:
-				{
-					SortInfo.bExtLinesIntersect = ( TargetP1.X - 1.f <= SourceP1.X && SourceP1.X <= TargetP2.X + 1.f ) ||
-												  ( TargetP1.X - 1.f <= SourceP2.X && SourceP2.X <= TargetP2.X + 1.f );
-				}
-				break;
-
-				case EEWN_WidgetCursor::Left:
-				case EEWN_WidgetCursor::Right:
-				{
-					SortInfo.bExtLinesIntersect = ( TargetP1.Y - 1.f <= SourceP1.Y && SourceP1.Y <= TargetP3.Y + 1.f ) ||
-												  ( TargetP1.Y - 1.f <= SourceP3.Y && SourceP3.Y <= TargetP3.Y + 1.f );
-				}
-				break;
+					case EEWN_WidgetCursor::Left:
+					case EEWN_WidgetCursor::Right:
+					{
+						SortInfo.bExtLinesIntersect = ( TargetP1.Y < SourceP1.Y + 1.f && SourceP1.Y - 1.f < TargetP3.Y ) ||
+													  ( TargetP1.Y < SourceP3.Y + 1.f && SourceP3.Y - 1.f < TargetP3.Y );
+					}
+					break;
+					}
 				}
 			}
 
@@ -163,8 +164,8 @@ UWidget* FindFocusToNearest(
 
 	return FoundWidget;
 }
-PRAGMA_ENABLE_OPTIMIZATION
-UWidget* FindFocusToFarthest(
+
+UWidget* FindFocusToOpposite(
 	UWidget* CurrentWidget, EEWN_WidgetCursor WidgetCursor, const TMap<UWidget*, FWidgetWithNavigation>& WidgetsWithNavigation )
 {
 	UWidget* FoundWidget = nullptr;
