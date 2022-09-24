@@ -1,6 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2022 koorinonaka, All Rights Reserved.
 
-#include "EWN_WidgetNavigationSwitcher.h"
+#include "EWN_WidgetNavigationConnector.h"
 
 //
 #include "EWN_WidgetInputSubsystem.h"
@@ -8,7 +8,7 @@
 #include "Navigation/EWN_WidgetNavigation.h"
 #include "Navigation/EWN_WidgetNavigationHelper.h"
 
-EEWN_WidgetInputType UEWN_WidgetNavigationSwitcher::TickNavigation( float DeltaTime )
+EEWN_WidgetInputType UEWN_WidgetNavigationConnector::TickNavigation( float DeltaTime )
 {
 	auto* WidgetInputSubsystem = UEWN_WidgetInputSubsystem::Get( GetTypedOuter<UWidget>() );
 	if ( !WidgetInputSubsystem )
@@ -42,50 +42,50 @@ EEWN_WidgetInputType UEWN_WidgetNavigationSwitcher::TickNavigation( float DeltaT
 	return EEWN_WidgetInputType::None;
 }
 
-int32 UEWN_WidgetNavigationSwitcher::GetActiveIndex() const
+int32 UEWN_WidgetNavigationConnector::GetActiveIndex() const
 {
 	return ActiveIndex;
 }
 
-bool UEWN_WidgetNavigationSwitcher::IsActive( TScriptInterface<IEWN_Interface_WidgetNavigationSwitcher> INavigation ) const
+bool UEWN_WidgetNavigationConnector::IsActive( TScriptInterface<IEWN_Interface_WidgetNavigationConnection> INavigation ) const
 {
 	return ActiveIndex != INDEX_NONE ? WidgetNavigations[ActiveIndex] == INavigation : false;
 }
 
-TScriptInterface<IEWN_Interface_WidgetNavigationSwitcher> UEWN_WidgetNavigationSwitcher::GetNavigationAt( int32 Index ) const
+TScriptInterface<IEWN_Interface_WidgetNavigationConnection> UEWN_WidgetNavigationConnector::GetNavigationAt( int32 Index ) const
 {
 	return Index < WidgetNavigations.Num() ? WidgetNavigations[Index] : nullptr;
 }
 
-TArray<TScriptInterface<IEWN_Interface_WidgetNavigationSwitcher>> UEWN_WidgetNavigationSwitcher::GetAllNavigations() const
+TArray<TScriptInterface<IEWN_Interface_WidgetNavigationConnection>> UEWN_WidgetNavigationConnector::GetAllNavigations() const
 {
 	return WidgetNavigations;
 }
 
-void UEWN_WidgetNavigationSwitcher::Register( TScriptInterface<IEWN_Interface_WidgetNavigationSwitcher> INavigation )
+void UEWN_WidgetNavigationConnector::Register( TScriptInterface<IEWN_Interface_WidgetNavigationConnection> INavigation )
 {
 	if ( ensureAlways( INavigation ) )
 	{
 		INavigation->NavigationUpdatedDelegate.AddUObject( this, &ThisClass::OnNavigationUpdated );
 		INavigation->SetMoveFocusFallback(
-			IEWN_Interface_WidgetNavigationSwitcher::FMoveFocusDelegate::CreateUObject( this, &ThisClass::MoveFocusFallback ) );
+			IEWN_Interface_WidgetNavigationConnection::FMoveFocusDelegate::CreateUObject( this, &ThisClass::MoveFocusFallback ) );
 		WidgetNavigations.Emplace( INavigation );
 	}
 }
 
-void UEWN_WidgetNavigationSwitcher::Unregister( TScriptInterface<IEWN_Interface_WidgetNavigationSwitcher> INavigation )
+void UEWN_WidgetNavigationConnector::Unregister( TScriptInterface<IEWN_Interface_WidgetNavigationConnection> INavigation )
 {
 	if ( ensureAlways( INavigation ) )
 	{
 		INavigation->NavigationUpdatedDelegate.RemoveAll( this );
-		INavigation->SetMoveFocusFallback( IEWN_Interface_WidgetNavigationSwitcher::FMoveFocusDelegate() );
+		INavigation->SetMoveFocusFallback( IEWN_Interface_WidgetNavigationConnection::FMoveFocusDelegate() );
 		WidgetNavigations.Remove( INavigation );
 	}
 }
 
-void UEWN_WidgetNavigationSwitcher::AddRoute( EEWN_WidgetCursor WidgetCursor,
-	TScriptInterface<IEWN_Interface_WidgetNavigationSwitcher> Source,
-	TScriptInterface<IEWN_Interface_WidgetNavigationSwitcher> Destination )
+void UEWN_WidgetNavigationConnector::AddRoute( EEWN_WidgetCursor WidgetCursor,
+	TScriptInterface<IEWN_Interface_WidgetNavigationConnection> Source,
+	TScriptInterface<IEWN_Interface_WidgetNavigationConnection> Destination )
 {
 	if ( ensureAlways( Source && Destination ) )
 	{
@@ -95,17 +95,17 @@ void UEWN_WidgetNavigationSwitcher::AddRoute( EEWN_WidgetCursor WidgetCursor,
 
 		if ( WidgetNavigationOverrides.Num( Key ) == 0 )
 		{
-			Source->SetMoveFocusOverride(
-				IEWN_Interface_WidgetNavigationSwitcher::FMoveFocusDelegate::CreateUObject( this, &ThisClass::MoveFocusOverride ) );
+			Source->SetMoveFocusOverride( IEWN_Interface_WidgetNavigationConnection::FMoveFocusDelegate::CreateUObject(
+				this, &ThisClass::MoveFocusOverride ) );
 		}
 
 		WidgetNavigationOverrides.Emplace( Key, Destination.GetObject() );
 	}
 }
 
-void UEWN_WidgetNavigationSwitcher::RemoveRoute( EEWN_WidgetCursor WidgetCursor,
-	TScriptInterface<IEWN_Interface_WidgetNavigationSwitcher> Source,
-	TScriptInterface<IEWN_Interface_WidgetNavigationSwitcher> Destination )
+void UEWN_WidgetNavigationConnector::RemoveRoute( EEWN_WidgetCursor WidgetCursor,
+	TScriptInterface<IEWN_Interface_WidgetNavigationConnection> Source,
+	TScriptInterface<IEWN_Interface_WidgetNavigationConnection> Destination )
 {
 	if ( ensureAlways( Source && Destination ) )
 	{
@@ -117,13 +117,13 @@ void UEWN_WidgetNavigationSwitcher::RemoveRoute( EEWN_WidgetCursor WidgetCursor,
 
 		if ( WidgetNavigationOverrides.Num( Key ) == 0 )
 		{
-			Source->SetMoveFocusOverride( IEWN_Interface_WidgetNavigationSwitcher::FMoveFocusDelegate() );
+			Source->SetMoveFocusOverride( IEWN_Interface_WidgetNavigationConnection::FMoveFocusDelegate() );
 		}
 	}
 }
 
-bool UEWN_WidgetNavigationSwitcher::MoveFocusOverride(
-	IEWN_Interface_WidgetNavigationSwitcher* INavigation, EEWN_WidgetCursor WidgetCursor, bool bFromOperation )
+bool UEWN_WidgetNavigationConnector::MoveFocusOverride(
+	IEWN_Interface_WidgetNavigationConnection* INavigation, EEWN_WidgetCursor WidgetCursor, bool bFromOperation )
 {
 	if ( TryMoveFocusOverride( WidgetCursor, bFromOperation ) )
 	{
@@ -153,7 +153,7 @@ bool UEWN_WidgetNavigationSwitcher::MoveFocusOverride(
 		TMap<UWidget*, FWidgetWithNavigation> WidgetsWithNavigation;
 		for ( TWeakObjectPtr<UObject> Destination : Destinations )
 		{
-			auto* INavigationDest = Cast<IEWN_Interface_WidgetNavigationSwitcher>( Destination.Get() );
+			auto* INavigationDest = Cast<IEWN_Interface_WidgetNavigationConnection>( Destination.Get() );
 			if ( !INavigationDest )
 			{
 				continue;
@@ -185,8 +185,8 @@ bool UEWN_WidgetNavigationSwitcher::MoveFocusOverride(
 	return false;
 }
 
-bool UEWN_WidgetNavigationSwitcher::MoveFocusFallback(
-	IEWN_Interface_WidgetNavigationSwitcher* INavigation, EEWN_WidgetCursor WidgetCursor, bool bFromOperation )
+bool UEWN_WidgetNavigationConnector::MoveFocusFallback(
+	IEWN_Interface_WidgetNavigationConnection* INavigation, EEWN_WidgetCursor WidgetCursor, bool bFromOperation )
 {
 	if ( TryMoveFocusFallback( WidgetCursor, bFromOperation ) )
 	{
@@ -238,8 +238,8 @@ bool UEWN_WidgetNavigationSwitcher::MoveFocusFallback(
 	return false;
 }
 
-void UEWN_WidgetNavigationSwitcher::OnNavigationUpdated(
-	IEWN_Interface_WidgetNavigationSwitcher* INavigation, int32 OldIndex, int32 NewIndex, bool bFromOperation )
+void UEWN_WidgetNavigationConnector::OnNavigationUpdated(
+	IEWN_Interface_WidgetNavigationConnection* INavigation, int32 OldIndex, int32 NewIndex, bool bFromOperation )
 {
 	if ( NewIndex != INDEX_NONE )
 	{
@@ -265,30 +265,30 @@ void UEWN_WidgetNavigationSwitcher::OnNavigationUpdated(
 	}
 }
 
-UWidget* UEWN_WidgetNavigationSwitcher::GetCurrentWidget() const
+UWidget* UEWN_WidgetNavigationConnector::GetCurrentWidget() const
 {
 	return ActiveIndex != INDEX_NONE ? WidgetNavigations[ActiveIndex]->GetCurrentWidget() : nullptr;
 }
 
-bool UEWN_WidgetNavigationSwitcher::TestFocus( EEWN_WidgetCursor WidgetCursor ) const
+bool UEWN_WidgetNavigationConnector::TestFocus( EEWN_WidgetCursor WidgetCursor ) const
 {
 	return ActiveIndex != INDEX_NONE ? WidgetNavigations[ActiveIndex]->TestFocus( WidgetCursor ) : false;
 }
 
-void UEWN_WidgetNavigationSwitcher::ForEachWidgetNavigation( const TFunctionRef<void( UEWN_WidgetNavigation* )> Callback )
+void UEWN_WidgetNavigationConnector::ForEachWidgetNavigation( const TFunctionRef<void( UEWN_WidgetNavigation* )> Callback )
 {
 	if ( IsNavigationEnabled() )
 	{
-		for ( TScriptInterface<IEWN_Interface_WidgetNavigationSwitcher> WidgetNavigation : WidgetNavigations )
+		for ( TScriptInterface<IEWN_Interface_WidgetNavigationConnection> WidgetNavigation : WidgetNavigations )
 		{
 			WidgetNavigation->ForEachWidgetNavigation( Callback );
 		}
 	}
 }
 
-void UEWN_WidgetNavigationSwitcher::InvalidateNavigation()
+void UEWN_WidgetNavigationConnector::InvalidateNavigation()
 {
-	for ( TScriptInterface<IEWN_Interface_WidgetNavigationSwitcher> WidgetNavigation : WidgetNavigations )
+	for ( TScriptInterface<IEWN_Interface_WidgetNavigationConnection> WidgetNavigation : WidgetNavigations )
 	{
 		WidgetNavigation->InvalidateNavigation();
 	}

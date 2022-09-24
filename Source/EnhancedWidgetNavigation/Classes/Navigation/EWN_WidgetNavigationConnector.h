@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2022 koorinonaka, All Rights Reserved.
 
 #pragma once
 
@@ -6,12 +6,12 @@
 
 //
 #include "EWN_WidgetTypes.h"
-#include "Interfaces/EWN_Interface_WidgetNavigationSwitcher.h"
+#include "Interfaces/EWN_Interface_WidgetNavigationConnection.h"
 
-#include "EWN_WidgetNavigationSwitcher.generated.h"
+#include "EWN_WidgetNavigationConnector.generated.h"
 
 UCLASS( Blueprintable )
-class ENHANCEDWIDGETNAVIGATION_API UEWN_WidgetNavigationSwitcher : public UObject, public IEWN_Interface_WidgetNavigationSwitcher
+class ENHANCEDWIDGETNAVIGATION_API UEWN_WidgetNavigationConnector : public UObject, public IEWN_Interface_WidgetNavigationConnection
 {
 	GENERATED_BODY()
 
@@ -45,29 +45,29 @@ public:
 	int32 GetActiveIndex() const;
 
 	UFUNCTION( BlueprintCallable )
-	bool IsActive( TScriptInterface<IEWN_Interface_WidgetNavigationSwitcher> INavigation ) const;
+	bool IsActive( TScriptInterface<IEWN_Interface_WidgetNavigationConnection> INavigation ) const;
 
 	UFUNCTION( BlueprintCallable )
-	TScriptInterface<IEWN_Interface_WidgetNavigationSwitcher> GetNavigationAt( int32 Index ) const;
+	TScriptInterface<IEWN_Interface_WidgetNavigationConnection> GetNavigationAt( int32 Index ) const;
 
 	UFUNCTION( BlueprintCallable )
-	TArray<TScriptInterface<IEWN_Interface_WidgetNavigationSwitcher>> GetAllNavigations() const;
+	TArray<TScriptInterface<IEWN_Interface_WidgetNavigationConnection>> GetAllNavigations() const;
 
 	UFUNCTION( BlueprintCallable )
-	void Register( TScriptInterface<IEWN_Interface_WidgetNavigationSwitcher> INavigation );
+	void Register( TScriptInterface<IEWN_Interface_WidgetNavigationConnection> INavigation );
 
 	UFUNCTION( BlueprintCallable )
-	void Unregister( TScriptInterface<IEWN_Interface_WidgetNavigationSwitcher> INavigation );
+	void Unregister( TScriptInterface<IEWN_Interface_WidgetNavigationConnection> INavigation );
 
 	UFUNCTION( BlueprintCallable )
 	void AddRoute( EEWN_WidgetCursor WidgetCursor,	  //
-		TScriptInterface<IEWN_Interface_WidgetNavigationSwitcher> Source,
-		TScriptInterface<IEWN_Interface_WidgetNavigationSwitcher> Destination );
+		TScriptInterface<IEWN_Interface_WidgetNavigationConnection> Source,
+		TScriptInterface<IEWN_Interface_WidgetNavigationConnection> Destination );
 
 	UFUNCTION( BlueprintCallable )
 	void RemoveRoute( EEWN_WidgetCursor WidgetCursor,	 //
-		TScriptInterface<IEWN_Interface_WidgetNavigationSwitcher> Source,
-		TScriptInterface<IEWN_Interface_WidgetNavigationSwitcher> Destination );
+		TScriptInterface<IEWN_Interface_WidgetNavigationConnection> Source,
+		TScriptInterface<IEWN_Interface_WidgetNavigationConnection> Destination );
 
 public:
 	UFUNCTION( BlueprintCallable )
@@ -75,16 +75,16 @@ public:
 
 private:
 	bool MoveFocusOverride(
-		IEWN_Interface_WidgetNavigationSwitcher* INavigation, EEWN_WidgetCursor WidgetCursor, bool bFromOperation );
+		IEWN_Interface_WidgetNavigationConnection* INavigation, EEWN_WidgetCursor WidgetCursor, bool bFromOperation );
 	bool MoveFocusFallback(
-		IEWN_Interface_WidgetNavigationSwitcher* INavigation, EEWN_WidgetCursor WidgetCursor, bool bFromOperation );
+		IEWN_Interface_WidgetNavigationConnection* INavigation, EEWN_WidgetCursor WidgetCursor, bool bFromOperation );
 
 	void OnNavigationUpdated(
-		IEWN_Interface_WidgetNavigationSwitcher* INavigation, int32 OldIndex, int32 NewIndex, bool bFromOperation );
+		IEWN_Interface_WidgetNavigationConnection* INavigation, int32 OldIndex, int32 NewIndex, bool bFromOperation );
 
 private:
 	UPROPERTY( Transient )
-	TArray<TScriptInterface<IEWN_Interface_WidgetNavigationSwitcher>> WidgetNavigations;
+	TArray<TScriptInterface<IEWN_Interface_WidgetNavigationConnection>> WidgetNavigations;
 
 	int32 ActiveIndex = INDEX_NONE;
 	TMultiMap<FWidgetNavigationOverride, TWeakObjectPtr<UObject>> WidgetNavigationOverrides;

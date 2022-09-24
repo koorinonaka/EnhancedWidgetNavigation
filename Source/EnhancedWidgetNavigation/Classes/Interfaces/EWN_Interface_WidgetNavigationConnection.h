@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2022 koorinonaka, All Rights Reserved.
 
 #pragma once
 
@@ -7,15 +7,15 @@
 //
 #include "EWN_WidgetTypes.h"
 
-#include "EWN_Interface_WidgetNavigationSwitcher.generated.h"
+#include "EWN_Interface_WidgetNavigationConnection.generated.h"
 
 UINTERFACE( BlueprintType, meta = ( CannotImplementInterfaceInBlueprint ) )
-class ENHANCEDWIDGETNAVIGATION_API UEWN_Interface_WidgetNavigationSwitcher : public UInterface
+class ENHANCEDWIDGETNAVIGATION_API UEWN_Interface_WidgetNavigationConnection : public UInterface
 {
 	GENERATED_BODY()
 };
 
-class ENHANCEDWIDGETNAVIGATION_API IEWN_Interface_WidgetNavigationSwitcher
+class ENHANCEDWIDGETNAVIGATION_API IEWN_Interface_WidgetNavigationConnection
 {
 	GENERATED_BODY()
 

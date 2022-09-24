@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2022 koorinonaka, All Rights Reserved.
 
 #pragma once
 
@@ -9,17 +9,17 @@
 
 //
 #include "EWN_WidgetTypes.h"
-#include "Interfaces/EWN_Interface_WidgetNavigationSwitcher.h"
+#include "Interfaces/EWN_Interface_WidgetNavigationConnection.h"
 
 #include "EWN_WidgetNavigation.generated.h"
 
 UCLASS( Blueprintable )
-class ENHANCEDWIDGETNAVIGATION_API UEWN_WidgetNavigation : public UObject, public IEWN_Interface_WidgetNavigationSwitcher
+class ENHANCEDWIDGETNAVIGATION_API UEWN_WidgetNavigation : public UObject, public IEWN_Interface_WidgetNavigationConnection
 {
 	GENERATED_BODY()
 
 	friend class FEWN_WidgetNavigationCursorHandler;
-	friend class UEWN_WidgetNavigationSwitcher;
+	friend class UEWN_WidgetNavigationConnector;
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams( FFocusDelegate, class UEWN_WidgetNavigation*, Navigation,	//
 		int32, OldIndex, int32, NewIndex, bool, bFromOperation );
