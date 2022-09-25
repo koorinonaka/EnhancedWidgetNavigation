@@ -13,6 +13,11 @@
 #include "EWN_WidgetInputSettings.h"
 #include "Interfaces/EWN_Interface_LocalPlayerExtension.h"
 
+#if WITH_EDITOR
+#include "IMessageLogListing.h"
+#include "MessageLogModule.h"
+#endif
+
 class FEWN_WidgetInputProcessor : public IInputProcessor
 {
 	friend class UEWN_WidgetInputSubsystem;
@@ -175,6 +180,19 @@ void UEWN_WidgetInputSubsystem::Initialize( FSubsystemCollectionBase& Collection
 	{
 		ILPExtension->SpawnPlayActorDelegate.AddUObject( this, &ThisClass::InitOnSpawnPlayActor );
 	}
+	else
+	{
+		FMessageLog AssetCheckLog( "AssetCheck" );
+
+		FText Message( NSLOCTEXT(
+			"EWN", "LocalPlayerNotImplementsInterface", "LocalPlayer does not implement IEWN_Interface_LocalPlayerExtension." ) );
+		AssetCheckLog.Error( Message );
+
+		if ( GIsEditor )
+		{
+			AssetCheckLog.Notify( Message, EMessageSeverity::Error, true );
+		}
+	}
 
 	GetMutableDefault<UEWN_WidgetInputSettings>()->TryLoadObjects();
 
@@ -199,14 +217,31 @@ void UEWN_WidgetInputSubsystem::InitOnSpawnPlayActor( APlayerController* PlayAct
 
 	if ( auto* EnhancedInputSubsystem = GetLocalPlayerChecked()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>() )
 	{
-		IMC_CommonInput = GetDefault<UEWN_WidgetInputSettings>()->BuildInputMappingContext(
-			[this]( EEWN_WidgetInputType InputType, UInputAction* IA ) { IA_CommonInputActions.Emplace( InputType, IA ); } );
-		if ( ensure( IMC_CommonInput ) )
+		if ( UEnhancedPlayerInput* EnhancedPI = EnhancedInputSubsystem->GetPlayerInput() )
 		{
-			EnhancedInputSubsystem->AddMappingContext( IMC_CommonInput, 0 );
-		}
+			IMC_CommonInput = GetDefault<UEWN_WidgetInputSettings>()->BuildInputMappingContext(
+				[this]( EEWN_WidgetInputType InputType, UInputAction* IA ) { IA_CommonInputActions.Emplace( InputType, IA ); } );
+			if ( ensure( IMC_CommonInput ) )
+			{
+				EnhancedInputSubsystem->AddMappingContext( IMC_CommonInput, 0 );
+			}
 
-		EnhancedInputSubsystem->AddMappingContext( GetDefault<UEWN_WidgetInputSettings>()->GetOptionalInputMappingContext(), 0 );
+			EnhancedInputSubsystem->AddMappingContext(
+				GetDefault<UEWN_WidgetInputSettings>()->GetOptionalInputMappingContext(), 0 );
+		}
+		else
+		{
+			FMessageLog AssetCheckLog( "AssetCheck" );
+
+			FText Message( NSLOCTEXT( "EWN", "NoSupportEnhancedInput",
+				"Project does not support EnhancedInput, check the DefaultPlayerInputClass in ProjectSettings." ) );
+			AssetCheckLog.Error( Message );
+
+			if ( GIsEditor )
+			{
+				AssetCheckLog.Notify( Message, EMessageSeverity::Error, true );
+			}
+		}
 	}
 }
 
@@ -215,12 +250,12 @@ ETriggerEvent UEWN_WidgetInputSubsystem::GetTriggerEvent( UInputAction* IA ) con
 	auto* EnhancedInputSubsystem = GetLocalPlayerChecked()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
 	check( EnhancedInputSubsystem );
 
-	UEnhancedPlayerInput* EnhancedPI = EnhancedInputSubsystem->GetPlayerInput();
-	check( EnhancedPI );
-
-	if ( const FInputActionInstance* IAInstance = EnhancedPI->FindActionInstanceData( IA ) )
+	if ( UEnhancedPlayerInput* EnhancedPI = EnhancedInputSubsystem->GetPlayerInput() )
 	{
-		return IAInstance->GetTriggerEvent();
+		if ( const FInputActionInstance* IAInstance = EnhancedPI->FindActionInstanceData( IA ) )
+		{
+			return IAInstance->GetTriggerEvent();
+		}
 	}
 
 	return ETriggerEvent::None;

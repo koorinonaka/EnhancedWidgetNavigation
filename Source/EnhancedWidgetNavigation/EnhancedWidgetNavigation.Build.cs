@@ -24,5 +24,13 @@ public class EnhancedWidgetNavigation : ModuleRules
 			"EnhancedInput",
 			"DeveloperSettings",
 		});
+
+		if (Target.bBuildEditor)
+		{
+			PrivateDependencyModuleNames.AddRange(new string[]
+			{
+				"MessageLog",
+			});
+		}
 	}
 }
