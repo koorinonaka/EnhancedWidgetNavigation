@@ -9,20 +9,23 @@ EnhancedWidgetNavigation provides navigation functionality for UMG.
 - Implements WidgetNavigation connections and allows nested connections.
 
 ## Requirement
-- UE5.0
+- UE 5.0
 
 ## Installation
 C++ projects can be built and used for free.
+
 Pre-built binaries are available in the UE Marketplace.
+
+The following three items must be set in ProjectSettings.
+1. UEnhancedPlayerInput to DefaultPlayerInputClass.
+2. LocalPlayer that implements IEWN_Interface_LocalPlayerExtension to LocalPlayerClass. If there are no special restrictions, EWN_LocalPlayer may be used.
+3. DA_WidgetInputConfig to WidgetInputConfigName. You can also create your own WidgetInputConfig for default key mapping.
 
 ## Usage
 See the [Tutorial](Documentation/Tutorial.md).
 
 ## Note
 - Touch input not supported.
-- IEWN_Interface_LocalPlayerExtension must be implemented in LocalPlayer.
-	- If there are no special restrictions, EWN_LocalPlayer may be used.
-- UEnhancedPlayerInput must be specified for DefaultPlayerInput in ProjectSettings.
 
 ## Author
 [@koorinonaka](https://twitter.com/koorinonaka)
