@@ -7,15 +7,15 @@
 //
 #include "EWN_WidgetTypes.h"
 
-#include "EWN_Interface_WidgetNavigationConnection.generated.h"
+#include "EWN_Interface_WidgetNavigation.generated.h"
 
 UINTERFACE( BlueprintType, meta = ( CannotImplementInterfaceInBlueprint ) )
-class ENHANCEDWIDGETNAVIGATION_API UEWN_Interface_WidgetNavigationConnection : public UInterface
+class ENHANCEDWIDGETNAVIGATION_API UEWN_Interface_WidgetNavigation : public UInterface
 {
 	GENERATED_BODY()
 };
 
-class ENHANCEDWIDGETNAVIGATION_API IEWN_Interface_WidgetNavigationConnection
+class ENHANCEDWIDGETNAVIGATION_API IEWN_Interface_WidgetNavigation
 {
 	GENERATED_BODY()
 

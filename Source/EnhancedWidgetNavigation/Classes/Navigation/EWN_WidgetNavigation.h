@@ -9,12 +9,12 @@
 
 //
 #include "EWN_WidgetTypes.h"
-#include "Interfaces/EWN_Interface_WidgetNavigationConnection.h"
+#include "Interfaces/EWN_Interface_WidgetNavigation.h"
 
 #include "EWN_WidgetNavigation.generated.h"
 
 UCLASS( Blueprintable )
-class ENHANCEDWIDGETNAVIGATION_API UEWN_WidgetNavigation : public UObject, public IEWN_Interface_WidgetNavigationConnection
+class ENHANCEDWIDGETNAVIGATION_API UEWN_WidgetNavigation : public UObject, public IEWN_Interface_WidgetNavigation
 {
 	GENERATED_BODY()
 

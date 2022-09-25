@@ -9,12 +9,12 @@
 
 //
 #include "EWN_WidgetTypes.h"
-#include "Interfaces/EWN_Interface_WidgetNavigationConnection.h"
+#include "Interfaces/EWN_Interface_WidgetNavigation.h"
 
 #include "EWN_WidgetNavigationConnector.generated.h"
 
 UCLASS( Blueprintable )
-class ENHANCEDWIDGETNAVIGATION_API UEWN_WidgetNavigationConnector : public UObject, public IEWN_Interface_WidgetNavigationConnection
+class ENHANCEDWIDGETNAVIGATION_API UEWN_WidgetNavigationConnector : public UObject, public IEWN_Interface_WidgetNavigation
 {
 	GENERATED_BODY()
 
@@ -48,29 +48,29 @@ public:
 	int32 GetActiveIndex() const;
 
 	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
-	bool IsActive( TScriptInterface<IEWN_Interface_WidgetNavigationConnection> INavigation ) const;
+	bool IsActive( TScriptInterface<IEWN_Interface_WidgetNavigation> INavigation ) const;
 
 	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
-	TScriptInterface<IEWN_Interface_WidgetNavigationConnection> GetNavigationAt( int32 Index ) const;
+	TScriptInterface<IEWN_Interface_WidgetNavigation> GetNavigationAt( int32 Index ) const;
 
 	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
-	TArray<TScriptInterface<IEWN_Interface_WidgetNavigationConnection>> GetAllNavigations() const;
+	TArray<TScriptInterface<IEWN_Interface_WidgetNavigation>> GetAllNavigations() const;
 
 	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
-	void Register( TScriptInterface<IEWN_Interface_WidgetNavigationConnection> INavigation );
+	void Register( TScriptInterface<IEWN_Interface_WidgetNavigation> INavigation );
 
 	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
-	void Unregister( TScriptInterface<IEWN_Interface_WidgetNavigationConnection> INavigation );
+	void Unregister( TScriptInterface<IEWN_Interface_WidgetNavigation> INavigation );
 
 	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	void AddRoute( EEWN_WidgetCursor WidgetCursor,	  //
-		TScriptInterface<IEWN_Interface_WidgetNavigationConnection> Source,
-		TScriptInterface<IEWN_Interface_WidgetNavigationConnection> Destination );
+		TScriptInterface<IEWN_Interface_WidgetNavigation> Source,
+		TScriptInterface<IEWN_Interface_WidgetNavigation> Destination );
 
 	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	void RemoveRoute( EEWN_WidgetCursor WidgetCursor,	 //
-		TScriptInterface<IEWN_Interface_WidgetNavigationConnection> Source,
-		TScriptInterface<IEWN_Interface_WidgetNavigationConnection> Destination );
+		TScriptInterface<IEWN_Interface_WidgetNavigation> Source,
+		TScriptInterface<IEWN_Interface_WidgetNavigation> Destination );
 
 public:
 	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
@@ -78,16 +78,16 @@ public:
 
 private:
 	bool MoveFocusOverride(
-		IEWN_Interface_WidgetNavigationConnection* INavigation, EEWN_WidgetCursor WidgetCursor, bool bFromOperation );
+		IEWN_Interface_WidgetNavigation* INavigation, EEWN_WidgetCursor WidgetCursor, bool bFromOperation );
 	bool MoveFocusFallback(
-		IEWN_Interface_WidgetNavigationConnection* INavigation, EEWN_WidgetCursor WidgetCursor, bool bFromOperation );
+		IEWN_Interface_WidgetNavigation* INavigation, EEWN_WidgetCursor WidgetCursor, bool bFromOperation );
 
 	void OnNavigationUpdated(
-		IEWN_Interface_WidgetNavigationConnection* INavigation, int32 OldIndex, int32 NewIndex, bool bFromOperation );
+		IEWN_Interface_WidgetNavigation* INavigation, int32 OldIndex, int32 NewIndex, bool bFromOperation );
 
 private:
 	UPROPERTY( Transient )
-	TArray<TScriptInterface<IEWN_Interface_WidgetNavigationConnection>> WidgetNavigations;
+	TArray<TScriptInterface<IEWN_Interface_WidgetNavigation>> WidgetNavigations;
 
 	int32 ActiveIndex = INDEX_NONE;
 	TMultiMap<FWidgetNavigationOverride, TWeakObjectPtr<UObject>> WidgetNavigationOverrides;
