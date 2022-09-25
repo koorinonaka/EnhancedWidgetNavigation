@@ -1,6 +1,8 @@
 # EnhancedWidgetNavigation
 EnhancedWidgetNavigation provides navigation functionality for UMG.
 
+![demo](https://raw.githubusercontent.com/wiki/koorinonaka/EnhancedWidgetNavigation/images/overview.gif)
+
 ## Features
 - Supports multiple input formats (gamepad, mouse, keyboad).
 - Uses EnhancedInput to acquire input. Allows free customization of key mapping and events.
@@ -22,7 +24,7 @@ The following three items must be set in ProjectSettings.
 3. DA_WidgetInputConfig to WidgetInputConfigName. You can also create your own WidgetInputConfig for default key mapping.
 
 ## Usage
-See the [Tutorial](Documentation/Tutorial.md).
+See the [Tutorial](https://github.com/koorinonaka/EnhancedWidgetNavigation/wiki).
 
 ## Note
 - Touch input not supported.
