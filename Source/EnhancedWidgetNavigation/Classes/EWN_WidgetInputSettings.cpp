@@ -5,6 +5,11 @@
 //
 #include "InputMappingContext.h"
 
+#if WITH_EDITOR
+#include "IMessageLogListing.h"
+#include "MessageLogModule.h"
+#endif
+
 template <typename T>
 void DeepCopyPtrArray( const TArray<T*>& From, TArray<T*>& To )
 {
@@ -50,7 +55,15 @@ void UEWN_WidgetInputSettings::TryLoadObjects()
 	}
 	else
 	{
-		UE_LOG( LogTemp, Warning, TEXT( "WidgetInputConfig not specified (or failed to load.)" ) );
+		FMessageLog AssetCheckLog( "AssetCheck" );
+
+		FText Message( NSLOCTEXT( "EWN", "WidgetInputConfigNotFound", "WidgetInputConfig not specified (or failed to load)." ) );
+		AssetCheckLog.Error( Message );
+
+		if ( GIsEditor )
+		{
+			AssetCheckLog.Notify( Message, EMessageSeverity::Error, true );
+		}
 	}
 }
 
@@ -62,13 +75,7 @@ UInputMappingContext* UEWN_WidgetInputSettings::GetOptionalInputMappingContext()
 UInputMappingContext* UEWN_WidgetInputSettings::BuildInputMappingContext(
 	const TFunctionRef<void( EEWN_WidgetInputType, class UInputAction* )> Callback ) const
 {
-	if ( !WidgetInputConfig )
-	{
-		UE_LOG( LogTemp, Warning, TEXT( "you should set WidgetInputConfig." ) );
-		return nullptr;
-	}
-
-	return BuildInputMappingContext( WidgetInputConfig->InputMappingDefault, Callback );
+	return WidgetInputConfig ? BuildInputMappingContext( WidgetInputConfig->InputMappingDefault, Callback ) : nullptr;
 }
 
 UInputMappingContext* UEWN_WidgetInputSettings::BuildInputMappingContext( const FEWN_WidgetInputMappingContainer& InjectionSettings,

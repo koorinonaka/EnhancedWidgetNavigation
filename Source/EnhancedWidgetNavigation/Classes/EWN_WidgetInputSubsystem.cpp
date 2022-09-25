@@ -215,32 +215,31 @@ void UEWN_WidgetInputSubsystem::InitOnSpawnPlayActor( APlayerController* PlayAct
 	IMC_CommonInput = nullptr;
 	IA_CommonInputActions.Empty();
 
-	if ( auto* EnhancedInputSubsystem = GetLocalPlayerChecked()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>() )
+	auto* EnhancedInputSubsystem = GetLocalPlayerChecked()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+	check( EnhancedInputSubsystem );
+
+	if ( UEnhancedPlayerInput* EnhancedPI = EnhancedInputSubsystem->GetPlayerInput() )
 	{
-		if ( UEnhancedPlayerInput* EnhancedPI = EnhancedInputSubsystem->GetPlayerInput() )
+		IMC_CommonInput = GetDefault<UEWN_WidgetInputSettings>()->BuildInputMappingContext(
+			[this]( EEWN_WidgetInputType InputType, UInputAction* IA ) { IA_CommonInputActions.Emplace( InputType, IA ); } );
+		if ( IMC_CommonInput )
 		{
-			IMC_CommonInput = GetDefault<UEWN_WidgetInputSettings>()->BuildInputMappingContext(
-				[this]( EEWN_WidgetInputType InputType, UInputAction* IA ) { IA_CommonInputActions.Emplace( InputType, IA ); } );
-			if ( ensure( IMC_CommonInput ) )
-			{
-				EnhancedInputSubsystem->AddMappingContext( IMC_CommonInput, 0 );
-			}
-
-			EnhancedInputSubsystem->AddMappingContext(
-				GetDefault<UEWN_WidgetInputSettings>()->GetOptionalInputMappingContext(), 0 );
+			EnhancedInputSubsystem->AddMappingContext( IMC_CommonInput, 0 );
 		}
-		else
+
+		EnhancedInputSubsystem->AddMappingContext( GetDefault<UEWN_WidgetInputSettings>()->GetOptionalInputMappingContext(), 0 );
+	}
+	else
+	{
+		FMessageLog AssetCheckLog( "AssetCheck" );
+
+		FText Message( NSLOCTEXT( "EWN", "NoSupportEnhancedInput",
+			"Project does not support EnhancedInput, check the DefaultPlayerInputClass in ProjectSettings." ) );
+		AssetCheckLog.Error( Message );
+
+		if ( GIsEditor )
 		{
-			FMessageLog AssetCheckLog( "AssetCheck" );
-
-			FText Message( NSLOCTEXT( "EWN", "NoSupportEnhancedInput",
-				"Project does not support EnhancedInput, check the DefaultPlayerInputClass in ProjectSettings." ) );
-			AssetCheckLog.Error( Message );
-
-			if ( GIsEditor )
-			{
-				AssetCheckLog.Notify( Message, EMessageSeverity::Error, true );
-			}
+			AssetCheckLog.Notify( Message, EMessageSeverity::Error, true );
 		}
 	}
 }
