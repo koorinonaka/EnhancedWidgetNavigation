@@ -3,7 +3,7 @@
 	"Version": 1,
 	"VersionName": "1.0.0",
 	"FriendlyName": "EnhancedWidgetNavigation",
-	"Description": "EnhancedWidgetNavigation provides UMG's UI navigation functionality.",
+	"Description": "EnhancedWidgetNavigation provides navigation functionality for UMG.",
 	"Category": "UI",
 	"CreatedBy": "koorinonaka",
 	"CreatedByURL": "https://github.com/koorinonaka",
