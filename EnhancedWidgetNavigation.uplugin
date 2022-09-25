@@ -1,15 +1,15 @@
 {
 	"FileVersion": 3,
 	"Version": 1,
-	"VersionName": "1.0",
+	"VersionName": "1.0.0",
 	"FriendlyName": "EnhancedWidgetNavigation",
-	"Description": "",
-	"Category": "Other",
+	"Description": "EnhancedWidgetNavigation provides UMG's UI navigation functionality.",
+	"Category": "UI",
 	"CreatedBy": "koorinonaka",
-	"CreatedByURL": "",
+	"CreatedByURL": "https://github.com/koorinonaka",
 	"DocsURL": "",
 	"MarketplaceURL": "",
-	"SupportURL": "",
+	"SupportURL": "https://github.com/koorinonaka/EnhancedWidgetNavigation",
 	"CanContainContent": true,
 	"IsBetaVersion": false,
 	"IsExperimentalVersion": false,
@@ -18,7 +18,10 @@
 		{
 			"Name": "EnhancedWidgetNavigation",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"WhitelistPlatforms": [
+				"Win64"
+			]
 		}
 	],
 	"Plugins": [

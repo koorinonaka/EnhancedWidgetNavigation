@@ -20,10 +20,10 @@ class ENHANCEDWIDGETNAVIGATION_API UEWN_WidgetInputConfig : public UDataAsset
 	friend class UEWN_WidgetInputSettings;
 
 protected:
-	UPROPERTY( EditDefaultsOnly )
+	UPROPERTY( EditDefaultsOnly, Category = "UI|Navigation" )
 	TObjectPtr<class UInputMappingContext> IMC_Options;
 
-	UPROPERTY( EditDefaultsOnly )
+	UPROPERTY( EditDefaultsOnly, Category = "UI|Navigation" )
 	FEWN_WidgetInputMappingContainer InputMappingDefault;
 };
 
@@ -50,7 +50,7 @@ public:
 	virtual void TryLoadObjects();
 
 protected:
-	UPROPERTY( Config, EditDefaultsOnly, meta = ( AllowedClasses = "EWN_WidgetInputConfig" ) )
+	UPROPERTY( Config, EditDefaultsOnly, Category = "UI|Navigation", meta = ( AllowedClasses = "EWN_WidgetInputConfig" ) )
 	FSoftObjectPath WidgetInputConfigName;
 
 private:

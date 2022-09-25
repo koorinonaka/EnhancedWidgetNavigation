@@ -43,10 +43,10 @@ protected:
 	virtual FString GetDebugState() const override;
 
 protected:
-	UPROPERTY( EditDefaultsOnly )
+	UPROPERTY( EditDefaultsOnly, Category = "UI|Navigation" )
 	float FirstDelay;
 
-	UPROPERTY( EditDefaultsOnly )
+	UPROPERTY( EditDefaultsOnly, Category = "UI|Navigation" )
 	float Interval = 1.f;
 
 private:

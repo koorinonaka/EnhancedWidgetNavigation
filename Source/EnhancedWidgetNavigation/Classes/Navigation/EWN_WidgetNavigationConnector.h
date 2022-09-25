@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 
 //
+#include "UObject/ObjectKey.h"
+
+//
 #include "EWN_WidgetTypes.h"
 #include "Interfaces/EWN_Interface_WidgetNavigationConnection.h"
 
@@ -41,36 +44,36 @@ protected:
 	virtual void InvalidateNavigation() override;
 
 public:
-	UFUNCTION( BlueprintCallable )
+	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
 	int32 GetActiveIndex() const;
 
-	UFUNCTION( BlueprintCallable )
+	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
 	bool IsActive( TScriptInterface<IEWN_Interface_WidgetNavigationConnection> INavigation ) const;
 
-	UFUNCTION( BlueprintCallable )
+	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
 	TScriptInterface<IEWN_Interface_WidgetNavigationConnection> GetNavigationAt( int32 Index ) const;
 
-	UFUNCTION( BlueprintCallable )
+	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
 	TArray<TScriptInterface<IEWN_Interface_WidgetNavigationConnection>> GetAllNavigations() const;
 
-	UFUNCTION( BlueprintCallable )
+	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
 	void Register( TScriptInterface<IEWN_Interface_WidgetNavigationConnection> INavigation );
 
-	UFUNCTION( BlueprintCallable )
+	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
 	void Unregister( TScriptInterface<IEWN_Interface_WidgetNavigationConnection> INavigation );
 
-	UFUNCTION( BlueprintCallable )
+	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
 	void AddRoute( EEWN_WidgetCursor WidgetCursor,	  //
 		TScriptInterface<IEWN_Interface_WidgetNavigationConnection> Source,
 		TScriptInterface<IEWN_Interface_WidgetNavigationConnection> Destination );
 
-	UFUNCTION( BlueprintCallable )
+	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
 	void RemoveRoute( EEWN_WidgetCursor WidgetCursor,	 //
 		TScriptInterface<IEWN_Interface_WidgetNavigationConnection> Source,
 		TScriptInterface<IEWN_Interface_WidgetNavigationConnection> Destination );
 
 public:
-	UFUNCTION( BlueprintCallable )
+	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
 	void SetLoopNavigation( bool bNewFlag ) { bLoopNavigation = bNewFlag; }
 
 private:

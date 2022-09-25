@@ -1,6 +1,5 @@
 # EnhancedWidgetNavigation
-
-EnhancedWidgetNavigationはUMGのUINavigation機能を提供します。
+EnhancedWidgetNavigation provides UMG's UI navigation functionality.
 
 ## Features
 - 複数の入力形式に対応しています（Gamepad、Mouse、KeyBoard）

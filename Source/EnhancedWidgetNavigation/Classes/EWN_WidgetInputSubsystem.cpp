@@ -7,6 +7,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedPlayerInput.h"
 #include "Framework/Application/IInputProcessor.h"
+#include "Framework/Application/SlateApplication.h"
 
 //
 #include "EWN_WidgetInputSettings.h"

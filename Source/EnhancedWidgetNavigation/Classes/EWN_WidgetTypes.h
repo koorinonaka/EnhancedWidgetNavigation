@@ -44,13 +44,13 @@ struct ENHANCEDWIDGETNAVIGATION_API FEWN_WidgetInputKeyMapping
 {
 	GENERATED_BODY()
 
-	UPROPERTY( EditAnywhere )
+	UPROPERTY( EditAnywhere, Category = "UI|Navigation" )
 	FKey Key;
 
-	UPROPERTY( EditAnywhere, Instanced, AdvancedDisplay )
+	UPROPERTY( EditAnywhere, Category = "UI|Navigation", Instanced, AdvancedDisplay )
 	TArray<class UInputTrigger*> Triggers;
 
-	UPROPERTY( EditAnywhere, Instanced, AdvancedDisplay )
+	UPROPERTY( EditAnywhere, Category = "UI|Navigation", Instanced, AdvancedDisplay )
 	TArray<class UInputModifier*> Modifiers;
 };
 
@@ -59,16 +59,16 @@ struct ENHANCEDWIDGETNAVIGATION_API FEWN_WidgetInputMapping
 {
 	GENERATED_BODY()
 
-	UPROPERTY( EditAnywhere )
+	UPROPERTY( EditAnywhere, Category = "UI|Navigation" )
 	EEWN_WidgetInputType InputType = EEWN_WidgetInputType::None;
 
-	UPROPERTY( EditAnywhere, meta = ( TitleProperty = "Key" ) )
+	UPROPERTY( EditAnywhere, Category = "UI|Navigation", meta = ( TitleProperty = "Key" ) )
 	TArray<FEWN_WidgetInputKeyMapping> KeyMappings;
 
-	UPROPERTY( EditAnywhere, Instanced, AdvancedDisplay )
+	UPROPERTY( EditAnywhere, Category = "UI|Navigation", Instanced, AdvancedDisplay )
 	TArray<class UInputTrigger*> Triggers;
 
-	UPROPERTY( EditAnywhere, Instanced, AdvancedDisplay )
+	UPROPERTY( EditAnywhere, Category = "UI|Navigation", Instanced, AdvancedDisplay )
 	TArray<class UInputModifier*> Modifiers;
 };
 
@@ -77,6 +77,6 @@ struct ENHANCEDWIDGETNAVIGATION_API FEWN_WidgetInputMappingContainer
 {
 	GENERATED_BODY()
 
-	UPROPERTY( EditAnywhere, meta = ( TitleProperty = "InputType" ) )
+	UPROPERTY( EditAnywhere, Category = "UI|Navigation", meta = ( TitleProperty = "InputType" ) )
 	TArray<FEWN_WidgetInputMapping> InputMappings;
 };
