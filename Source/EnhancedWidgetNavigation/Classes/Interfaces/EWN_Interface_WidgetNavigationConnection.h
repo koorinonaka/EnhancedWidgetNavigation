@@ -47,15 +47,15 @@ private:
 	FMoveFocusDelegate MoveFocusFallbackDelegate;
 
 public:
-	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
+	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	virtual EEWN_WidgetInputType TickNavigation( float DeltaTime )
 		PURE_VIRTUAL( ThisClass::TickNavigation, return EEWN_WidgetInputType::None; );
 
 public:
-	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
+	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	virtual bool IsNavigationEnabled() const { return bNavigationEnabled; }
 
-	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
+	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	virtual void SetNavigationEnabled( bool bEnabled ) { bNavigationEnabled = bEnabled; }
 
 private:

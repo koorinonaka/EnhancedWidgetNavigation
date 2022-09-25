@@ -16,12 +16,12 @@ protected:
 	virtual void NativeDestruct() override;
 
 public:
-	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "UI|Navigation" )
+	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "User Interface|Navigation" )
 	void TickMenu( float DeltaTime );
 	virtual void TickMenu_Implementation( float DeltaTime ) {}
 
 protected:
-	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "UI|Navigation" )
+	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "User Interface|Navigation" )
 	void InitMenu();
 	virtual void InitMenu_Implementation() {}
 };

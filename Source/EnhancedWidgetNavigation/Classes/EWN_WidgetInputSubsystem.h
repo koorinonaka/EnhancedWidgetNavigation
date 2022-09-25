@@ -34,10 +34,10 @@ public:
 	ETriggerEvent GetTriggerEvent( class UInputAction* IA ) const;
 	ETriggerEvent GetTriggerEvent( EEWN_WidgetInputType InputType ) const;
 
-	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
+	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	bool WasJustTriggered( EEWN_WidgetInputType InputType ) const;
 
-	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
+	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	EEWN_WidgetInputMode GetCurrentInputMode() const;
 
 private:
@@ -45,7 +45,7 @@ private:
 	void BroadcastInputMethodChanged();
 
 public:
-	UPROPERTY( BlueprintAssignable, Category = "UI|Navigation" )
+	UPROPERTY( BlueprintAssignable, Category = "User Interface|Navigation" )
 	FInputModeDelegate OnInputMethodChangedDelegate;
 
 private:

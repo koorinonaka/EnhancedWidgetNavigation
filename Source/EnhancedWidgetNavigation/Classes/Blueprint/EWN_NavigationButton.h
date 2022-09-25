@@ -24,7 +24,7 @@ protected:
 	// IEWN_Interface_WidgetNavigationChild END
 
 public:
-	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
+	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	bool WasJustClicked() const;
 
 private:

@@ -32,29 +32,36 @@ public:
 	static bool WasJustNavigationClicked( const UObject* OuterThis );
 
 protected:
-	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "UI|Navigation", DisplayName = "Is Navigation Focusable" )
+	UFUNCTION(
+		BlueprintCallable, BlueprintNativeEvent, Category = "User Interface|Navigation", DisplayName = "Is Navigation Focusable" )
 	bool IsNavigationFocusable() const;
 	virtual bool IsNavigationFocusable_Implementation() const { return bNavigationFocusable; }
 
-	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "UI|Navigation", DisplayName = "Is Navigation Acceptable" )
+	UFUNCTION(
+		BlueprintCallable, BlueprintNativeEvent, Category = "User Interface|Navigation", DisplayName = "Is Navigation Acceptable" )
 	bool IsNavigationAcceptable() const;
 	virtual bool IsNavigationAcceptable_Implementation() const { return bNavigationAcceptable; }
 
-	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "UI|Navigation", DisplayName = "On Navigation Focusable" )
+	UFUNCTION(
+		BlueprintCallable, BlueprintNativeEvent, Category = "User Interface|Navigation", DisplayName = "On Navigation Focusable" )
 	void SetNavigationFocusable( bool bEnabled );
 	virtual void SetNavigationFocusable_Implementation( bool bEnabled ) { bNavigationFocusable = bEnabled; }
 
-	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "UI|Navigation", DisplayName = "On Navigation Acceptable" )
+	UFUNCTION(
+		BlueprintCallable, BlueprintNativeEvent, Category = "User Interface|Navigation", DisplayName = "On Navigation Acceptable" )
 	void SetNavigationAcceptable( bool bEnabled );
 	virtual void SetNavigationAcceptable_Implementation( bool bEnabled ) { bNavigationAcceptable = bEnabled; }
 
-	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "UI|Navigation", DisplayName = "Was Just Navigation Clicked" )
+	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "User Interface|Navigation",
+		DisplayName = "Was Just Navigation Clicked" )
 	bool WasJustNavigationClicked() const;
 
-	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent, Category = "UI|Navigation", DisplayName = "On Navigation Focused" )
+	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent, Category = "User Interface|Navigation",
+		DisplayName = "On Navigation Focused" )
 	void K2_SetNavigationFocused( bool bFocused, bool bFromOperation );
 
-	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent, Category = "UI|Navigation", DisplayName = "On Navigation Accepted" )
+	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent, Category = "User Interface|Navigation",
+		DisplayName = "On Navigation Accepted" )
 	void K2_SetNavigationAccepted( bool bFromOperation );
 
 private:

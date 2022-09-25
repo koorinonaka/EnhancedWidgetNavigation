@@ -40,17 +40,17 @@ protected:
 	virtual void InvalidateNavigation() override;
 
 public:
-	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
+	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	void SetInputMappingContext( const FEWN_WidgetInputMappingContainer& InjectionSettings );
 
-	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
+	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	void ClearInputMappingContext();
 
 public:
-	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
+	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	bool WasJustTriggered( EEWN_WidgetInputType InputType ) const;
 
-	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
+	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	UWidget* GetChildAt( int32 Index ) const;
 
 	template <class T>
@@ -61,13 +61,13 @@ public:
 
 	int32 GetChildIndex( UWidget* Widget ) const;
 
-	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
+	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	int32 GetFocusIndex() const { return FocusIndex; }
 
-	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
+	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	void SetFocusIndex( int32 NewIndex ) { UpdateFocusIndex( NewIndex, false ); }
 
-	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
+	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	void ResetNavigation( bool bResetIndex = false );
 
 	void MoveWithMouseCursor();
@@ -90,47 +90,47 @@ protected:
 	virtual void NotifyFocusAccepted( int32 Index );
 
 public:
-	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
+	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	void SetLoopNavigation( bool bNewFlag ) { bLoopNavigation = bNewFlag; }
 
-	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
+	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	void SetIndependentNavigation( bool bNewFlag ) { bIndependentNavigation = bNewFlag; }
 
-	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
+	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	void SetDistanceBasedNavigation( bool bNewFlag ) { bDistanceBasedNavigation = bNewFlag; }
 
-	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
+	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	void SetWrapLines( bool bNewFlag ) { bWrapLines = bNewFlag; }
 
-	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
+	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	void SetMouseEnabled( bool bNewFlag ) { bMouseEnabled = bNewFlag; }
 
 public:
-	UPROPERTY( BlueprintAssignable, Category = "UI|Navigation" )
+	UPROPERTY( BlueprintAssignable, Category = "User Interface|Navigation" )
 	FFocusDelegate FocusUpdatedDelegate;
 
-	UPROPERTY( BlueprintAssignable, Category = "UI|Navigation" )
+	UPROPERTY( BlueprintAssignable, Category = "User Interface|Navigation" )
 	FAcceptDelegate FocusAcceptedDelegate;
 
 protected:
 	// navigation that loops horizontally and vertically.
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "UI|Navigation" )
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "User Interface|Navigation" )
 	bool bLoopNavigation = false;
 
 	// whether to disable navigation when trying to key focus.
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "UI|Navigation" )
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "User Interface|Navigation" )
 	bool bIndependentNavigation = false;
 
 	// navigation by distance based on each cell.
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "UI|Navigation" )
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "User Interface|Navigation" )
 	bool bDistanceBasedNavigation = false;
 
 	// whether to wrap navigation on line breaks such as grid panels.
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "UI|Navigation" )
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "User Interface|Navigation" )
 	bool bWrapLines = false;
 
 	//
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "UI|Navigation" )
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "User Interface|Navigation" )
 	bool bMouseEnabled = true;
 
 private:

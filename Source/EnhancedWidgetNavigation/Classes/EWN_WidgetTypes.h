@@ -44,13 +44,13 @@ struct ENHANCEDWIDGETNAVIGATION_API FEWN_WidgetInputKeyMapping
 {
 	GENERATED_BODY()
 
-	UPROPERTY( EditAnywhere, Category = "UI|Navigation" )
+	UPROPERTY( EditAnywhere, Category = "User Interface|Navigation" )
 	FKey Key;
 
-	UPROPERTY( EditAnywhere, Category = "UI|Navigation", Instanced, AdvancedDisplay )
+	UPROPERTY( EditAnywhere, Category = "User Interface|Navigation", Instanced, AdvancedDisplay )
 	TArray<class UInputTrigger*> Triggers;
 
-	UPROPERTY( EditAnywhere, Category = "UI|Navigation", Instanced, AdvancedDisplay )
+	UPROPERTY( EditAnywhere, Category = "User Interface|Navigation", Instanced, AdvancedDisplay )
 	TArray<class UInputModifier*> Modifiers;
 };
 
@@ -59,16 +59,16 @@ struct ENHANCEDWIDGETNAVIGATION_API FEWN_WidgetInputMapping
 {
 	GENERATED_BODY()
 
-	UPROPERTY( EditAnywhere, Category = "UI|Navigation" )
+	UPROPERTY( EditAnywhere, Category = "User Interface|Navigation" )
 	EEWN_WidgetInputType InputType = EEWN_WidgetInputType::None;
 
-	UPROPERTY( EditAnywhere, Category = "UI|Navigation", meta = ( TitleProperty = "Key" ) )
+	UPROPERTY( EditAnywhere, Category = "User Interface|Navigation", meta = ( TitleProperty = "Key" ) )
 	TArray<FEWN_WidgetInputKeyMapping> KeyMappings;
 
-	UPROPERTY( EditAnywhere, Category = "UI|Navigation", Instanced, AdvancedDisplay )
+	UPROPERTY( EditAnywhere, Category = "User Interface|Navigation", Instanced, AdvancedDisplay )
 	TArray<class UInputTrigger*> Triggers;
 
-	UPROPERTY( EditAnywhere, Category = "UI|Navigation", Instanced, AdvancedDisplay )
+	UPROPERTY( EditAnywhere, Category = "User Interface|Navigation", Instanced, AdvancedDisplay )
 	TArray<class UInputModifier*> Modifiers;
 };
 
@@ -77,6 +77,6 @@ struct ENHANCEDWIDGETNAVIGATION_API FEWN_WidgetInputMappingContainer
 {
 	GENERATED_BODY()
 
-	UPROPERTY( EditAnywhere, Category = "UI|Navigation", meta = ( TitleProperty = "InputType" ) )
+	UPROPERTY( EditAnywhere, Category = "User Interface|Navigation", meta = ( TitleProperty = "InputType" ) )
 	TArray<FEWN_WidgetInputMapping> InputMappings;
 };

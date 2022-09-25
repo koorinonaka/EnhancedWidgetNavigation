@@ -44,36 +44,36 @@ protected:
 	virtual void InvalidateNavigation() override;
 
 public:
-	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
+	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	int32 GetActiveIndex() const;
 
-	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
+	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	bool IsActive( TScriptInterface<IEWN_Interface_WidgetNavigationConnection> INavigation ) const;
 
-	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
+	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	TScriptInterface<IEWN_Interface_WidgetNavigationConnection> GetNavigationAt( int32 Index ) const;
 
-	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
+	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	TArray<TScriptInterface<IEWN_Interface_WidgetNavigationConnection>> GetAllNavigations() const;
 
-	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
+	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	void Register( TScriptInterface<IEWN_Interface_WidgetNavigationConnection> INavigation );
 
-	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
+	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	void Unregister( TScriptInterface<IEWN_Interface_WidgetNavigationConnection> INavigation );
 
-	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
+	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	void AddRoute( EEWN_WidgetCursor WidgetCursor,	  //
 		TScriptInterface<IEWN_Interface_WidgetNavigationConnection> Source,
 		TScriptInterface<IEWN_Interface_WidgetNavigationConnection> Destination );
 
-	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
+	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	void RemoveRoute( EEWN_WidgetCursor WidgetCursor,	 //
 		TScriptInterface<IEWN_Interface_WidgetNavigationConnection> Source,
 		TScriptInterface<IEWN_Interface_WidgetNavigationConnection> Destination );
 
 public:
-	UFUNCTION( BlueprintCallable, Category = "UI|Navigation" )
+	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	void SetLoopNavigation( bool bNewFlag ) { bLoopNavigation = bNewFlag; }
 
 private:
