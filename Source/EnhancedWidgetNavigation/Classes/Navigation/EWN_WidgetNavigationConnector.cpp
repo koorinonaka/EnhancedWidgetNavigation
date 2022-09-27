@@ -4,7 +4,6 @@
 
 //
 #include "EWN_WidgetInputSubsystem.h"
-#include "Navigation/CursorHandler/EWN_WidgetNavigationCursorHandler.h"
 #include "Navigation/EWN_WidgetNavigation.h"
 #include "Navigation/EWN_WidgetNavigationHelper.h"
 
