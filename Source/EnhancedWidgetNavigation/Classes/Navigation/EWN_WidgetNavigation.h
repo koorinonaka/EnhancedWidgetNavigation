@@ -30,9 +30,10 @@ protected:
 	virtual void PostInitProperties() override;
 	virtual void BeginDestroy() override;
 
-protected:
+public:
 	virtual EEWN_WidgetInputType TickNavigation( float DeltaTime ) override;
 
+protected:
 	virtual UWidget* GetCurrentWidget() const;
 	virtual bool TestFocus( EEWN_WidgetCursor WidgetCursor ) const;
 	virtual void ForEachWidgetNavigation( const TFunctionRef<void( UEWN_WidgetNavigation* )> Callback ) override;

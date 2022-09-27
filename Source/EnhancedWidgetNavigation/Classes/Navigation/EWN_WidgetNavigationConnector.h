@@ -34,9 +34,10 @@ class ENHANCEDWIDGETNAVIGATION_API UEWN_WidgetNavigationConnector : public UObje
 		}
 	};
 
-protected:
+public:
 	virtual EEWN_WidgetInputType TickNavigation( float DeltaTime ) override;
 
+protected:
 	virtual UWidget* GetCurrentWidget() const override;
 	virtual bool TestFocus( EEWN_WidgetCursor WidgetCursor ) const override;
 	virtual void ForEachWidgetNavigation( const TFunctionRef<void( class UEWN_WidgetNavigation* )> Callback ) override;
@@ -64,26 +65,21 @@ public:
 
 	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	void AddRoute( EEWN_WidgetCursor WidgetCursor,	  //
-		TScriptInterface<IEWN_Interface_WidgetNavigation> Source,
-		TScriptInterface<IEWN_Interface_WidgetNavigation> Destination );
+		TScriptInterface<IEWN_Interface_WidgetNavigation> Source, TScriptInterface<IEWN_Interface_WidgetNavigation> Destination );
 
 	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	void RemoveRoute( EEWN_WidgetCursor WidgetCursor,	 //
-		TScriptInterface<IEWN_Interface_WidgetNavigation> Source,
-		TScriptInterface<IEWN_Interface_WidgetNavigation> Destination );
+		TScriptInterface<IEWN_Interface_WidgetNavigation> Source, TScriptInterface<IEWN_Interface_WidgetNavigation> Destination );
 
 public:
 	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	void SetLoopNavigation( bool bNewFlag ) { bLoopNavigation = bNewFlag; }
 
 private:
-	bool MoveFocusOverride(
-		IEWN_Interface_WidgetNavigation* INavigation, EEWN_WidgetCursor WidgetCursor, bool bFromOperation );
-	bool MoveFocusFallback(
-		IEWN_Interface_WidgetNavigation* INavigation, EEWN_WidgetCursor WidgetCursor, bool bFromOperation );
+	bool MoveFocusOverride( IEWN_Interface_WidgetNavigation* INavigation, EEWN_WidgetCursor WidgetCursor, bool bFromOperation );
+	bool MoveFocusFallback( IEWN_Interface_WidgetNavigation* INavigation, EEWN_WidgetCursor WidgetCursor, bool bFromOperation );
 
-	void OnNavigationUpdated(
-		IEWN_Interface_WidgetNavigation* INavigation, int32 OldIndex, int32 NewIndex, bool bFromOperation );
+	void OnNavigationUpdated( IEWN_Interface_WidgetNavigation* INavigation, int32 OldIndex, int32 NewIndex, bool bFromOperation );
 
 private:
 	UPROPERTY( Transient )
