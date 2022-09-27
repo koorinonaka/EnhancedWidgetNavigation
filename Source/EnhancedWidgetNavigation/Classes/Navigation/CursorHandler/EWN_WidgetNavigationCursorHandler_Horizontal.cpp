@@ -2,9 +2,6 @@
 
 #include "EWN_WidgetNavigationCursorHandler_Horizontal.h"
 
-//
-#include "Components/HorizontalBox.h"
-
 bool FEWN_WidgetNavigationCursorHandler_Horizontal::IsHorizontal( UPanelWidget* PanelWidget )
 {
 	return PanelWidget->IsA<UHorizontalBox>();

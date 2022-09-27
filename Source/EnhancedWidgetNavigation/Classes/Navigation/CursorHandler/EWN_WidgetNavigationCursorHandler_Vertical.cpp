@@ -2,9 +2,6 @@
 
 #include "EWN_WidgetNavigationCursorHandler_Vertical.h"
 
-//
-#include "Components/VerticalBox.h"
-
 bool FEWN_WidgetNavigationCursorHandler_Vertical::IsVertical( UPanelWidget* PanelWidget )
 {
 	return PanelWidget->IsA<UVerticalBox>();

@@ -4,6 +4,9 @@
 
 #include "EWN_WidgetNavigationCursorHandler.h"
 
+//
+#include "Components/VerticalBox.h"
+
 class ENHANCEDWIDGETNAVIGATION_API FEWN_WidgetNavigationCursorHandler_Vertical : public FEWN_WidgetNavigationCursorHandler
 {
 public:

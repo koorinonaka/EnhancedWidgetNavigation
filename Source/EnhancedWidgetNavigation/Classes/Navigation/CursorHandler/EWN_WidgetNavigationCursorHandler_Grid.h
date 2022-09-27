@@ -4,6 +4,12 @@
 
 #include "EWN_WidgetNavigationCursorHandler.h"
 
+//
+#include "Components/GridPanel.h"
+#include "Components/GridSlot.h"
+#include "Components/UniformGridPanel.h"
+#include "Components/UniformGridSlot.h"
+
 class ENHANCEDWIDGETNAVIGATION_API FEWN_WidgetNavigationCursorHandler_Grid : public FEWN_WidgetNavigationCursorHandler
 {
 public:

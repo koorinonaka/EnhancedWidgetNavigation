@@ -14,7 +14,7 @@ public:
 
 	int32 GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const
 	{
-		using namespace EWN::WidgetNavigationHelper;
+		using namespace EWN::WidgetNavigation;
 
 		int32 ResultIndex = CurrentIndex;
 
@@ -28,25 +28,25 @@ public:
 		check( CurrentWidget );
 
 		TMap<UWidget*, FWidgetWithNavigation> WidgetsWithNavigation;
-		EWN::WidgetNavigationHelper::ForEachPanelChildren( PanelWidget,
+		FHelper::ForEachPanelChildren( PanelWidget,
 			[&]( int32 i, UWidget* ChildWidget )
 			{
 				if ( ChildWidget != CurrentWidget && IEWN_Interface_WidgetNavigationChild::IsNavigationFocusable( ChildWidget ) )
 				{
 					FWidgetWithNavigation& Info = WidgetsWithNavigation.Emplace( ChildWidget );
 					Info.Index = i;
-					Info.Position = GetCursorPosition( ChildWidget->GetCachedGeometry(), EEWN_WidgetCursor::None );
+					Info.Position = FHelper::GetCursorPosition( ChildWidget->GetCachedGeometry(), EEWN_WidgetCursor::None );
 				}
 			} );
 
 		// fallback if MoveFocus fails
-		if ( UWidget* NearestWidget = FindFocusToNearest( CurrentWidget, WidgetCursor, WidgetsWithNavigation ) )
+		if ( UWidget* NearestWidget = FHelper::FindFocusToNearest( CurrentWidget, WidgetCursor, WidgetsWithNavigation ) )
 		{
 			ResultIndex = WidgetsWithNavigation[NearestWidget].Index;
 		}
 		else if ( OwnerHandler.IsLoopNavigation() )
 		{
-			if ( UWidget* FarthestWidget = FindFocusToOpposite( CurrentWidget, WidgetCursor, WidgetsWithNavigation ) )
+			if ( UWidget* FarthestWidget = FHelper::FindFocusToOpposite( CurrentWidget, WidgetCursor, WidgetsWithNavigation ) )
 			{
 				ResultIndex = WidgetsWithNavigation[FarthestWidget].Index;
 			}

@@ -2,9 +2,9 @@
 
 #include "EWN_WidgetNavigationHelper.h"
 
-namespace EWN::WidgetNavigationHelper
+namespace EWN::WidgetNavigation
 {
-int32 FindPanelIndex( UPanelWidget* PanelWidget, const TFunctionRef<bool( int32, UWidget* )> Callback )
+int32 FHelper::FindPanelIndex( UPanelWidget* PanelWidget, const TFunctionRef<bool( int32, UWidget* )> Callback )
 {
 	if ( ensure( PanelWidget ) )
 	{
@@ -22,7 +22,7 @@ int32 FindPanelIndex( UPanelWidget* PanelWidget, const TFunctionRef<bool( int32,
 	return INDEX_NONE;
 }
 
-void ForEachPanelChildren( UPanelWidget* PanelWidget, const TFunctionRef<void( int32, UWidget* )> Callback )
+void FHelper::ForEachPanelChildren( UPanelWidget* PanelWidget, const TFunctionRef<void( int32, UWidget* )> Callback )
 {
 	if ( ensure( PanelWidget ) )
 	{
@@ -34,7 +34,7 @@ void ForEachPanelChildren( UPanelWidget* PanelWidget, const TFunctionRef<void( i
 	}
 }
 
-FVector2D GetCursorPosition( const FGeometry& Geometry, EEWN_WidgetCursor WidgetCursor )
+FVector2D FHelper::GetCursorPosition( const FGeometry& Geometry, EEWN_WidgetCursor WidgetCursor )
 {
 	FVector2D Position = Geometry.GetAbsolutePosition();
 	FVector2D Size = Geometry.GetAbsoluteSize();
@@ -51,7 +51,7 @@ FVector2D GetCursorPosition( const FGeometry& Geometry, EEWN_WidgetCursor Widget
 	return Position;
 }
 
-UWidget* FindFocusToNearest(
+UWidget* FHelper::FindFocusToNearest(
 	UWidget* CurrentWidget, EEWN_WidgetCursor WidgetCursor, const TMap<UWidget*, FWidgetWithNavigation>& WidgetsWithNavigation )
 {
 	float Nearest = FLT_MAX;
@@ -165,7 +165,7 @@ UWidget* FindFocusToNearest(
 	return FoundWidget;
 }
 
-UWidget* FindFocusToOpposite(
+UWidget* FHelper::FindFocusToOpposite(
 	UWidget* CurrentWidget, EEWN_WidgetCursor WidgetCursor, const TMap<UWidget*, FWidgetWithNavigation>& WidgetsWithNavigation )
 {
 	UWidget* FoundWidget = nullptr;
@@ -224,4 +224,4 @@ UWidget* FindFocusToOpposite(
 
 	return FoundWidget;
 }
-}	 // namespace EWN::WidgetNavigationHelper
+}	 // namespace EWN::WidgetNavigation

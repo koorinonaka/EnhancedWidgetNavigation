@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 
 //
+#include "Components/PanelWidget.h"
+
+//
 #include "EWN_WidgetTypes.h"
 #include "Interfaces/EWN_Interface_WidgetNavigationChild.h"
 

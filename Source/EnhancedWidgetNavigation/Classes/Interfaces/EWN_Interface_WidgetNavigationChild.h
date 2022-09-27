@@ -56,13 +56,13 @@ protected:
 		DisplayName = "Was Just Navigation Clicked" )
 	bool WasJustNavigationClicked() const;
 
-	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent, Category = "User Interface|Navigation",
-		DisplayName = "On Navigation Focused" )
-	void K2_SetNavigationFocused( bool bFocused, bool bFromOperation );
+	UFUNCTION(
+		BlueprintCallable, BlueprintNativeEvent, Category = "User Interface|Navigation", DisplayName = "On Navigation Focused" )
+	void K2_NavigationFocused( bool bFocused, bool bFromOperation );
 
-	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent, Category = "User Interface|Navigation",
-		DisplayName = "On Navigation Accepted" )
-	void K2_SetNavigationAccepted( bool bFromOperation );
+	UFUNCTION(
+		BlueprintCallable, BlueprintNativeEvent, Category = "User Interface|Navigation", DisplayName = "On Navigation Accepted" )
+	void K2_NavigationAccepted( bool bFromOperation );
 
 private:
 	bool bNavigationFocusable = true;

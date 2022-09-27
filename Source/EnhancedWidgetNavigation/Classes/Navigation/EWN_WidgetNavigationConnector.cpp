@@ -3,6 +3,9 @@
 #include "EWN_WidgetNavigationConnector.h"
 
 //
+#include "Components/Widget.h"
+
+//
 #include "EWN_WidgetInputSubsystem.h"
 #include "Navigation/EWN_WidgetNavigation.h"
 #include "Navigation/EWN_WidgetNavigationHelper.h"
@@ -83,8 +86,7 @@ void UEWN_WidgetNavigationConnector::Unregister( TScriptInterface<IEWN_Interface
 }
 
 void UEWN_WidgetNavigationConnector::AddRoute( EEWN_WidgetCursor WidgetCursor,
-	TScriptInterface<IEWN_Interface_WidgetNavigation> Source,
-	TScriptInterface<IEWN_Interface_WidgetNavigation> Destination )
+	TScriptInterface<IEWN_Interface_WidgetNavigation> Source, TScriptInterface<IEWN_Interface_WidgetNavigation> Destination )
 {
 	if ( ensureAlways( Source && Destination ) )
 	{
@@ -94,8 +96,8 @@ void UEWN_WidgetNavigationConnector::AddRoute( EEWN_WidgetCursor WidgetCursor,
 
 		if ( WidgetNavigationOverrides.Num( Key ) == 0 )
 		{
-			Source->SetMoveFocusOverride( IEWN_Interface_WidgetNavigation::FMoveFocusDelegate::CreateUObject(
-				this, &ThisClass::MoveFocusOverride ) );
+			Source->SetMoveFocusOverride(
+				IEWN_Interface_WidgetNavigation::FMoveFocusDelegate::CreateUObject( this, &ThisClass::MoveFocusOverride ) );
 		}
 
 		WidgetNavigationOverrides.Emplace( Key, Destination.GetObject() );
@@ -103,8 +105,7 @@ void UEWN_WidgetNavigationConnector::AddRoute( EEWN_WidgetCursor WidgetCursor,
 }
 
 void UEWN_WidgetNavigationConnector::RemoveRoute( EEWN_WidgetCursor WidgetCursor,
-	TScriptInterface<IEWN_Interface_WidgetNavigation> Source,
-	TScriptInterface<IEWN_Interface_WidgetNavigation> Destination )
+	TScriptInterface<IEWN_Interface_WidgetNavigation> Source, TScriptInterface<IEWN_Interface_WidgetNavigation> Destination )
 {
 	if ( ensureAlways( Source && Destination ) )
 	{
@@ -129,7 +130,7 @@ bool UEWN_WidgetNavigationConnector::MoveFocusOverride(
 		return true;
 	}
 
-	using namespace EWN::WidgetNavigationHelper;
+	using namespace EWN::WidgetNavigation;
 
 	FWidgetNavigationOverride Key;
 	Key.NavigationObject = Cast<UObject>( INavigation );
@@ -167,13 +168,13 @@ bool UEWN_WidgetNavigationConnector::MoveFocusOverride(
 							FWidgetWithNavigation& Info = WidgetsWithNavigation.Emplace( ChildWidget );
 							Info.Navigation = WidgetNavigation;
 							Info.Index = i;
-							Info.Position = GetCursorPosition( ChildWidget->GetCachedGeometry(), EEWN_WidgetCursor::None );
+							Info.Position = FHelper::GetCursorPosition( ChildWidget->GetCachedGeometry(), EEWN_WidgetCursor::None );
 						} );
 				} );
 		}
 
 		// find the closest widget in registered navigation
-		if ( UWidget* NearestWidget = FindFocusToNearest( CurrentWidget, WidgetCursor, WidgetsWithNavigation ) )
+		if ( UWidget* NearestWidget = FHelper::FindFocusToNearest( CurrentWidget, WidgetCursor, WidgetsWithNavigation ) )
 		{
 			const FWidgetWithNavigation& WidgetInfo = WidgetsWithNavigation[NearestWidget];
 			WidgetInfo.Navigation->UpdateFocusIndex( WidgetInfo.Index, bFromOperation );
@@ -192,7 +193,7 @@ bool UEWN_WidgetNavigationConnector::MoveFocusFallback(
 		return true;
 	}
 
-	using namespace EWN::WidgetNavigationHelper;
+	using namespace EWN::WidgetNavigation;
 
 	UWidget* CurrentWidget = INavigation->GetCurrentWidget();
 	check( CurrentWidget );
@@ -213,12 +214,12 @@ bool UEWN_WidgetNavigationConnector::MoveFocusFallback(
 					FWidgetWithNavigation& Info = WidgetsWithNavigation.Emplace( ChildWidget );
 					Info.Navigation = WidgetNavigation;
 					Info.Index = i;
-					Info.Position = GetCursorPosition( ChildWidget->GetCachedGeometry(), EEWN_WidgetCursor::None );
+					Info.Position = FHelper::GetCursorPosition( ChildWidget->GetCachedGeometry(), EEWN_WidgetCursor::None );
 				} );
 		} );
 
 	// fallback if MoveFocus fails
-	if ( UWidget* NearestWidget = FindFocusToNearest( CurrentWidget, WidgetCursor, WidgetsWithNavigation ) )
+	if ( UWidget* NearestWidget = FHelper::FindFocusToNearest( CurrentWidget, WidgetCursor, WidgetsWithNavigation ) )
 	{
 		const FWidgetWithNavigation& WidgetInfo = WidgetsWithNavigation[NearestWidget];
 		WidgetInfo.Navigation->UpdateFocusIndex( WidgetInfo.Index, bFromOperation );
@@ -226,7 +227,7 @@ bool UEWN_WidgetNavigationConnector::MoveFocusFallback(
 	}
 	else if ( bLoopNavigation )
 	{
-		if ( UWidget* FarthestWidget = FindFocusToOpposite( CurrentWidget, WidgetCursor, WidgetsWithNavigation ) )
+		if ( UWidget* FarthestWidget = FHelper::FindFocusToOpposite( CurrentWidget, WidgetCursor, WidgetsWithNavigation ) )
 		{
 			const FWidgetWithNavigation& WidgetInfo = WidgetsWithNavigation[FarthestWidget];
 			WidgetInfo.Navigation->UpdateFocusIndex( WidgetInfo.Index, bFromOperation );

@@ -189,7 +189,7 @@ EEWN_WidgetInputType UEWN_WidgetNavigation::TickNavigation( float DeltaTime )
 				if ( ( WasJustTriggered( EEWN_WidgetInputType::Accept ) ||
 						 IEWN_Interface_WidgetNavigationChild::WasJustNavigationClicked( ChildWidget ) ) )
 				{
-					IEWN_Interface_WidgetNavigationChild::Execute_K2_SetNavigationAccepted( ChildWidget, true );
+					IEWN_Interface_WidgetNavigationChild::Execute_K2_NavigationAccepted( ChildWidget, true );
 					NotifyFocusAccepted( FocusIndex );
 					return EEWN_WidgetInputType::Accept;
 				}
@@ -222,13 +222,13 @@ void UEWN_WidgetNavigation::ForEachWidgetNavigation( const TFunctionRef<void( UE
 
 int32 UEWN_WidgetNavigation::FindHoveredIndex() const
 {
-	return EWN::WidgetNavigationHelper::FindPanelIndex( GetTypedOuter<UPanelWidget>(), [&]( int32 i, UWidget* ChildWidget )
+	return EWN::WidgetNavigation::FHelper::FindPanelIndex( GetTypedOuter<UPanelWidget>(), [&]( int32 i, UWidget* ChildWidget )
 		{ return ChildWidget->IsHovered() && IEWN_Interface_WidgetNavigationChild::IsNavigationFocusable( ChildWidget ); } );
 }
 
 void UEWN_WidgetNavigation::ForEachFocusable( const TFunctionRef<void( int32, UWidget* )> Callback ) const
 {
-	EWN::WidgetNavigationHelper::ForEachPanelChildren( GetTypedOuter<UPanelWidget>(),
+	EWN::WidgetNavigation::FHelper::ForEachPanelChildren( GetTypedOuter<UPanelWidget>(),
 		[&]( int32 i, UWidget* ChildWidget )
 		{
 			if ( IEWN_Interface_WidgetNavigationChild::IsNavigationFocusable( ChildWidget ) )
@@ -361,7 +361,7 @@ void UEWN_WidgetNavigation::UpdateFocusIndex( int32 NewIndex, bool bFromOperatio
 				bShouldUpdate |= ( OldIndex != NewIndex && ( OldIndex == i || NewIndex == i ) );	// 更新があった場合だけ通知
 				if ( bShouldUpdate )
 				{
-					IEWN_Interface_WidgetNavigationChild::Execute_K2_SetNavigationFocused(
+					IEWN_Interface_WidgetNavigationChild::Execute_K2_NavigationFocused(
 						ChildWidget, i == NewIndex, bFromOperation );
 				}
 			}

@@ -3,9 +3,6 @@
 #include "EWN_WidgetNavigationCursorHandler.h"
 
 //
-#include "Components/PanelWidget.h"
-
-//
 #include "Navigation/EWN_WidgetNavigation.h"
 
 //
