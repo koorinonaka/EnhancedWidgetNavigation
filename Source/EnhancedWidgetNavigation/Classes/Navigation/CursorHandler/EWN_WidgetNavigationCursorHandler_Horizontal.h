@@ -12,10 +12,10 @@ namespace EWN::WidgetNavigation
 class ENHANCEDWIDGETNAVIGATION_API FCursorHandler_Horizontal : public FCursorHandler
 {
 public:
-	static bool IsHorizontal( class UPanelWidget* PanelWidget );
+	static bool IsHorizontal( UPanelWidget* PanelWidget );
 
 public:
-	FCursorHandler_Horizontal( class UEWN_WidgetNavigation* Navigation ) : FCursorHandler( Navigation ) {}
+	FCursorHandler_Horizontal( UEWN_WidgetNavigation* Navigation ) : FCursorHandler( Navigation ) {}
 
 public:
 	virtual int32 GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const override;

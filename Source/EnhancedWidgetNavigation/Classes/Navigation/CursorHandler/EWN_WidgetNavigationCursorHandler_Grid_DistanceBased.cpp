@@ -16,8 +16,6 @@ public:
 
 	int32 GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const
 	{
-		using namespace EWN::WidgetNavigation;
-
 		int32 ResultIndex = CurrentIndex;
 
 		UPanelWidget* PanelWidget = OwnerHandler.GetPanelWidget();

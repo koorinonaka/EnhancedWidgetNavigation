@@ -11,18 +11,20 @@
 #include "EWN_WidgetTypes.h"
 #include "Interfaces/EWN_Interface_WidgetNavigationChild.h"
 
+class UEWN_WidgetNavigation;
+
 namespace EWN::WidgetNavigation
 {
 class FCursorFactory
 {
 public:
-	static TSharedPtr<class FCursorHandler> CreateHandler( class UEWN_WidgetNavigation* Navigation );
+	static TSharedPtr<class FCursorHandler> CreateHandler( UEWN_WidgetNavigation* Navigation );
 };
 
 class ENHANCEDWIDGETNAVIGATION_API FCursorHandler
 {
 public:
-	FCursorHandler( class UEWN_WidgetNavigation* Navigation );
+	FCursorHandler( UEWN_WidgetNavigation* Navigation );
 	virtual ~FCursorHandler() {}
 
 public:
@@ -32,7 +34,7 @@ public:
 	int32 GetBackwardIndex( int32 CurrentIndex ) const;
 
 protected:
-	class UPanelWidget* GetPanelWidget() const;
+	UPanelWidget* GetPanelWidget() const;
 
 protected:
 	bool IsLoopNavigation() const;
@@ -40,13 +42,13 @@ protected:
 	bool IsWrapLines() const;
 
 private:
-	TWeakObjectPtr<class UEWN_WidgetNavigation> OuterNavigation;
+	TWeakObjectPtr<UEWN_WidgetNavigation> OuterNavigation;
 };
 
 class ENHANCEDWIDGETNAVIGATION_API FCursorHandler_Default : public FCursorHandler
 {
 public:
-	FCursorHandler_Default( class UEWN_WidgetNavigation* Navigation ) : FCursorHandler( Navigation ) {}
+	FCursorHandler_Default( UEWN_WidgetNavigation* Navigation ) : FCursorHandler( Navigation ) {}
 
 public:
 	virtual int32 GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const override { return CurrentIndex; }

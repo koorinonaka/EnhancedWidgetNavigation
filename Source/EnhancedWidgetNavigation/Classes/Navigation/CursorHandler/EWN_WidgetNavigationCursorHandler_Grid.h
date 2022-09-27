@@ -15,10 +15,10 @@ namespace EWN::WidgetNavigation
 class ENHANCEDWIDGETNAVIGATION_API FCursorHandler_Grid : public FCursorHandler
 {
 public:
-	static bool IsGrid( class UPanelWidget* PanelWidget );
+	static bool IsGrid( UPanelWidget* PanelWidget );
 
 public:
-	FCursorHandler_Grid( class UEWN_WidgetNavigation* Navigation ) : FCursorHandler( Navigation )
+	FCursorHandler_Grid( UEWN_WidgetNavigation* Navigation ) : FCursorHandler( Navigation )
 	{
 		InitSimple();
 		InitDistanceBased();
