@@ -2,17 +2,14 @@
 
 #include "EWN_WidgetNavigationCursorHandler_Vertical.h"
 
-bool FEWN_WidgetNavigationCursorHandler_Vertical::IsVertical( UPanelWidget* PanelWidget )
+namespace EWN::WidgetNavigation
+{
+bool FCursorHandler_Vertical::IsVertical( UPanelWidget* PanelWidget )
 {
 	return PanelWidget->IsA<UVerticalBox>();
 }
 
-FEWN_WidgetNavigationCursorHandler_Vertical::FEWN_WidgetNavigationCursorHandler_Vertical( UEWN_WidgetNavigation* Navigation )
-	: FEWN_WidgetNavigationCursorHandler( Navigation )
-{
-}
-
-int32 FEWN_WidgetNavigationCursorHandler_Vertical::GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const
+int32 FCursorHandler_Vertical::GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const
 {
 	int32 ResultIndex = CurrentIndex;
 
@@ -33,3 +30,4 @@ int32 FEWN_WidgetNavigationCursorHandler_Vertical::GetNextIndex( int32 CurrentIn
 
 	return ResultIndex;
 }
+}	 // namespace EWN::WidgetNavigation

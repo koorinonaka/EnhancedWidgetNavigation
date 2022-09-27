@@ -2,12 +2,14 @@
 
 #include "EWN_WidgetNavigationCursorHandler_Grid.h"
 
-class FEWN_WidgetNavigationCursorHandler_Grid::FSimpleNav
+namespace EWN::WidgetNavigation
 {
-	FEWN_WidgetNavigationCursorHandler_Grid& OwnerHandler;
+class FCursorHandler_Grid::FSimpleNav
+{
+	FCursorHandler_Grid& OwnerHandler;
 
 public:
-	FSimpleNav( FEWN_WidgetNavigationCursorHandler_Grid& Owner ) : OwnerHandler( Owner ) {}
+	FSimpleNav( FCursorHandler_Grid& Owner ) : OwnerHandler( Owner ) {}
 
 	int32 GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const
 	{
@@ -240,12 +242,13 @@ private:
 	}
 };
 
-void FEWN_WidgetNavigationCursorHandler_Grid::InitSimple()
+void FCursorHandler_Grid::InitSimple()
 {
 	SimpleNav = MakePimpl<FSimpleNav>( *this );
 }
 
-int32 FEWN_WidgetNavigationCursorHandler_Grid::GetNextIndexFromSimple( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const
+int32 FCursorHandler_Grid::GetNextIndexFromSimple( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const
 {
 	return SimpleNav->GetNextIndex( CurrentIndex, WidgetCursor );
 }
+}	 // namespace EWN::WidgetNavigation

@@ -40,7 +40,7 @@ void UEWN_WidgetNavigation::PostInitProperties()
 {
 	Super::PostInitProperties();
 
-	CursorHandler = FEWN_WidgetNavigationCursorFactory::CreateHandler( this );
+	CursorHandler = EWN::WidgetNavigation::FCursorFactory::CreateHandler( this );
 }
 
 void UEWN_WidgetNavigation::BeginDestroy()

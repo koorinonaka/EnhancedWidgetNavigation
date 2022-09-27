@@ -13,12 +13,17 @@
 
 #include "EWN_WidgetNavigation.generated.h"
 
+namespace EWN::WidgetNavigation
+{
+class FCursorHandler;
+}
+
 UCLASS( Blueprintable )
 class ENHANCEDWIDGETNAVIGATION_API UEWN_WidgetNavigation : public UObject, public IEWN_Interface_WidgetNavigation
 {
 	GENERATED_BODY()
 
-	friend class FEWN_WidgetNavigationCursorHandler;
+	friend class EWN::WidgetNavigation::FCursorHandler;
 	friend class UEWN_WidgetNavigationConnector;
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams( FFocusDelegate, class UEWN_WidgetNavigation*, Navigation,	//
@@ -138,7 +143,7 @@ private:
 	int32 FocusIndex = INDEX_NONE;
 	int32 LastValidFocusIndex = INDEX_NONE;
 	TWeakObjectPtr<class UEWN_WidgetNavigationInputMappingContext> NavigationIMC;
-	TSharedPtr<class FEWN_WidgetNavigationCursorHandler> CursorHandler;
+	TSharedPtr<class EWN::WidgetNavigation::FCursorHandler> CursorHandler;
 
 	UPROPERTY( Transient )
 	TObjectPtr<class UInputMappingContext> IMC_Navigation;

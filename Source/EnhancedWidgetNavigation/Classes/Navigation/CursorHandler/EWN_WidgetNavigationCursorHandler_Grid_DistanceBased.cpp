@@ -5,12 +5,14 @@
 //
 #include "Navigation/EWN_WidgetNavigationHelper.h"
 
-class FEWN_WidgetNavigationCursorHandler_Grid::FDistanceBasedNav
+namespace EWN::WidgetNavigation
 {
-	FEWN_WidgetNavigationCursorHandler_Grid& OwnerHandler;
+class FCursorHandler_Grid::FDistanceBasedNav
+{
+	FCursorHandler_Grid& OwnerHandler;
 
 public:
-	FDistanceBasedNav( FEWN_WidgetNavigationCursorHandler_Grid& Owner ) : OwnerHandler( Owner ) {}
+	FDistanceBasedNav( FCursorHandler_Grid& Owner ) : OwnerHandler( Owner ) {}
 
 	int32 GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const
 	{
@@ -56,13 +58,13 @@ public:
 	}
 };
 
-void FEWN_WidgetNavigationCursorHandler_Grid::InitDistanceBased()
+void FCursorHandler_Grid::InitDistanceBased()
 {
 	DistanceBasedNav = MakePimpl<FDistanceBasedNav>( *this );
 }
 
-int32 FEWN_WidgetNavigationCursorHandler_Grid::GetNextIndexFromDistanceBased(
-	int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const
+int32 FCursorHandler_Grid::GetNextIndexFromDistanceBased( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const
 {
 	return DistanceBasedNav->GetNextIndex( CurrentIndex, WidgetCursor );
 }
+}	 // namespace EWN::WidgetNavigation

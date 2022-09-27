@@ -11,17 +11,19 @@
 #include "EWN_WidgetTypes.h"
 #include "Interfaces/EWN_Interface_WidgetNavigationChild.h"
 
-class FEWN_WidgetNavigationCursorFactory
+namespace EWN::WidgetNavigation
+{
+class FCursorFactory
 {
 public:
-	static TSharedPtr<class FEWN_WidgetNavigationCursorHandler> CreateHandler( class UEWN_WidgetNavigation* Navigation );
+	static TSharedPtr<class FCursorHandler> CreateHandler( class UEWN_WidgetNavigation* Navigation );
 };
 
-class ENHANCEDWIDGETNAVIGATION_API FEWN_WidgetNavigationCursorHandler
+class ENHANCEDWIDGETNAVIGATION_API FCursorHandler
 {
 public:
-	FEWN_WidgetNavigationCursorHandler( class UEWN_WidgetNavigation* Navigation );
-	virtual ~FEWN_WidgetNavigationCursorHandler() {}
+	FCursorHandler( class UEWN_WidgetNavigation* Navigation );
+	virtual ~FCursorHandler() {}
 
 public:
 	virtual int32 GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const = 0;
@@ -41,11 +43,12 @@ private:
 	TWeakObjectPtr<class UEWN_WidgetNavigation> OuterNavigation;
 };
 
-class ENHANCEDWIDGETNAVIGATION_API FEWN_WidgetNavigationCursorHandler_Default : public FEWN_WidgetNavigationCursorHandler
+class ENHANCEDWIDGETNAVIGATION_API FCursorHandler_Default : public FCursorHandler
 {
 public:
-	FEWN_WidgetNavigationCursorHandler_Default( class UEWN_WidgetNavigation* Navigation );
+	FCursorHandler_Default( class UEWN_WidgetNavigation* Navigation ) : FCursorHandler( Navigation ) {}
 
 public:
 	virtual int32 GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const override { return CurrentIndex; }
 };
+}	 // namespace EWN::WidgetNavigation

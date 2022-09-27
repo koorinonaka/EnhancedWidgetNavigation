@@ -10,13 +10,19 @@
 #include "Components/UniformGridPanel.h"
 #include "Components/UniformGridSlot.h"
 
-class ENHANCEDWIDGETNAVIGATION_API FEWN_WidgetNavigationCursorHandler_Grid : public FEWN_WidgetNavigationCursorHandler
+namespace EWN::WidgetNavigation
+{
+class ENHANCEDWIDGETNAVIGATION_API FCursorHandler_Grid : public FCursorHandler
 {
 public:
 	static bool IsGrid( class UPanelWidget* PanelWidget );
 
 public:
-	FEWN_WidgetNavigationCursorHandler_Grid( class UEWN_WidgetNavigation* Navigation );
+	FCursorHandler_Grid( class UEWN_WidgetNavigation* Navigation ) : FCursorHandler( Navigation )
+	{
+		InitSimple();
+		InitDistanceBased();
+	}
 
 public:
 	virtual int32 GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const override;
@@ -35,3 +41,4 @@ private:
 	void InitDistanceBased();
 	int32 GetNextIndexFromDistanceBased( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const;
 };
+}	 // namespace EWN::WidgetNavigation

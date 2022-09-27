@@ -7,14 +7,17 @@
 //
 #include "Components/VerticalBox.h"
 
-class ENHANCEDWIDGETNAVIGATION_API FEWN_WidgetNavigationCursorHandler_Vertical : public FEWN_WidgetNavigationCursorHandler
+namespace EWN::WidgetNavigation
+{
+class ENHANCEDWIDGETNAVIGATION_API FCursorHandler_Vertical : public FCursorHandler
 {
 public:
 	static bool IsVertical( class UPanelWidget* PanelWidget );
 
 public:
-	FEWN_WidgetNavigationCursorHandler_Vertical( class UEWN_WidgetNavigation* Navigation );
+	FCursorHandler_Vertical( class UEWN_WidgetNavigation* Navigation ) : FCursorHandler( Navigation ) {}
 
 public:
 	virtual int32 GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const override;
 };
+}	 // namespace EWN::WidgetNavigation

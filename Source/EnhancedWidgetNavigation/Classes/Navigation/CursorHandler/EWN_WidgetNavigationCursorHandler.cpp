@@ -10,65 +10,61 @@
 #include "EWN_WidgetNavigationCursorHandler_Horizontal.h"
 #include "EWN_WidgetNavigationCursorHandler_Vertical.h"
 
-TSharedPtr<FEWN_WidgetNavigationCursorHandler> FEWN_WidgetNavigationCursorFactory::CreateHandler(
-	UEWN_WidgetNavigation* Navigation )
+namespace EWN::WidgetNavigation
+{
+TSharedPtr<FCursorHandler> FCursorFactory::CreateHandler( UEWN_WidgetNavigation* Navigation )
 {
 	auto* PanelWidget = Navigation->GetTypedOuter<UPanelWidget>();
 	if ( PanelWidget && !PanelWidget->IsDesignTime() )
 	{
-		if ( FEWN_WidgetNavigationCursorHandler_Vertical::IsVertical( PanelWidget ) )
+		if ( FCursorHandler_Vertical::IsVertical( PanelWidget ) )
 		{
-			return MakeShared<FEWN_WidgetNavigationCursorHandler_Vertical>( Navigation );
+			return MakeShared<FCursorHandler_Vertical>( Navigation );
 		}
-		else if ( FEWN_WidgetNavigationCursorHandler_Horizontal::IsHorizontal( PanelWidget ) )
+		else if ( FCursorHandler_Horizontal::IsHorizontal( PanelWidget ) )
 		{
-			return MakeShared<FEWN_WidgetNavigationCursorHandler_Horizontal>( Navigation );
+			return MakeShared<FCursorHandler_Horizontal>( Navigation );
 		}
-		else if ( FEWN_WidgetNavigationCursorHandler_Grid::IsGrid( PanelWidget ) )
+		else if ( FCursorHandler_Grid::IsGrid( PanelWidget ) )
 		{
-			return MakeShared<FEWN_WidgetNavigationCursorHandler_Grid>( Navigation );
+			return MakeShared<FCursorHandler_Grid>( Navigation );
 		}
 		else
 		{
 			// fallback for PanelWidget that is not navigative like SizeBox.
-			return MakeShared<FEWN_WidgetNavigationCursorHandler_Default>( Navigation );
+			return MakeShared<FCursorHandler_Default>( Navigation );
 		}
 	}
 
 	return nullptr;
 }
 
-FEWN_WidgetNavigationCursorHandler::FEWN_WidgetNavigationCursorHandler( UEWN_WidgetNavigation* Navigation )
+FCursorHandler::FCursorHandler( UEWN_WidgetNavigation* Navigation )
 {
 	OuterNavigation = Navigation;
 }
 
-FEWN_WidgetNavigationCursorHandler_Default::FEWN_WidgetNavigationCursorHandler_Default( UEWN_WidgetNavigation* Navigation )
-	: FEWN_WidgetNavigationCursorHandler( Navigation )
-{
-}
-
-UPanelWidget* FEWN_WidgetNavigationCursorHandler::GetPanelWidget() const
+UPanelWidget* FCursorHandler::GetPanelWidget() const
 {
 	return OuterNavigation->GetTypedOuter<UPanelWidget>();
 }
 
-bool FEWN_WidgetNavigationCursorHandler::IsLoopNavigation() const
+bool FCursorHandler::IsLoopNavigation() const
 {
 	return OuterNavigation->bLoopNavigation;
 }
 
-bool FEWN_WidgetNavigationCursorHandler::IsDistanceBasedNavigation() const
+bool FCursorHandler::IsDistanceBasedNavigation() const
 {
 	return OuterNavigation->bDistanceBasedNavigation;
 }
 
-bool FEWN_WidgetNavigationCursorHandler::IsWrapLines() const
+bool FCursorHandler::IsWrapLines() const
 {
 	return OuterNavigation->bWrapLines;
 }
 
-int32 FEWN_WidgetNavigationCursorHandler::GetForwardIndex( int32 CurrentIndex ) const
+int32 FCursorHandler::GetForwardIndex( int32 CurrentIndex ) const
 {
 	UPanelWidget* PanelWidget = GetPanelWidget();
 	if ( !ensure( PanelWidget ) )
@@ -109,7 +105,7 @@ int32 FEWN_WidgetNavigationCursorHandler::GetForwardIndex( int32 CurrentIndex ) 
 	return CurrentIndex;
 }
 
-int32 FEWN_WidgetNavigationCursorHandler::GetBackwardIndex( int32 CurrentIndex ) const
+int32 FCursorHandler::GetBackwardIndex( int32 CurrentIndex ) const
 {
 	UPanelWidget* PanelWidget = GetPanelWidget();
 	if ( !ensure( PanelWidget ) )
@@ -149,3 +145,4 @@ int32 FEWN_WidgetNavigationCursorHandler::GetBackwardIndex( int32 CurrentIndex )
 
 	return CurrentIndex;
 }
+}	 // namespace EWN::WidgetNavigation
