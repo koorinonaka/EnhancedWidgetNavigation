@@ -26,5 +26,5 @@ FReply UEWN_NavigationButton::NativeOnMouseButtonUp( const FGeometry& InGeometry
 
 bool UEWN_NavigationButton::WasJustClicked() const
 {
-	return FrameNumberOnClicked >= ( GFrameNumber - 1 );
+	return FrameNumberOnClicked == GFrameNumber;
 }
