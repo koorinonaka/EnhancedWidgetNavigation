@@ -50,8 +50,8 @@ public:
 	virtual void TryLoadObjects();
 
 protected:
-	UPROPERTY(
-		Config, EditDefaultsOnly, Category = "User Interface|Navigation", meta = ( AllowedClasses = "EWN_WidgetInputConfig" ) )
+	UPROPERTY( Config, EditDefaultsOnly, Category = "User Interface|Navigation",
+		meta = ( AllowedClasses = "/Script/EnhancedWidgetNavigation.EWN_WidgetInputConfig" ) )
 	FSoftObjectPath WidgetInputConfigName;
 
 private:
