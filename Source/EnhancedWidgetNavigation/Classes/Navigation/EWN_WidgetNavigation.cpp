@@ -143,6 +143,10 @@ EEWN_WidgetInputType UEWN_WidgetNavigation::TickNavigation( float DeltaTime )
 			return EEWN_WidgetInputType::Next;
 		}
 	}
+	else if ( WasJustTriggered( EEWN_WidgetInputType::Back ) )
+	{
+		return EEWN_WidgetInputType::Back;
+	}
 	else
 	{
 		auto* WidgetInputSubsystem = UEWN_WidgetInputSubsystem::Get( GetTypedOuter<UWidget>() );
