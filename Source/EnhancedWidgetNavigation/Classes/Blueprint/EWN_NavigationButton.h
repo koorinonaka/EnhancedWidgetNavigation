@@ -15,6 +15,9 @@ class ENHANCEDWIDGETNAVIGATION_API UEWN_NavigationButton : public UUserWidget, p
 	GENERATED_BODY()
 
 protected:
+	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
+
 	virtual FReply NativeOnMouseButtonDown( const FGeometry& InGeometry, const FPointerEvent& InMouseEvent ) override;
 	virtual FReply NativeOnMouseButtonUp( const FGeometry& InGeometry, const FPointerEvent& InMouseEvent ) override;
 
@@ -28,6 +31,8 @@ public:
 	bool WasJustClicked() const;
 
 private:
-	bool bPressed;
-	uint32 FrameNumberOnClicked;
+	bool bFocused = false;
+	bool bPressed = false;
+	bool bWasJustClicked = false;
+	uint32 FrameNumberOnClicked = 0;
 };

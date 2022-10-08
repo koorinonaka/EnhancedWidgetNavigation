@@ -11,9 +11,8 @@
 
 /**
  * EnhancedWidgetNavigationを動作させるためのサンプルクラス。
- * プロジェクト側でLocalPlayerクラスを用意し、同様に実装することを推奨します。
+ * プロジェクト側でクラスを用意し、同様に実装することを推奨します。
  */
-
 UCLASS()
 class UEWN_LocalPlayer final : public ULocalPlayer, public IEWN_Interface_LocalPlayerExtension
 {
