@@ -58,7 +58,14 @@ void UEWN_WidgetNavigation::SetInputMappingContext( const FEWN_WidgetInputMappin
 	ClearInputMappingContext();
 
 	IMC_Navigation = GetDefault<UEWN_WidgetInputSettings>()->BuildInputMappingContext( InjectionSettings,
-		[this]( EEWN_WidgetInputType InputType, UInputAction* IA ) { IA_NavigationActions.Emplace( InputType, IA ); } );
+		[this]( FName InputName, UInputAction* IA )
+		{
+			EEWN_WidgetInputType InputType = EWN::Enum::FindValueByName<EEWN_WidgetInputType>( InputName );
+			if ( InputType != EEWN_WidgetInputType::None )
+			{
+				IA_NavigationActions.Emplace( InputType, IA );
+			}
+		} );
 	if ( IMC_Navigation )
 	{
 		if ( UEnhancedInputLocalPlayerSubsystem* EnhancedInputSubsystem =
@@ -258,7 +265,7 @@ ETriggerEvent UEWN_WidgetNavigation::GetTriggerEvent( EEWN_WidgetInputType Input
 	else
 	{
 		// 上書きがなければCommonInputを使う
-		return WidgetInputSubsystem->GetTriggerEvent( InputType );
+		return WidgetInputSubsystem->GetTriggerEvent( *EWN::Enum::GetValueAsString( InputType ) );
 	}
 
 	return ETriggerEvent::None;

@@ -73,19 +73,19 @@ UInputMappingContext* UEWN_WidgetInputSettings::GetOptionalInputMappingContext()
 }
 
 UInputMappingContext* UEWN_WidgetInputSettings::BuildInputMappingContext(
-	const TFunctionRef<void( EEWN_WidgetInputType, class UInputAction* )> Callback ) const
+	const TFunctionRef<void( FName, UInputAction* )> Callback ) const
 {
 	return WidgetInputConfig ? BuildInputMappingContext( WidgetInputConfig->InputMappingDefault, Callback ) : nullptr;
 }
 
-UInputMappingContext* UEWN_WidgetInputSettings::BuildInputMappingContext( const FEWN_WidgetInputMappingContainer& InjectionSettings,
-	const TFunctionRef<void( EEWN_WidgetInputType, UInputAction* )> Callback ) const
+UInputMappingContext* UEWN_WidgetInputSettings::BuildInputMappingContext(
+	const FEWN_WidgetInputMappingContainer& InjectionSettings, const TFunctionRef<void( FName, UInputAction* )> Callback ) const
 {
 	auto* NewIMC = NewObject<UInputMappingContext>();
 
 	for ( const FEWN_WidgetInputMapping& InputMapping : InjectionSettings.InputMappings )
 	{
-		if ( InputMapping.InputType == EEWN_WidgetInputType::None )
+		if ( InputMapping.InputName.IsNone() )
 		{
 			UE_LOG( LogTemp, Warning, TEXT( "invalid key found in input mapping." ) );
 			continue;
@@ -103,7 +103,7 @@ UInputMappingContext* UEWN_WidgetInputSettings::BuildInputMappingContext( const 
 			DeepCopyPtrArray<UInputTrigger>( KeyMapping.Triggers, NewMapping.Triggers );
 		}
 
-		switch ( InputMapping.InputType )
+		switch ( EWN::Enum::FindValueByName<EEWN_WidgetInputType>( InputMapping.InputName ) )
 		{
 		case EEWN_WidgetInputType::Accept:
 		{
@@ -120,7 +120,7 @@ UInputMappingContext* UEWN_WidgetInputSettings::BuildInputMappingContext( const 
 		break;
 		}
 
-		Callback( InputMapping.InputType, NewInputAction );
+		Callback( InputMapping.InputName, NewInputAction );
 	}
 
 	return NewIMC;

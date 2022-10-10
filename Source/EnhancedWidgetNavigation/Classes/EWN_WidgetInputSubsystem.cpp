@@ -33,10 +33,10 @@ protected:
 
 	virtual bool HandleKeyDownEvent( FSlateApplication& SlateApp, const FKeyEvent& InKeyEvent ) override
 	{
-		const EEWN_WidgetInputMode InputType = GetInputType( InKeyEvent.GetKey() );
-		if ( IsRelevantInput( SlateApp, InKeyEvent, InputType ) )
+		const EEWN_WidgetInputMode InputMode = GetInputMode( InKeyEvent.GetKey() );
+		if ( IsRelevantInput( SlateApp, InKeyEvent, InputMode ) )
 		{
-			RefreshCurrentInputMethod( InputType );
+			RefreshCurrentInputMethod( InputMode );
 		}
 
 		return false;
@@ -44,10 +44,10 @@ protected:
 
 	virtual bool HandleAnalogInputEvent( FSlateApplication& SlateApp, const FAnalogInputEvent& InAnalogInputEvent ) override
 	{
-		const EEWN_WidgetInputMode InputType = GetInputType( InAnalogInputEvent.GetKey() );
-		if ( IsRelevantInput( SlateApp, InAnalogInputEvent, InputType ) )
+		const EEWN_WidgetInputMode InputMode = GetInputMode( InAnalogInputEvent.GetKey() );
+		if ( IsRelevantInput( SlateApp, InAnalogInputEvent, InputMode ) )
 		{
-			RefreshCurrentInputMethod( InputType );
+			RefreshCurrentInputMethod( InputMode );
 		}
 
 		return false;
@@ -55,12 +55,12 @@ protected:
 
 	virtual bool HandleMouseMoveEvent( FSlateApplication& SlateApp, const FPointerEvent& InPointerEvent ) override
 	{
-		const EEWN_WidgetInputMode InputType = GetInputType( InPointerEvent );
-		if ( IsRelevantInput( SlateApp, InPointerEvent, InputType ) )
+		const EEWN_WidgetInputMode InputMode = GetInputMode( InPointerEvent );
+		if ( IsRelevantInput( SlateApp, InPointerEvent, InputMode ) )
 		{
 			if ( !InPointerEvent.GetCursorDelta().IsNearlyZero() )
 			{
-				RefreshCurrentInputMethod( InputType );
+				RefreshCurrentInputMethod( InputMode );
 			}
 		}
 
@@ -69,10 +69,10 @@ protected:
 
 	virtual bool HandleMouseButtonDownEvent( FSlateApplication& SlateApp, const FPointerEvent& InPointerEvent ) override
 	{
-		const EEWN_WidgetInputMode InputType = GetInputType( InPointerEvent );
-		if ( IsRelevantInput( SlateApp, InPointerEvent, InputType ) )
+		const EEWN_WidgetInputMode InputMode = GetInputMode( InPointerEvent );
+		if ( IsRelevantInput( SlateApp, InPointerEvent, InputMode ) )
 		{
-			RefreshCurrentInputMethod( InputType );
+			RefreshCurrentInputMethod( InputMode );
 		}
 
 		return false;
@@ -80,17 +80,17 @@ protected:
 
 	virtual bool HandleMouseButtonDoubleClickEvent( FSlateApplication& SlateApp, const FPointerEvent& InPointerEvent ) override
 	{
-		const EEWN_WidgetInputMode InputType = GetInputType( InPointerEvent );
-		if ( IsRelevantInput( SlateApp, InPointerEvent, InputType ) )
+		const EEWN_WidgetInputMode InputMode = GetInputMode( InPointerEvent );
+		if ( IsRelevantInput( SlateApp, InPointerEvent, InputMode ) )
 		{
-			RefreshCurrentInputMethod( InputType );
+			RefreshCurrentInputMethod( InputMode );
 		}
 
 		return false;
 	}
 
 private:
-	bool IsRelevantInput( FSlateApplication& SlateApp, const FInputEvent& InputEvent, const EEWN_WidgetInputMode DesiredInputType )
+	bool IsRelevantInput( FSlateApplication& SlateApp, const FInputEvent& InputEvent, const EEWN_WidgetInputMode DesiredInputMode )
 	{
 		if ( SlateApp.IsActive() || SlateApp.GetHandleDeviceInputWhenApplicationNotActive() )
 		{
@@ -144,7 +144,7 @@ private:
 		InputSubsystem.SetCurrentInputMode( InputMethod );
 	}
 
-	EEWN_WidgetInputMode GetInputType( const FKey& Key )
+	EEWN_WidgetInputMode GetInputMode( const FKey& Key )
 	{
 		if ( Key.IsGamepadKey() )
 		{
@@ -154,7 +154,7 @@ private:
 		return EEWN_WidgetInputMode::Keyboard;
 	}
 
-	EEWN_WidgetInputMode GetInputType( const FPointerEvent& PointerEvent )
+	EEWN_WidgetInputMode GetInputMode( const FPointerEvent& PointerEvent )
 	{
 		if ( PointerEvent.IsTouchEvent() )
 		{
@@ -221,7 +221,7 @@ void UEWN_WidgetInputSubsystem::InitOnSpawnPlayActor( APlayerController* PlayAct
 	if ( UEnhancedPlayerInput* EnhancedPI = EnhancedInputSubsystem->GetPlayerInput() )
 	{
 		IMC_CommonInput = GetDefault<UEWN_WidgetInputSettings>()->BuildInputMappingContext(
-			[this]( EEWN_WidgetInputType InputType, UInputAction* IA ) { IA_CommonInputActions.Emplace( InputType, IA ); } );
+			[this]( FName InputName, UInputAction* IA ) { IA_CommonInputActions.Emplace( InputName, IA ); } );
 		if ( IMC_CommonInput )
 		{
 			EnhancedInputSubsystem->AddMappingContext( IMC_CommonInput, 0 );
@@ -260,14 +260,14 @@ ETriggerEvent UEWN_WidgetInputSubsystem::GetTriggerEvent( UInputAction* IA ) con
 	return ETriggerEvent::None;
 }
 
-ETriggerEvent UEWN_WidgetInputSubsystem::GetTriggerEvent( EEWN_WidgetInputType InputType ) const
+ETriggerEvent UEWN_WidgetInputSubsystem::GetTriggerEvent( FName InputName ) const
 {
-	return IA_CommonInputActions.Contains( InputType ) ? GetTriggerEvent( IA_CommonInputActions[InputType] ) : ETriggerEvent::None;
+	return IA_CommonInputActions.Contains( InputName ) ? GetTriggerEvent( IA_CommonInputActions[InputName] ) : ETriggerEvent::None;
 }
 
-bool UEWN_WidgetInputSubsystem::WasJustTriggered( EEWN_WidgetInputType InputType ) const
+bool UEWN_WidgetInputSubsystem::WasJustTriggered( FName InputName ) const
 {
-	return GetTriggerEvent( InputType ) == ETriggerEvent::Triggered;
+	return GetTriggerEvent( InputName ) == ETriggerEvent::Triggered;
 }
 
 EEWN_WidgetInputMode UEWN_WidgetInputSubsystem::GetCurrentInputMode() const

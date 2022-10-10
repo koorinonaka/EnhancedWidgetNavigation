@@ -41,10 +41,9 @@ protected:
 public:
 	class UInputMappingContext* GetOptionalInputMappingContext() const;
 
-	class UInputMappingContext* BuildInputMappingContext(
-		const TFunctionRef<void( EEWN_WidgetInputType, class UInputAction* )> Callback ) const;
+	class UInputMappingContext* BuildInputMappingContext( const TFunctionRef<void( FName, class UInputAction* )> Callback ) const;
 	class UInputMappingContext* BuildInputMappingContext( const FEWN_WidgetInputMappingContainer& InjectionSettings,
-		const TFunctionRef<void( EEWN_WidgetInputType, class UInputAction* )> Callback ) const;
+		const TFunctionRef<void( FName, class UInputAction* )> Callback ) const;
 
 public:
 	virtual void TryLoadObjects();

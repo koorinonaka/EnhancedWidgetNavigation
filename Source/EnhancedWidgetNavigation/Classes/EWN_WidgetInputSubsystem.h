@@ -32,10 +32,10 @@ protected:
 
 public:
 	ETriggerEvent GetTriggerEvent( class UInputAction* IA ) const;
-	ETriggerEvent GetTriggerEvent( EEWN_WidgetInputType InputType ) const;
+	ETriggerEvent GetTriggerEvent( FName InputName ) const;
 
 	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
-	bool WasJustTriggered( EEWN_WidgetInputType InputType ) const;
+	bool WasJustTriggered( FName InputName ) const;
 
 	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	EEWN_WidgetInputMode GetCurrentInputMode() const;
@@ -56,5 +56,5 @@ private:
 	TObjectPtr<class UInputMappingContext> IMC_CommonInput;
 
 	UPROPERTY( Transient )
-	TMap<EEWN_WidgetInputType, TObjectPtr<class UInputAction>> IA_CommonInputActions;
+	TMap<FName, TObjectPtr<class UInputAction>> IA_CommonInputActions;
 };

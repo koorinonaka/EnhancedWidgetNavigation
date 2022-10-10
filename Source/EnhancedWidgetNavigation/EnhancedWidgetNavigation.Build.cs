@@ -7,6 +7,7 @@ public class EnhancedWidgetNavigation : ModuleRules
 	public EnhancedWidgetNavigation(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+		PrivatePCHHeaderFile = "Private/EnhancedWidgetNavigationPCH.h";
 
 		PublicDependencyModuleNames.AddRange(new string[]
 		{

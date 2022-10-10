@@ -25,7 +25,7 @@ enum class EEWN_WidgetCursor : uint8
 	Right,
 };
 
-UENUM()
+UENUM( BlueprintType )
 enum class EEWN_WidgetInputType : uint8
 {
 	None,
@@ -60,7 +60,7 @@ struct ENHANCEDWIDGETNAVIGATION_API FEWN_WidgetInputMapping
 	GENERATED_BODY()
 
 	UPROPERTY( EditAnywhere, Category = "User Interface|Navigation" )
-	EEWN_WidgetInputType InputType = EEWN_WidgetInputType::None;
+	FName InputName;
 
 	UPROPERTY( EditAnywhere, Category = "User Interface|Navigation", meta = ( TitleProperty = "Key" ) )
 	TArray<FEWN_WidgetInputKeyMapping> KeyMappings;
@@ -77,6 +77,6 @@ struct ENHANCEDWIDGETNAVIGATION_API FEWN_WidgetInputMappingContainer
 {
 	GENERATED_BODY()
 
-	UPROPERTY( EditAnywhere, Category = "User Interface|Navigation", meta = ( TitleProperty = "InputType" ) )
+	UPROPERTY( EditAnywhere, Category = "User Interface|Navigation", meta = ( TitleProperty = "InputName" ) )
 	TArray<FEWN_WidgetInputMapping> InputMappings;
 };
