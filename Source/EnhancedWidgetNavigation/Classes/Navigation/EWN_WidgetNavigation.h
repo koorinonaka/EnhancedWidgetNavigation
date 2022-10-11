@@ -33,7 +33,6 @@ class ENHANCEDWIDGETNAVIGATION_API UEWN_WidgetNavigation : public UObject, publi
 
 protected:
 	virtual void PostInitProperties() override;
-	virtual void BeginDestroy() override;
 
 public:
 	virtual EEWN_WidgetInputType TickNavigation( float DeltaTime ) override;
@@ -144,10 +143,4 @@ private:
 	int32 LastValidFocusIndex = INDEX_NONE;
 	TWeakObjectPtr<class UEWN_WidgetNavigationInputMappingContext> NavigationIMC;
 	TSharedPtr<class EWN::WidgetNavigation::FCursorHandler> CursorHandler;
-
-	UPROPERTY( Transient )
-	TObjectPtr<class UInputMappingContext> IMC_Navigation;
-
-	UPROPERTY( Transient )
-	TMap<EEWN_WidgetInputType, TObjectPtr<class UInputAction>> IA_NavigationActions;
 };

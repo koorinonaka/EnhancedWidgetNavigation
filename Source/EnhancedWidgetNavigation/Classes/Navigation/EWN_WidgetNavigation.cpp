@@ -43,51 +43,19 @@ void UEWN_WidgetNavigation::PostInitProperties()
 	CursorHandler = EWN::WidgetNavigation::FCursorFactory::CreateHandler( this );
 }
 
-void UEWN_WidgetNavigation::BeginDestroy()
-{
-	if ( IMC_Navigation )
-	{
-		UE_LOG( LogTemp, Warning, TEXT( "you forgot to call ClearInputMappingContext!" ) );
-	}
-
-	Super::BeginDestroy();
-}
-
 void UEWN_WidgetNavigation::SetInputMappingContext( const FEWN_WidgetInputMappingContainer& InjectionSettings )
 {
-	ClearInputMappingContext();
-
-	IMC_Navigation = GetDefault<UEWN_WidgetInputSettings>()->BuildInputMappingContext( InjectionSettings,
-		[this]( FName InputName, UInputAction* IA )
-		{
-			EEWN_WidgetInputType InputType = EWN::Enum::FindValueByName<EEWN_WidgetInputType>( InputName );
-			if ( InputType != EEWN_WidgetInputType::None )
-			{
-				IA_NavigationActions.Emplace( InputType, IA );
-			}
-		} );
-	if ( IMC_Navigation )
+	if ( auto* WidgetInputSubsystem = UEWN_WidgetInputSubsystem::Get( GetTypedOuter<UWidget>() ) )
 	{
-		if ( UEnhancedInputLocalPlayerSubsystem* EnhancedInputSubsystem =
-				 EWN::Util::GetEnhancedInputSubsystem( GetTypedOuter<UWidget>() ) )
-		{
-			EnhancedInputSubsystem->AddMappingContext( IMC_Navigation, 0 );
-		}
+		WidgetInputSubsystem->SetInputMappingContext( this, InjectionSettings );
 	}
 }
 
 void UEWN_WidgetNavigation::ClearInputMappingContext()
 {
-	if ( IMC_Navigation )
+	if ( auto* WidgetInputSubsystem = UEWN_WidgetInputSubsystem::Get( GetTypedOuter<UWidget>() ) )
 	{
-		if ( UEnhancedInputLocalPlayerSubsystem* EnhancedInputSubsystem =
-				 EWN::Util::GetEnhancedInputSubsystem( GetTypedOuter<UWidget>() ) )
-		{
-			EnhancedInputSubsystem->RemoveMappingContext( IMC_Navigation );
-		}
-
-		IMC_Navigation = nullptr;
-		IA_NavigationActions.Empty();
+		WidgetInputSubsystem->ClearInputMappingContext( this );
 	}
 }
 
@@ -252,23 +220,8 @@ void UEWN_WidgetNavigation::ForEachFocusable( const TFunctionRef<void( int32, UW
 ETriggerEvent UEWN_WidgetNavigation::GetTriggerEvent( EEWN_WidgetInputType InputType ) const
 {
 	auto* WidgetInputSubsystem = UEWN_WidgetInputSubsystem::Get( GetTypedOuter<UWidget>() );
-	if ( !WidgetInputSubsystem )
-	{
-		return ETriggerEvent::None;
-	}
-
-	if ( IA_NavigationActions.Contains( InputType ) )
-	{
-		UInputAction* IA = IA_NavigationActions[InputType];
-		return WidgetInputSubsystem->GetTriggerEvent( IA );
-	}
-	else
-	{
-		// 上書きがなければCommonInputを使う
-		return WidgetInputSubsystem->GetTriggerEvent( *EWN::Enum::GetValueAsString( InputType ) );
-	}
-
-	return ETriggerEvent::None;
+	return WidgetInputSubsystem ? WidgetInputSubsystem->GetTriggerEvent( this, *EWN::Enum::GetValueAsString( InputType ) )
+								: ETriggerEvent::None;
 }
 
 bool UEWN_WidgetNavigation::WasJustTriggered( EEWN_WidgetInputType InputType ) const

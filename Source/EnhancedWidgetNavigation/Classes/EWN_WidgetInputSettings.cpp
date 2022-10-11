@@ -53,18 +53,17 @@ void UEWN_WidgetInputSettings::TryLoadObjects()
 		WidgetInputConfig = CastChecked<UEWN_WidgetInputConfig>( LoadedObject );
 		WidgetInputConfig->AddToRoot();
 	}
-	else
+#if WITH_EDITOR
+	else if ( GIsEditor )
 	{
 		FMessageLog AssetCheckLog( "AssetCheck" );
 
 		FText Message( NSLOCTEXT( "EWN", "WidgetInputConfigNotFound", "WidgetInputConfig not specified (or failed to load)." ) );
 		AssetCheckLog.Error( Message );
 
-		if ( GIsEditor )
-		{
-			AssetCheckLog.Notify( Message, EMessageSeverity::Error, true );
-		}
+		AssetCheckLog.Notify( Message, EMessageSeverity::Error, true );
 	}
+#endif
 }
 
 UInputMappingContext* UEWN_WidgetInputSettings::GetOptionalInputMappingContext() const

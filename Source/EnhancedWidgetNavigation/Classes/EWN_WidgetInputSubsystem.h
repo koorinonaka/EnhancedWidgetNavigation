@@ -12,6 +12,18 @@
 
 #include "EWN_WidgetInputSubsystem.generated.h"
 
+USTRUCT()
+struct ENHANCEDWIDGETNAVIGATION_API FEWN_InputMappingOverrides
+{
+	GENERATED_BODY()
+
+	UPROPERTY( Transient )
+	TObjectPtr<class UInputMappingContext> InputMappingContext;
+
+	UPROPERTY( Transient )
+	TMap<FName, TObjectPtr<class UInputAction>> InputActions;
+};
+
 UCLASS()
 class ENHANCEDWIDGETNAVIGATION_API UEWN_WidgetInputSubsystem : public ULocalPlayerSubsystem
 {
@@ -32,10 +44,16 @@ protected:
 
 public:
 	ETriggerEvent GetTriggerEvent( class UInputAction* IA ) const;
-	ETriggerEvent GetTriggerEvent( FName InputName ) const;
+	ETriggerEvent GetTriggerEvent( const UObject* ContextObject, FName InputName ) const;
 
-	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
-	bool WasJustTriggered( FName InputName ) const;
+	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation", meta = ( DefaultToSelf = "ContextObject" ) )
+	bool WasJustTriggered( const UObject* ContextObject, FName InputName ) const;
+
+	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation", meta = ( DefaultToSelf = "ContextObject" ) )
+	void SetInputMappingContext( const UObject* ContextObject, const FEWN_WidgetInputMappingContainer& InjectionSettings );
+
+	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation", meta = ( DefaultToSelf = "ContextObject" ) )
+	void ClearInputMappingContext( const UObject* ContextObject );
 
 	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
 	EEWN_WidgetInputMode GetCurrentInputMode() const;
@@ -57,4 +75,7 @@ private:
 
 	UPROPERTY( Transient )
 	TMap<FName, TObjectPtr<class UInputAction>> IA_CommonInputActions;
+
+	UPROPERTY( Transient )
+	TMap<uint32, FEWN_InputMappingOverrides> InputMappingOverrides;
 };
