@@ -27,6 +27,7 @@ The following three items must be set in ProjectSettings.
 See the [Tutorial](https://github.com/koorinonaka/EnhancedWidgetNavigation/wiki).
 
 ## Note
+- EnhancedInput required
 - Touch input not supported.
 
 ## Author
