@@ -134,7 +134,7 @@ EEWN_WidgetInputType UEWN_WidgetNavigation::TickNavigation( float DeltaTime )
 		{
 			int32 ResultIndex = CurrentIndex;
 
-			bool bCheckHovered = bMouseEnabled && WidgetInputSubsystem->GetCurrentInputMode() == EEWN_WidgetInputMode::Mouse;
+			bool bCheckHovered = bMouseEnabled && WidgetInputSubsystem->GetCurrentInputMethod() == EEWN_WidgetInputMethod::Mouse;
 			if ( bCheckHovered )
 			{
 				bool bValidHovered = [&]
@@ -379,7 +379,7 @@ void UEWN_WidgetNavigation::ResetNavigation( bool bResetIndex )
 		return;
 	}
 
-	bool bMouseOperation = bMouseEnabled && WidgetInputSubsystem->GetCurrentInputMode() == EEWN_WidgetInputMode::Mouse;
+	bool bMouseOperation = bMouseEnabled && WidgetInputSubsystem->GetCurrentInputMethod() == EEWN_WidgetInputMethod::Mouse;
 	if ( bMouseOperation )
 	{
 		UpdateFocusIndex( FindHoveredIndex(), false );

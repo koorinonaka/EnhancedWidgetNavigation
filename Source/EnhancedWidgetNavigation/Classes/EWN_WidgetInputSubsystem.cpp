@@ -35,10 +35,10 @@ protected:
 
 	virtual bool HandleKeyDownEvent( FSlateApplication& SlateApp, const FKeyEvent& InKeyEvent ) override
 	{
-		const EEWN_WidgetInputMode InputMode = GetInputMode( InKeyEvent.GetKey() );
-		if ( IsRelevantInput( SlateApp, InKeyEvent, InputMode ) )
+		const EEWN_WidgetInputMethod InputMethod = GetInputMethod( InKeyEvent.GetKey() );
+		if ( IsRelevantInput( SlateApp, InKeyEvent, InputMethod ) )
 		{
-			RefreshCurrentInputMethod( InputMode );
+			RefreshCurrentInputMethod( InputMethod );
 		}
 
 		return false;
@@ -46,10 +46,10 @@ protected:
 
 	virtual bool HandleAnalogInputEvent( FSlateApplication& SlateApp, const FAnalogInputEvent& InAnalogInputEvent ) override
 	{
-		const EEWN_WidgetInputMode InputMode = GetInputMode( InAnalogInputEvent.GetKey() );
-		if ( IsRelevantInput( SlateApp, InAnalogInputEvent, InputMode ) )
+		const EEWN_WidgetInputMethod InputMethod = GetInputMethod( InAnalogInputEvent.GetKey() );
+		if ( IsRelevantInput( SlateApp, InAnalogInputEvent, InputMethod ) )
 		{
-			RefreshCurrentInputMethod( InputMode );
+			RefreshCurrentInputMethod( InputMethod );
 		}
 
 		return false;
@@ -57,12 +57,12 @@ protected:
 
 	virtual bool HandleMouseMoveEvent( FSlateApplication& SlateApp, const FPointerEvent& InPointerEvent ) override
 	{
-		const EEWN_WidgetInputMode InputMode = GetInputMode( InPointerEvent );
-		if ( IsRelevantInput( SlateApp, InPointerEvent, InputMode ) )
+		const EEWN_WidgetInputMethod InputMethod = GetInputMethod( InPointerEvent );
+		if ( IsRelevantInput( SlateApp, InPointerEvent, InputMethod ) )
 		{
 			if ( !InPointerEvent.GetCursorDelta().IsNearlyZero() )
 			{
-				RefreshCurrentInputMethod( InputMode );
+				RefreshCurrentInputMethod( InputMethod );
 			}
 		}
 
@@ -71,10 +71,10 @@ protected:
 
 	virtual bool HandleMouseButtonDownEvent( FSlateApplication& SlateApp, const FPointerEvent& InPointerEvent ) override
 	{
-		const EEWN_WidgetInputMode InputMode = GetInputMode( InPointerEvent );
-		if ( IsRelevantInput( SlateApp, InPointerEvent, InputMode ) )
+		const EEWN_WidgetInputMethod InputMethod = GetInputMethod( InPointerEvent );
+		if ( IsRelevantInput( SlateApp, InPointerEvent, InputMethod ) )
 		{
-			RefreshCurrentInputMethod( InputMode );
+			RefreshCurrentInputMethod( InputMethod );
 		}
 
 		return false;
@@ -82,17 +82,18 @@ protected:
 
 	virtual bool HandleMouseButtonDoubleClickEvent( FSlateApplication& SlateApp, const FPointerEvent& InPointerEvent ) override
 	{
-		const EEWN_WidgetInputMode InputMode = GetInputMode( InPointerEvent );
-		if ( IsRelevantInput( SlateApp, InPointerEvent, InputMode ) )
+		const EEWN_WidgetInputMethod InputMethod = GetInputMethod( InPointerEvent );
+		if ( IsRelevantInput( SlateApp, InPointerEvent, InputMethod ) )
 		{
-			RefreshCurrentInputMethod( InputMode );
+			RefreshCurrentInputMethod( InputMethod );
 		}
 
 		return false;
 	}
 
 private:
-	bool IsRelevantInput( FSlateApplication& SlateApp, const FInputEvent& InputEvent, const EEWN_WidgetInputMode DesiredInputMode )
+	bool IsRelevantInput(
+		FSlateApplication& SlateApp, const FInputEvent& InputEvent, const EEWN_WidgetInputMethod DesiredInputMethod )
 	{
 		if ( SlateApp.IsActive() || SlateApp.GetHandleDeviceInputWhenApplicationNotActive() )
 		{
@@ -102,7 +103,7 @@ private:
 		return false;
 	}
 
-	void RefreshCurrentInputMethod( EEWN_WidgetInputMode InputMethod )
+	void RefreshCurrentInputMethod( EEWN_WidgetInputMethod InputMethod )
 	{
 #if WITH_EDITOR && 0
 		// Lots of special-case fun for PIE - there are special scenarios wherein we want to ignore the update attempt
@@ -126,12 +127,12 @@ private:
 				{
 					// Our owner's game viewport is in the focus path, which in a PIE scenario means we shouldn't
 					// acknowledge gamepad input if it's being routed to another PIE client
-					if ( InputMethod != EEWN_WidgetInputMode::Gamepad || !bRoutingGamepadToNextPlayer )
+					if ( InputMethod != EEWN_WidgetInputMethod::Gamepad || !bRoutingGamepadToNextPlayer )
 					{
 						bCanApplyInputMethodUpdate = true;
 					}
 				}
-				else if ( InputMethod == EEWN_WidgetInputMode::Gamepad )
+				else if ( InputMethod == EEWN_WidgetInputMethod::Gamepad )
 				{
 					bCanApplyInputMethodUpdate = bRoutingGamepadToNextPlayer;
 				}
@@ -143,27 +144,27 @@ private:
 		}
 #endif
 
-		InputSubsystem.SetCurrentInputMode( InputMethod );
+		InputSubsystem.SetCurrentInputMethod( InputMethod );
 	}
 
-	EEWN_WidgetInputMode GetInputMode( const FKey& Key )
+	EEWN_WidgetInputMethod GetInputMethod( const FKey& Key )
 	{
 		if ( Key.IsGamepadKey() )
 		{
-			return EEWN_WidgetInputMode::Gamepad;
+			return EEWN_WidgetInputMethod::Gamepad;
 		}
 
-		return EEWN_WidgetInputMode::Keyboard;
+		return EEWN_WidgetInputMethod::Keyboard;
 	}
 
-	EEWN_WidgetInputMode GetInputMode( const FPointerEvent& PointerEvent )
+	EEWN_WidgetInputMethod GetInputMethod( const FPointerEvent& PointerEvent )
 	{
 		if ( PointerEvent.IsTouchEvent() )
 		{
-			return EEWN_WidgetInputMode::Touch;
+			return EEWN_WidgetInputMethod::Touch;
 		}
 
-		return EEWN_WidgetInputMode::Mouse;
+		return EEWN_WidgetInputMethod::Mouse;
 	}
 
 private:
@@ -315,12 +316,12 @@ void UEWN_WidgetInputSubsystem::ClearInputMappingContext( const UObject* Context
 	}
 }
 
-EEWN_WidgetInputMode UEWN_WidgetInputSubsystem::GetCurrentInputMode() const
+EEWN_WidgetInputMethod UEWN_WidgetInputSubsystem::GetCurrentInputMethod() const
 {
 	return CurrentMode;
 }
 
-void UEWN_WidgetInputSubsystem::SetCurrentInputMode( EEWN_WidgetInputMode NewMode )
+void UEWN_WidgetInputSubsystem::SetCurrentInputMethod( EEWN_WidgetInputMethod NewMode )
 {
 	if ( CurrentMode != NewMode )
 	{

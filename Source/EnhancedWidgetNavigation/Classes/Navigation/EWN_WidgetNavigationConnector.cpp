@@ -18,9 +18,9 @@ EEWN_WidgetInputType UEWN_WidgetNavigationConnector::TickNavigation( float Delta
 		return EEWN_WidgetInputType::None;
 	}
 
-	switch ( WidgetInputSubsystem->GetCurrentInputMode() )
+	switch ( WidgetInputSubsystem->GetCurrentInputMethod() )
 	{
-	case EEWN_WidgetInputMode::Mouse:
+	case EEWN_WidgetInputMethod::Mouse:
 	{
 		ForEachWidgetNavigation(
 			[&]( UEWN_WidgetNavigation* WidgetNavigation )

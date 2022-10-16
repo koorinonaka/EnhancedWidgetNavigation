@@ -31,7 +31,7 @@ class ENHANCEDWIDGETNAVIGATION_API UEWN_WidgetInputSubsystem : public ULocalPlay
 
 	friend class FEWN_WidgetInputProcessor;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FInputModeDelegate, EEWN_WidgetInputMode, InputMode );
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FInputMethodDelegate, EEWN_WidgetInputMethod, InputMethod );
 
 public:
 	static UEWN_WidgetInputSubsystem* Get( UWidget* Widget );
@@ -56,19 +56,19 @@ public:
 	void ClearInputMappingContext( const UObject* ContextObject );
 
 	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation" )
-	EEWN_WidgetInputMode GetCurrentInputMode() const;
+	EEWN_WidgetInputMethod GetCurrentInputMethod() const;
 
 private:
-	void SetCurrentInputMode( EEWN_WidgetInputMode NewMode );
+	void SetCurrentInputMethod( EEWN_WidgetInputMethod NewMode );
 	void BroadcastInputMethodChanged();
 
 public:
 	UPROPERTY( BlueprintAssignable, Category = "User Interface|Navigation" )
-	FInputModeDelegate OnInputMethodChangedDelegate;
+	FInputMethodDelegate OnInputMethodChangedDelegate;
 
 private:
 	TSharedPtr<class FEWN_WidgetInputProcessor> InputProcessor;
-	EEWN_WidgetInputMode CurrentMode;
+	EEWN_WidgetInputMethod CurrentMode;
 
 	UPROPERTY( Transient )
 	TObjectPtr<class UInputMappingContext> IMC_CommonInput;

@@ -7,7 +7,7 @@
 #include "EWN_WidgetTypes.generated.h"
 
 UENUM( BlueprintType )
-enum class EEWN_WidgetInputMode : uint8
+enum class EEWN_WidgetInputMethod : uint8
 {
 	Gamepad,
 	Mouse,
