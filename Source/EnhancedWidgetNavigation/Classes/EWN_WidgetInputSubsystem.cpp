@@ -9,6 +9,7 @@
 #include "EnhancedPlayerInput.h"
 #include "Framework/Application/IInputProcessor.h"
 #include "Framework/Application/SlateApplication.h"
+#include "UObject/ObjectKey.h"
 
 //
 #include "EWN_WidgetInputSettings.h"
