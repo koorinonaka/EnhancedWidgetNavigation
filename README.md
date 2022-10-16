@@ -18,9 +18,9 @@ C++ projects can be built and used for free.
 
 Pre-built binaries are available in the UE Marketplace.
 
-The following three items must be set in ProjectSettings.
-1. UEnhancedPlayerInput to DefaultPlayerInputClass.
-2. LocalPlayer that implements IEWN_Interface_LocalPlayerExtension to LocalPlayerClass. If there are no special restrictions, EWN_LocalPlayer may be used.
+The following 3 steps must be set in ProjectSettings.
+1. EWN_EnhancedPlayerInput that implements IEWN_Interface_PlayerInputExtension to DefaultPlayerInputClass.
+2. EWN_LocalPlayer that implements IEWN_Interface_LocalPlayerExtension to LocalPlayerClass.
 3. DA_WidgetInputConfig to WidgetInputConfigName. You can also create your own WidgetInputConfig for default key mapping.
 
 ## Usage
