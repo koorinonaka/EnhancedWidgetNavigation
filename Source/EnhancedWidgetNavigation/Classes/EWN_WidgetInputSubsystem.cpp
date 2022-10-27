@@ -14,6 +14,7 @@
 //
 #include "EWN_WidgetInputSettings.h"
 #include "Interfaces/EWN_Interface_LocalPlayerExtension.h"
+#include "Interfaces/EWN_Interface_PlayerInputExtension.h"
 
 #if WITH_EDITOR
 #include "IMessageLogListing.h"
@@ -214,22 +215,22 @@ void UEWN_WidgetInputSubsystem::Deinitialize()
 
 void UEWN_WidgetInputSubsystem::InitOnSpawnPlayActor( APlayerController* PlayActor )
 {
-	IMC_CommonInput = nullptr;
-	IA_CommonInputActions.Empty();
-
 	auto* EnhancedInputSubsystem = GetLocalPlayerChecked()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
 	check( EnhancedInputSubsystem );
 
-	if ( UEnhancedPlayerInput* EnhancedPI = EnhancedInputSubsystem->GetPlayerInput() )
+	if ( auto* IPlayerInputExtension = Cast<IEWN_Interface_PlayerInputExtension>( EnhancedInputSubsystem->GetPlayerInput() ) )
 	{
+		FEWN_InputMappingOverrides& IMOverrides =
+			IPlayerInputExtension->GetInputMappingOverrides().Emplace( GetTypeHash( FObjectKey( this ) ) );
+
 		auto* WidgetInputSettings = GetDefault<UEWN_WidgetInputSettings>();
 		check( WidgetInputSettings );
 
-		IMC_CommonInput = WidgetInputSettings->BuildInputMappingContext(
-			[this]( FName InputName, UInputAction* IA ) { IA_CommonInputActions.Emplace( InputName, IA ); } );
-		if ( IMC_CommonInput )
+		IMOverrides.InputMappingContext = WidgetInputSettings->BuildInputMappingContext(
+			[&]( FName InputName, UInputAction* IA ) { IMOverrides.InputActions.Emplace( InputName, IA ); } );
+		if ( IMOverrides.InputMappingContext )
 		{
-			EnhancedInputSubsystem->AddMappingContext( IMC_CommonInput, 0 );
+			EnhancedInputSubsystem->AddMappingContext( IMOverrides.InputMappingContext, 0 );
 		}
 
 		EnhancedInputSubsystem->AddMappingContext( WidgetInputSettings->GetOptionalInputMappingContext(), 0 );
@@ -239,8 +240,8 @@ void UEWN_WidgetInputSubsystem::InitOnSpawnPlayActor( APlayerController* PlayAct
 	{
 		FMessageLog AssetCheckLog( "AssetCheck" );
 
-		FText Message( NSLOCTEXT( "EWN", "NoSupportEnhancedInput",
-			"Project does not support EnhancedInput, check the DefaultPlayerInputClass in ProjectSettings." ) );
+		FText Message(
+			NSLOCTEXT( "EWN", "NoSupportEnhancedInput", "PlayerInput does not implement IEWN_Interface_PlayerInputExtension." ) );
 		AssetCheckLog.Error( Message );
 
 		AssetCheckLog.Notify( Message, EMessageSeverity::Error, true );
@@ -268,15 +269,26 @@ ETriggerEvent UEWN_WidgetInputSubsystem::GetTriggerEvent( const UObject* Context
 {
 	UInputAction* FoundIA = [&]
 	{
-		if ( const FEWN_InputMappingOverrides* InputMappingOverride =
-				 InputMappingOverrides.Find( GetTypeHash( FObjectKey( ContextObject ) ) ) )
+		auto* EnhancedInputSubsystem = GetLocalPlayerChecked()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+		check( EnhancedInputSubsystem );
+
+		auto* IPlayerInputExtension = Cast<IEWN_Interface_PlayerInputExtension>( EnhancedInputSubsystem->GetPlayerInput() );
+		check( IPlayerInputExtension );
+
+		if ( const FEWN_InputMappingOverrides* IMOverrides =
+				 IPlayerInputExtension->GetInputMappingOverrides().Find( GetTypeHash( FObjectKey( ContextObject ) ) ) )
 		{
-			if ( InputMappingOverride->InputActions.Contains( InputName ) )
+			if ( IMOverrides->InputActions.Contains( InputName ) )
 			{
-				return InputMappingOverride->InputActions[InputName];
+				return IMOverrides->InputActions[InputName];
 			}
 		}
-		return IA_CommonInputActions.Contains( InputName ) ? IA_CommonInputActions[InputName] : nullptr;
+
+		const FEWN_InputMappingOverrides* IMOverrides =
+			IPlayerInputExtension->GetInputMappingOverrides().Find( GetTypeHash( FObjectKey( this ) ) );
+		check( IMOverrides );
+
+		return IMOverrides->InputActions.Contains( InputName ) ? IMOverrides->InputActions[InputName] : nullptr;
 	}();
 	return FoundIA ? GetTriggerEvent( FoundIA ) : ETriggerEvent::None;
 }
@@ -291,28 +303,35 @@ void UEWN_WidgetInputSubsystem::SetInputMappingContext(
 {
 	ClearInputMappingContext( ContextObject );
 
-	FEWN_InputMappingOverrides& InputMappingOverride = InputMappingOverrides.Emplace( GetTypeHash( FObjectKey( ContextObject ) ) );
+	auto* EnhancedInputSubsystem = GetLocalPlayerChecked()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+	check( EnhancedInputSubsystem );
 
-	InputMappingOverride.InputMappingContext = GetDefault<UEWN_WidgetInputSettings>()->BuildInputMappingContext( InjectionSettings,
-		[&]( FName InputName, UInputAction* IA ) { InputMappingOverride.InputActions.Emplace( InputName, IA ); } );
-	if ( InputMappingOverride.InputMappingContext )
+	auto* IPlayerInputExtension = Cast<IEWN_Interface_PlayerInputExtension>( EnhancedInputSubsystem->GetPlayerInput() );
+	check( IPlayerInputExtension );
+
+	FEWN_InputMappingOverrides& IMOverrides =
+		IPlayerInputExtension->GetInputMappingOverrides().Emplace( GetTypeHash( FObjectKey( ContextObject ) ) );
+
+	IMOverrides.InputMappingContext = GetDefault<UEWN_WidgetInputSettings>()->BuildInputMappingContext(
+		InjectionSettings, [&]( FName InputName, UInputAction* IA ) { IMOverrides.InputActions.Emplace( InputName, IA ); } );
+	if ( IMOverrides.InputMappingContext )
 	{
-		auto* EnhancedInputSubsystem = GetLocalPlayerChecked()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
-		check( EnhancedInputSubsystem );
-
-		EnhancedInputSubsystem->AddMappingContext( InputMappingOverride.InputMappingContext, 0 );
+		EnhancedInputSubsystem->AddMappingContext( IMOverrides.InputMappingContext, 0 );
 	}
 }
 
 void UEWN_WidgetInputSubsystem::ClearInputMappingContext( const UObject* ContextObject )
 {
-	if ( FEWN_InputMappingOverrides* InputMappingOverride =
-			 InputMappingOverrides.Find( GetTypeHash( FObjectKey( ContextObject ) ) ) )
-	{
-		auto* EnhancedInputSubsystem = GetLocalPlayerChecked()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
-		check( EnhancedInputSubsystem );
+	auto* EnhancedInputSubsystem = GetLocalPlayerChecked()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+	check( EnhancedInputSubsystem );
 
-		EnhancedInputSubsystem->RemoveMappingContext( InputMappingOverride->InputMappingContext );
+	auto* IPlayerInputExtension = Cast<IEWN_Interface_PlayerInputExtension>( EnhancedInputSubsystem->GetPlayerInput() );
+	check( IPlayerInputExtension );
+
+	if ( const FEWN_InputMappingOverrides* IMOverrides =
+			 IPlayerInputExtension->GetInputMappingOverrides().Find( GetTypeHash( FObjectKey( ContextObject ) ) ) )
+	{
+		EnhancedInputSubsystem->RemoveMappingContext( IMOverrides->InputMappingContext );
 	}
 }
 

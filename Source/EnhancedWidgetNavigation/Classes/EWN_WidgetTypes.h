@@ -80,3 +80,15 @@ struct ENHANCEDWIDGETNAVIGATION_API FEWN_WidgetInputMappingContainer
 	UPROPERTY( EditAnywhere, Category = "User Interface|Navigation", meta = ( TitleProperty = "InputName" ) )
 	TArray<FEWN_WidgetInputMapping> InputMappings;
 };
+
+USTRUCT()
+struct ENHANCEDWIDGETNAVIGATION_API FEWN_InputMappingOverrides
+{
+	GENERATED_BODY()
+
+	UPROPERTY( Transient )
+	TObjectPtr<class UInputMappingContext> InputMappingContext;
+
+	UPROPERTY( Transient )
+	TMap<FName, TObjectPtr<class UInputAction>> InputActions;
+};

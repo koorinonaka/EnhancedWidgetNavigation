@@ -22,4 +22,10 @@ class UEWN_EnhancedPlayerInput final : public UEnhancedPlayerInput, public IEWN_
 protected:
 	virtual void ProcessInputStack(
 		const TArray<UInputComponent*>& InputComponentStack, const float DeltaTime, const bool bGamePaused ) override;
+
+	virtual TMap<uint32, FEWN_InputMappingOverrides>& GetInputMappingOverrides() override { return InputMappingOverrides; }
+
+protected:
+	UPROPERTY( Transient )
+	TMap<uint32, FEWN_InputMappingOverrides> InputMappingOverrides;
 };

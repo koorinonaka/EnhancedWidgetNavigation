@@ -12,18 +12,6 @@
 
 #include "EWN_WidgetInputSubsystem.generated.h"
 
-USTRUCT()
-struct ENHANCEDWIDGETNAVIGATION_API FEWN_InputMappingOverrides
-{
-	GENERATED_BODY()
-
-	UPROPERTY( Transient )
-	TObjectPtr<class UInputMappingContext> InputMappingContext;
-
-	UPROPERTY( Transient )
-	TMap<FName, TObjectPtr<class UInputAction>> InputActions;
-};
-
 UCLASS()
 class ENHANCEDWIDGETNAVIGATION_API UEWN_WidgetInputSubsystem : public ULocalPlayerSubsystem
 {
@@ -69,13 +57,4 @@ public:
 private:
 	TSharedPtr<class FEWN_WidgetInputProcessor> InputProcessor;
 	EEWN_WidgetInputMethod CurrentMode;
-
-	UPROPERTY( Transient )
-	TObjectPtr<class UInputMappingContext> IMC_CommonInput;
-
-	UPROPERTY( Transient )
-	TMap<FName, TObjectPtr<class UInputAction>> IA_CommonInputActions;
-
-	UPROPERTY( Transient )
-	TMap<uint32, FEWN_InputMappingOverrides> InputMappingOverrides;
 };
