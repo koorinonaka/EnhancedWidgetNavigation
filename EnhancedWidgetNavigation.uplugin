@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
-	"Version": 1,
-	"VersionName": "1.0.0",
+	"Version": 2,
+	"VersionName": "1.0.1",
 	"FriendlyName": "EnhancedWidgetNavigation",
 	"Description": "EnhancedWidgetNavigation provides navigation functionality for UMG.",
 	"Category": "UI",
@@ -10,16 +10,15 @@
 	"DocsURL": "",
 	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/1d72418860104f28b0906358434e2090",
 	"SupportURL": "https://github.com/koorinonaka/EnhancedWidgetNavigation",
+	"EngineVersion": "5.1.0",
 	"CanContainContent": true,
-	"IsBetaVersion": false,
-	"IsExperimentalVersion": false,
 	"Installed": false,
 	"Modules": [
 		{
 			"Name": "EnhancedWidgetNavigation",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
-			"WhitelistPlatforms": [
+			"PlatformAllowList": [
 				"Win64"
 			]
 		}
