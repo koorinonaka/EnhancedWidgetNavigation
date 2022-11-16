@@ -4,7 +4,9 @@
 
 //
 #include "Components/Widget.h"
+#include "Engine/LocalPlayer.h"
 #include "Framework/Application/NavigationConfig.h"
+#include "Framework/Application/SlateApplication.h"
 
 //
 #include "Navigation/EWN_WidgetNavigation.h"
@@ -61,7 +63,11 @@ void UEWN_WidgetNavigationSubsystem::Tick( float DeltaTime )
 		{
 			if ( UWidget* FocusWidget = Navigation->GetChildAt( Navigation->GetFocusIndex() ) )
 			{
+#if EWN_UE_VERSION_OR_LATER( 5, 1 )
+				return FocusWidget->GetCursor();
+#else
 				return FocusWidget->Cursor;
+#endif
 			}
 		}
 		return EMouseCursor::Default;

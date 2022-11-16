@@ -3,6 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Runtime/Launch/Resources/Version.h"
+
+#define EWN_UE_VERSION_OR_LATER( Major, Minor ) \
+	ENGINE_MAJOR_VERSION > Major || ( ENGINE_MAJOR_VERSION == Major && ENGINE_MINOR_VERSION >= Minor )
 
 namespace EWN::Enum
 {
