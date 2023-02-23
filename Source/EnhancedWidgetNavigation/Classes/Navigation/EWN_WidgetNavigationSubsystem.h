@@ -24,17 +24,25 @@ protected:
 	virtual ETickableTickType GetTickableTickType() const override;
 	virtual UWorld* GetTickableGameObjectWorld() const override { return GetWorld(); }
 	virtual TStatId GetStatId() const;
+	virtual bool IsTickableWhenPaused() const override { return true; }
 	virtual void Tick( float DeltaTime );
 	// FTickableGameObject END
 
-public:
+private:
+	void SetFocusAndLocking( bool bCaptureMouse, bool bLockMouse );
+
+private:
+	friend class UEWN_WidgetNavigation;
 	void MarkOnThisFrame( class UEWN_WidgetNavigation* Navigation );
 
-	void MenuConstruct();
-	void MenuDestruct();
+private:
+	friend class UEWN_MenuWidget;
+	void MenuConstruct( class UEWN_MenuWidget* MenuWidget );
+	void MenuDestruct( class UEWN_MenuWidget* MenuWidget );
 
 private:
 	TArray<TWeakObjectPtr<class UEWN_WidgetNavigation>> ActiveNavigationsOnLastFrame;
 
 	int32 MenuCounter;
+	bool bShowMouseCursor = true;
 };

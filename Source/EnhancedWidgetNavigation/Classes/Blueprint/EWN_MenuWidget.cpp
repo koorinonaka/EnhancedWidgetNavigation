@@ -11,7 +11,7 @@ void UEWN_MenuWidget::NativeConstruct()
 
 	if ( auto* WidgetNavigationSubsystem = UEWN_WidgetNavigationSubsystem::Get( this ) )
 	{
-		WidgetNavigationSubsystem->MenuConstruct();
+		WidgetNavigationSubsystem->MenuConstruct( this );
 	}
 }
 
@@ -19,7 +19,7 @@ void UEWN_MenuWidget::NativeDestruct()
 {
 	if ( auto* WidgetNavigationSubsystem = UEWN_WidgetNavigationSubsystem::Get( this ) )
 	{
-		WidgetNavigationSubsystem->MenuDestruct();
+		WidgetNavigationSubsystem->MenuDestruct( this );
 	}
 
 	Super::NativeDestruct();

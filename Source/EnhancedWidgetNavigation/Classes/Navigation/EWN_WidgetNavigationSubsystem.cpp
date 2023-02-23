@@ -7,8 +7,11 @@
 #include "Engine/LocalPlayer.h"
 #include "Framework/Application/NavigationConfig.h"
 #include "Framework/Application/SlateApplication.h"
+#include "Widgets/SViewport.h"
 
 //
+#include "Blueprint/EWN_MenuWidget.h"
+#include "EWN_WidgetInputTriggers.h"
 #include "Navigation/EWN_WidgetNavigation.h"
 
 class FEWN_NavigationConfig : public FNavigationConfig
@@ -18,8 +21,8 @@ public:
 
 	virtual EUINavigationAction GetNavigationActionFromKey( const FKeyEvent& InKeyEvent ) const override
 	{
-		// 特定のキーがコード上に埋め込まれていて、入力を消費してしまうので上書き
-		// FNavigationConfig::GetNavigationActionForKeyを参照
+		// override specific keys embedded in the code that would consume input.
+		// FNavigationConfig::GetNavigationActionForKey
 		return EUINavigationAction::Invalid;
 	}
 };
@@ -41,6 +44,13 @@ void UEWN_WidgetNavigationSubsystem::Deinitialize()
 {
 	FSlateApplication::Get().SetNavigationConfig( MakeShared<FNavigationConfig>() );
 
+#if WITH_EDITOR
+	// Fix editor cursor bug
+	// https://qiita.com/Mitsunagi/items/0dfded740f3be414b514
+	FSlateApplication::Get().UsePlatformCursorForCursorUser( true );
+	FSlateApplication::Get().GetCursorUser()->SetCursorVisibility( true );
+#endif
+
 	Super::Deinitialize();
 }
 
@@ -57,24 +67,39 @@ ETickableTickType UEWN_WidgetNavigationSubsystem::GetTickableTickType() const
 
 void UEWN_WidgetNavigationSubsystem::Tick( float DeltaTime )
 {
-	if ( APlayerController* PC = GetLocalPlayerChecked()->GetPlayerController( nullptr ) )
+	if ( MenuCounter > 0 )
 	{
-		EMouseCursor::Type CurrentMouseCursor = [&]() -> EMouseCursor::Type
+		ULocalPlayer* LocalPlayer = GetLocalPlayerChecked();
+
+		if ( bShowMouseCursor !=
+			 [&]
+			 {
+				 auto* WidgetInputSubsystem = LocalPlayer->GetSubsystem<UEWN_WidgetInputSubsystem>();
+				 return WidgetInputSubsystem && WidgetInputSubsystem->GetCurrentInputMethod() == EEWN_WidgetInputMethod::Mouse;
+			 }() )
 		{
-			for ( TWeakObjectPtr<UEWN_WidgetNavigation> Navigation : ActiveNavigationsOnLastFrame )
+			bShowMouseCursor = !bShowMouseCursor;
+			FSlateApplication::Get().GetCursorUser()->SetCursorVisibility( bShowMouseCursor );
+		}
+
+		if ( APlayerController* PC = LocalPlayer->GetPlayerController( nullptr ) )
+		{
+			PC->CurrentMouseCursor = [&]() -> EMouseCursor::Type
 			{
-				if ( UWidget* FocusWidget = Navigation->GetChildAt( Navigation->GetFocusIndex() ) )
+				for ( TWeakObjectPtr<UEWN_WidgetNavigation> Navigation : ActiveNavigationsOnLastFrame )
 				{
+					if ( UWidget* FocusWidget = Navigation->GetChildAt( Navigation->GetFocusIndex() ) )
+					{
 #if EWN_UE_VERSION_OR_LATER( 5, 1 )
-					return FocusWidget->GetCursor();
+						return FocusWidget->GetCursor();
 #else
-					return FocusWidget->Cursor;
+						return FocusWidget->Cursor;
 #endif
+					}
 				}
-			}
-			return EMouseCursor::Default;
-		}();
-		PC->CurrentMouseCursor = CurrentMouseCursor;
+				return EMouseCursor::Default;
+			}();
+		}
 	}
 
 	ActiveNavigationsOnLastFrame.Empty();
@@ -85,18 +110,57 @@ void UEWN_WidgetNavigationSubsystem::MarkOnThisFrame( UEWN_WidgetNavigation* Nav
 	ActiveNavigationsOnLastFrame.Emplace( Navigation );
 }
 
-void UEWN_WidgetNavigationSubsystem::MenuConstruct()
+void UEWN_WidgetNavigationSubsystem::MenuConstruct( UEWN_MenuWidget* MenuWidget )
 {
 	if ( ULocalPlayer* LocalPlayer = GetLocalPlayer() )
 	{
+		if ( MenuCounter == 0 )
+		{
+			SetFocusAndLocking( false, false );
+		}
+
 		LocalPlayer->GetPlayerController( nullptr )->SetShowMouseCursor( ++MenuCounter > 0 );
 	}
 }
 
-void UEWN_WidgetNavigationSubsystem::MenuDestruct()
+void UEWN_WidgetNavigationSubsystem::MenuDestruct( UEWN_MenuWidget* MenuWidget )
 {
 	if ( ULocalPlayer* LocalPlayer = GetLocalPlayer() )
 	{
 		LocalPlayer->GetPlayerController( nullptr )->SetShowMouseCursor( --MenuCounter > 0 );
+
+		if ( MenuCounter == 0 )
+		{
+			SetFocusAndLocking( true, true );
+		}
+	}
+}
+
+void UEWN_WidgetNavigationSubsystem::SetFocusAndLocking( bool bCaptureMouse, bool bLockMouse )
+{
+	if ( ULocalPlayer* LocalPlayer = GetLocalPlayer() )
+	{
+		if ( TSharedPtr<SViewport> ViewportWidget = LocalPlayer->ViewportClient->GetGameViewportWidget() )
+		{
+			FReply& SlateOperations = LocalPlayer->GetSlateOperations();
+
+			if ( bCaptureMouse )
+			{
+				SlateOperations.UseHighPrecisionMouseMovement( ViewportWidget.ToSharedRef() );
+			}
+			else
+			{
+				SlateOperations.ReleaseMouseCapture();
+			}
+
+			if ( bLockMouse )
+			{
+				SlateOperations.LockMouseToWidget( ViewportWidget.ToSharedRef() );
+			}
+			else
+			{
+				SlateOperations.ReleaseMouseLock();
+			}
+		}
 	}
 }
