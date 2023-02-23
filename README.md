@@ -11,7 +11,7 @@ EnhancedWidgetNavigation provides navigation functionality for UMG.
 - Implements WidgetNavigation connections and allows nested connections.
 
 ## Requirement
-- UE 5.0
+- UE 5.0 and more!
 
 ## Installation
 C++ projects can be built and used for free.
