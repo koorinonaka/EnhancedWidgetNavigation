@@ -7,6 +7,7 @@
 #include "Engine/LocalPlayer.h"
 #include "Framework/Application/NavigationConfig.h"
 #include "Framework/Application/SlateApplication.h"
+#include "Framework/Application/SlateUser.h"
 #include "Widgets/SViewport.h"
 
 //
