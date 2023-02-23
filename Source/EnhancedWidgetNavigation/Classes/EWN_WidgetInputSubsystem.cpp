@@ -13,12 +13,11 @@
 
 //
 #include "EWN_WidgetInputSettings.h"
-#include "Interfaces/EWN_Interface_LocalPlayerExtension.h"
 #include "Interfaces/EWN_Interface_PlayerInputExtension.h"
 
 #if WITH_EDITOR
 #include "IMessageLogListing.h"
-#include "MessageLogModule.h"
+#include "Logging/MessageLog.h"
 #endif
 
 class FEWN_WidgetInputProcessor : public IInputProcessor
@@ -180,23 +179,6 @@ UEWN_WidgetInputSubsystem* UEWN_WidgetInputSubsystem::Get( UWidget* Widget )
 
 void UEWN_WidgetInputSubsystem::Initialize( FSubsystemCollectionBase& Collection )
 {
-	if ( auto* ILPExtension = GetLocalPlayer<IEWN_Interface_LocalPlayerExtension>() )
-	{
-		ILPExtension->SpawnPlayActorDelegate.AddUObject( this, &ThisClass::InitOnSpawnPlayActor );
-	}
-#if WITH_EDITOR
-	else if ( GIsEditor )
-	{
-		FMessageLog AssetCheckLog( "AssetCheck" );
-
-		FText Message( NSLOCTEXT(
-			"EWN", "LocalPlayerNotImplementsInterface", "LocalPlayer does not implement IEWN_Interface_LocalPlayerExtension." ) );
-		AssetCheckLog.Error( Message );
-
-		AssetCheckLog.Notify( Message, EMessageSeverity::Error, true );
-	}
-#endif
-
 	GetMutableDefault<UEWN_WidgetInputSettings>()->TryLoadObjects();
 
 	Super::Initialize( Collection );
@@ -213,12 +195,12 @@ void UEWN_WidgetInputSubsystem::Deinitialize()
 	Super::Deinitialize();
 }
 
-void UEWN_WidgetInputSubsystem::InitOnSpawnPlayActor( APlayerController* PlayActor )
+void UEWN_WidgetInputSubsystem::InitPlayerInput( IEWN_Interface_PlayerInputExtension* IPlayerInputExtension )
 {
 	auto* EnhancedInputSubsystem = GetLocalPlayerChecked()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
 	check( EnhancedInputSubsystem );
 
-	if ( auto* IPlayerInputExtension = Cast<IEWN_Interface_PlayerInputExtension>( EnhancedInputSubsystem->GetPlayerInput() ) )
+	if ( IPlayerInputExtension )
 	{
 		FEWN_InputMappingOverrides& IMOverrides =
 			IPlayerInputExtension->GetInputMappingOverrides().Emplace( GetTypeHash( FObjectKey( this ) ) );

@@ -28,7 +28,8 @@ protected:
 	virtual void Initialize( FSubsystemCollectionBase& Collection ) override;
 	virtual void Deinitialize() override;
 
-	virtual void InitOnSpawnPlayActor( APlayerController* PlayActor );
+public:
+	void InitPlayerInput( class IEWN_Interface_PlayerInputExtension* IPlayerInputExtension );
 
 public:
 	ETriggerEvent GetTriggerEvent( class UInputAction* IA ) const;

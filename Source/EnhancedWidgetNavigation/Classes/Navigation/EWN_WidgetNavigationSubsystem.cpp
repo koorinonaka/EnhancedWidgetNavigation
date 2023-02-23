@@ -57,22 +57,25 @@ ETickableTickType UEWN_WidgetNavigationSubsystem::GetTickableTickType() const
 
 void UEWN_WidgetNavigationSubsystem::Tick( float DeltaTime )
 {
-	EMouseCursor::Type CurrentMouseCursor = [&]() -> EMouseCursor::Type
+	if ( APlayerController* PC = GetLocalPlayerChecked()->GetPlayerController( nullptr ) )
 	{
-		for ( TWeakObjectPtr<UEWN_WidgetNavigation> Navigation : ActiveNavigationsOnLastFrame )
+		EMouseCursor::Type CurrentMouseCursor = [&]() -> EMouseCursor::Type
 		{
-			if ( UWidget* FocusWidget = Navigation->GetChildAt( Navigation->GetFocusIndex() ) )
+			for ( TWeakObjectPtr<UEWN_WidgetNavigation> Navigation : ActiveNavigationsOnLastFrame )
 			{
+				if ( UWidget* FocusWidget = Navigation->GetChildAt( Navigation->GetFocusIndex() ) )
+				{
 #if EWN_UE_VERSION_OR_LATER( 5, 1 )
-				return FocusWidget->GetCursor();
+					return FocusWidget->GetCursor();
 #else
-				return FocusWidget->Cursor;
+					return FocusWidget->Cursor;
 #endif
+				}
 			}
-		}
-		return EMouseCursor::Default;
-	}();
-	GetLocalPlayerChecked()->GetPlayerController( nullptr )->CurrentMouseCursor = CurrentMouseCursor;
+			return EMouseCursor::Default;
+		}();
+		PC->CurrentMouseCursor = CurrentMouseCursor;
+	}
 
 	ActiveNavigationsOnLastFrame.Empty();
 }

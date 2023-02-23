@@ -21,8 +21,9 @@ protected:
 
 	// FTickableGameObject BEGIN
 protected:
-	virtual TStatId GetStatId() const;
 	virtual ETickableTickType GetTickableTickType() const override;
+	virtual UWorld* GetTickableGameObjectWorld() const override { return GetWorld(); }
+	virtual TStatId GetStatId() const;
 	virtual void Tick( float DeltaTime );
 	// FTickableGameObject END
 

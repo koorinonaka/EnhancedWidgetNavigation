@@ -11,8 +11,8 @@
 #include "EWN_EnhancedPlayerInput.generated.h"
 
 /**
- * EnhancedWidgetNavigationを動作させるためのサンプルクラス。
- * プロジェクト側でクラスを用意し、同様に実装することを推奨します。
+ * Sample class for running EnhancedWidgetNavigation.
+ * It is recommended that a class be prepared on the project side and implemented in the same way.
  */
 UCLASS()
 class UEWN_EnhancedPlayerInput final : public UEnhancedPlayerInput, public IEWN_Interface_PlayerInputExtension
