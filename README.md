@@ -4,7 +4,7 @@ EnhancedWidgetNavigation provides navigation functionality for UMG.
 ![demo](https://raw.githubusercontent.com/wiki/koorinonaka/EnhancedWidgetNavigation/images/overview.gif)
 
 ## Features
-- Supports multiple input formats (gamepad, mouse, keyboad).
+- Supports multiple input formats (gamepad, mouse, keyboard).
 - Uses EnhancedInput to acquire input. Allows free customization of key mapping and events.
 - Supports GridPanel/UniformGridPanel/HorizontalBox/VerticalBox.
 - Intuitive distance based navigation and eazy setup.
