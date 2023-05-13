@@ -29,7 +29,7 @@ protected:
 	// FTickableGameObject END
 
 private:
-	void SetFocusAndLocking( bool bCaptureMouse, bool bLockMouse );
+	void SetFocusAndLocking( bool bCaptureMouse );
 
 private:
 	friend class UEWN_WidgetNavigation;

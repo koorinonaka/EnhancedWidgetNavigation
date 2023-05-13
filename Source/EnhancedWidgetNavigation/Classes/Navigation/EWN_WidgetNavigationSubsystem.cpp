@@ -4,6 +4,7 @@
 
 //
 #include "Components/Widget.h"
+#include "Engine/GameViewportClient.h"
 #include "Engine/LocalPlayer.h"
 #include "Framework/Application/NavigationConfig.h"
 #include "Framework/Application/SlateApplication.h"
@@ -72,17 +73,6 @@ void UEWN_WidgetNavigationSubsystem::Tick( float DeltaTime )
 	{
 		ULocalPlayer* LocalPlayer = GetLocalPlayerChecked();
 
-		if ( bShowMouseCursor !=
-			 [&]
-			 {
-				 auto* WidgetInputSubsystem = LocalPlayer->GetSubsystem<UEWN_WidgetInputSubsystem>();
-				 return WidgetInputSubsystem && WidgetInputSubsystem->GetCurrentInputMethod() == EEWN_WidgetInputMethod::Mouse;
-			 }() )
-		{
-			bShowMouseCursor = !bShowMouseCursor;
-			FSlateApplication::Get().GetCursorUser()->SetCursorVisibility( bShowMouseCursor );
-		}
-
 		if ( APlayerController* PC = LocalPlayer->GetPlayerController( nullptr ) )
 		{
 			PC->CurrentMouseCursor = [&]() -> EMouseCursor::Type
@@ -117,7 +107,7 @@ void UEWN_WidgetNavigationSubsystem::MenuConstruct( UEWN_MenuWidget* MenuWidget 
 	{
 		if ( MenuCounter == 0 )
 		{
-			SetFocusAndLocking( false, false );
+			SetFocusAndLocking( false );
 		}
 
 		LocalPlayer->GetPlayerController( nullptr )->SetShowMouseCursor( ++MenuCounter > 0 );
@@ -132,12 +122,12 @@ void UEWN_WidgetNavigationSubsystem::MenuDestruct( UEWN_MenuWidget* MenuWidget )
 
 		if ( MenuCounter == 0 )
 		{
-			SetFocusAndLocking( true, true );
+			SetFocusAndLocking( true );
 		}
 	}
 }
 
-void UEWN_WidgetNavigationSubsystem::SetFocusAndLocking( bool bCaptureMouse, bool bLockMouse )
+void UEWN_WidgetNavigationSubsystem::SetFocusAndLocking( bool bCaptureMouse )
 {
 	if ( ULocalPlayer* LocalPlayer = GetLocalPlayer() )
 	{
@@ -154,7 +144,8 @@ void UEWN_WidgetNavigationSubsystem::SetFocusAndLocking( bool bCaptureMouse, boo
 				SlateOperations.ReleaseMouseCapture();
 			}
 
-			if ( bLockMouse )
+			if ( bCaptureMouse ? LocalPlayer->ViewportClient->LockDuringCapture()
+							   : LocalPlayer->ViewportClient->ShouldAlwaysLockMouse() )
 			{
 				SlateOperations.LockMouseToWidget( ViewportWidget.ToSharedRef() );
 			}

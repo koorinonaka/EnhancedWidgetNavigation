@@ -10,7 +10,7 @@
 	"DocsURL": "",
 	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/1d72418860104f28b0906358434e2090",
 	"SupportURL": "https://github.com/koorinonaka/EnhancedWidgetNavigation",
-	"EngineVersion": "5.1.0",
+	"EngineVersion": "5.2.0",
 	"CanContainContent": true,
 	"Installed": false,
 	"Modules": [
