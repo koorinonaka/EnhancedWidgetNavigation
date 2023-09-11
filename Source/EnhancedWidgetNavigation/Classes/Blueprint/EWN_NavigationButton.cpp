@@ -34,13 +34,17 @@ void UEWN_NavigationButton::NativeDestruct()
 
 FReply UEWN_NavigationButton::NativeOnMouseButtonDown( const FGeometry& InGeometry, const FPointerEvent& InMouseEvent )
 {
-	bPressed = true;
-	return FReply::Handled();	 // FReply::Unhandled()を呼ぶと、MouseLeaveに遷移してしまう
+	// FReply::Unhandled()を呼ぶと、MouseLeaveに遷移してしまう
+	return FReply::Handled().CaptureMouse( GetCachedWidget().ToSharedRef() );
 }
 
 FReply UEWN_NavigationButton::NativeOnMouseButtonUp( const FGeometry& InGeometry, const FPointerEvent& InMouseEvent )
 {
-	if ( bPressed )
+	FReply Reply = FReply::Handled();
+
+	// If the user hasn't requested a new mouse captor and the button still has mouse capture,
+	// then the default behavior of the button is to release mouse capture.
+	if ( Reply.GetMouseCaptor().IsValid() == false && HasMouseCapture() )
 	{
 		bool bEventOverButton = IsHovered();
 		if ( bEventOverButton )
@@ -48,10 +52,10 @@ FReply UEWN_NavigationButton::NativeOnMouseButtonUp( const FGeometry& InGeometry
 			FrameNumberOnClicked = GFrameNumber;
 		}
 
-		bPressed = false;
+		Reply.ReleaseMouseCapture();
 	}
 
-	return FReply::Handled();
+	return Reply;
 }
 
 bool UEWN_NavigationButton::WasJustClicked() const

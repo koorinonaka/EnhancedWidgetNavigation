@@ -32,7 +32,6 @@ public:
 
 private:
 	bool bFocused = false;
-	bool bPressed = false;
 	bool bWasJustClicked = false;
 	uint32 FrameNumberOnClicked = 0;
 };
