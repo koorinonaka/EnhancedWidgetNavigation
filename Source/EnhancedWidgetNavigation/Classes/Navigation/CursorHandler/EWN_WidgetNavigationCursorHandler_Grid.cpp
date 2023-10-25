@@ -9,9 +9,9 @@ bool FCursorHandler_Grid::IsGrid( UPanelWidget* PanelWidget )
 	return PanelWidget->IsA<UGridPanel>() || PanelWidget->IsA<UUniformGridPanel>();
 }
 
-int32 FCursorHandler_Grid::GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const
+int32 FCursorHandler_Grid::GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor, bool bLoopIgnored ) const
 {
-	return IsDistanceBasedNavigation() ? GetNextIndexFromDistanceBased( CurrentIndex, WidgetCursor )
-									   : GetNextIndexFromSimple( CurrentIndex, WidgetCursor );
+	return IsDistanceBasedNavigation() ? GetNextIndexFromDistanceBased( CurrentIndex, WidgetCursor, bLoopIgnored )
+									   : GetNextIndexFromSimple( CurrentIndex, WidgetCursor, bLoopIgnored );
 }
 }	 // namespace EWN::WidgetNavigation

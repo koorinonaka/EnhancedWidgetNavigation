@@ -9,7 +9,7 @@ bool FCursorHandler_Horizontal::IsHorizontal( UPanelWidget* PanelWidget )
 	return PanelWidget->IsA<UHorizontalBox>();
 }
 
-int32 FCursorHandler_Horizontal::GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const
+int32 FCursorHandler_Horizontal::GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor, bool bLoopIgnored ) const
 {
 	int32 ResultIndex = CurrentIndex;
 
@@ -17,13 +17,13 @@ int32 FCursorHandler_Horizontal::GetNextIndex( int32 CurrentIndex, EEWN_WidgetCu
 	{
 	case EEWN_WidgetCursor::Left:
 	{
-		ResultIndex = GetBackwardIndex( CurrentIndex );
+		ResultIndex = GetBackwardIndex( CurrentIndex, bLoopIgnored );
 	}
 	break;
 
 	case EEWN_WidgetCursor::Right:
 	{
-		ResultIndex = GetForwardIndex( CurrentIndex );
+		ResultIndex = GetForwardIndex( CurrentIndex, bLoopIgnored );
 	}
 	break;
 

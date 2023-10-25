@@ -57,7 +57,7 @@ bool FCursorHandler::IsWrapLines() const
 	return OuterNavigation->bWrapLines;
 }
 
-int32 FCursorHandler::GetForwardIndex( int32 CurrentIndex ) const
+int32 FCursorHandler::GetForwardIndex( int32 CurrentIndex, bool bLoopIgnored ) const
 {
 	const UPanelWidget* PanelWidget = GetPanelWidget();
 	if ( !ensure( PanelWidget ) )
@@ -76,7 +76,7 @@ int32 FCursorHandler::GetForwardIndex( int32 CurrentIndex ) const
 		}
 	}
 
-	if ( IsLoopNavigation() )
+	if ( IsLoopNavigation() && !bLoopIgnored )
 	{
 		if ( const int32 FirstIndex = [&]() -> int32
 			 {
@@ -98,7 +98,7 @@ int32 FCursorHandler::GetForwardIndex( int32 CurrentIndex ) const
 	return CurrentIndex;
 }
 
-int32 FCursorHandler::GetBackwardIndex( int32 CurrentIndex ) const
+int32 FCursorHandler::GetBackwardIndex( int32 CurrentIndex, bool bLoopIgnored ) const
 {
 	const UPanelWidget* PanelWidget = GetPanelWidget();
 	if ( !ensure( PanelWidget ) )
@@ -117,7 +117,7 @@ int32 FCursorHandler::GetBackwardIndex( int32 CurrentIndex ) const
 		}
 	}
 
-	if ( IsLoopNavigation() )
+	if ( IsLoopNavigation() && !bLoopIgnored )
 	{
 		if ( const int32 LastIndex = [&]() -> int32
 			 {

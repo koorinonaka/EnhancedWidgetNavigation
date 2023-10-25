@@ -24,10 +24,10 @@ public:
 	virtual ~FCursorHandler() {}
 
 public:
-	virtual int32 GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const = 0;
+	virtual int32 GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor, bool bLoopIgnored ) const = 0;
 
-	int32 GetForwardIndex( int32 CurrentIndex ) const;
-	int32 GetBackwardIndex( int32 CurrentIndex ) const;
+	int32 GetForwardIndex( int32 CurrentIndex, bool bLoopIgnored ) const;
+	int32 GetBackwardIndex( int32 CurrentIndex, bool bLoopIgnored ) const;
 
 protected:
 	UPanelWidget* GetPanelWidget() const;
@@ -47,6 +47,9 @@ public:
 	explicit FCursorHandler_Default( UEWN_WidgetNavigation* Navigation ) : FCursorHandler( Navigation ) {}
 
 public:
-	virtual int32 GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const override { return CurrentIndex; }
+	virtual int32 GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor, bool bLoopIgnored ) const override
+	{
+		return CurrentIndex;
+	}
 };
 }	 // namespace EWN::WidgetNavigation

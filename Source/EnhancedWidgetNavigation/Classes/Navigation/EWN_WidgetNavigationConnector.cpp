@@ -120,9 +120,9 @@ void UEWN_WidgetNavigationConnector::RemoveRoute( EEWN_WidgetCursor WidgetCursor
 }
 
 bool UEWN_WidgetNavigationConnector::MoveFocusOverride(
-	IEWN_Interface_WidgetNavigation* INavigation, EEWN_WidgetCursor WidgetCursor, bool bFromOperation )
+	IEWN_Interface_WidgetNavigation* INavigation, EEWN_WidgetCursor WidgetCursor, bool bFromOperation, bool bLoopIgnored )
 {
-	if ( TryMoveFocusOverride( WidgetCursor, bFromOperation ) )
+	if ( TryMoveFocusOverride( WidgetCursor, bFromOperation, bLoopIgnored ) )
 	{
 		return true;
 	}
@@ -135,7 +135,7 @@ bool UEWN_WidgetNavigationConnector::MoveFocusOverride(
 
 	if ( WidgetNavigationOverrides.Contains( Key ) )
 	{
-		if ( INavigation->TestFocus( WidgetCursor ) )
+		if ( INavigation->TestFocus( WidgetCursor, bLoopIgnored ) )
 		{
 			// default navigation worked, so use it
 			return false;
@@ -183,9 +183,9 @@ bool UEWN_WidgetNavigationConnector::MoveFocusOverride(
 }
 
 bool UEWN_WidgetNavigationConnector::MoveFocusFallback(
-	IEWN_Interface_WidgetNavigation* INavigation, EEWN_WidgetCursor WidgetCursor, bool bFromOperation )
+	IEWN_Interface_WidgetNavigation* INavigation, EEWN_WidgetCursor WidgetCursor, bool bFromOperation, bool bLoopIgnored )
 {
-	if ( TryMoveFocusFallback( WidgetCursor, bFromOperation ) )
+	if ( TryMoveFocusFallback( WidgetCursor, bFromOperation, bLoopIgnored ) )
 	{
 		return true;
 	}
@@ -222,7 +222,7 @@ bool UEWN_WidgetNavigationConnector::MoveFocusFallback(
 		WidgetInfo.Navigation->UpdateFocusIndex( WidgetInfo.Index, bFromOperation );
 		return true;
 	}
-	if ( bLoopNavigation )
+	if ( bLoopNavigation && !bLoopIgnored )
 	{
 		if ( const UWidget* FarthestWidget = FHelper::FindFocusToOpposite( CurrentWidget, WidgetCursor, WidgetsWithNavigation ) )
 		{
@@ -267,12 +267,12 @@ UWidget* UEWN_WidgetNavigationConnector::GetCurrentWidget() const
 	return ActiveIndex != INDEX_NONE ? WidgetNavigations[ActiveIndex]->GetCurrentWidget() : nullptr;
 }
 
-bool UEWN_WidgetNavigationConnector::TestFocus( EEWN_WidgetCursor WidgetCursor ) const
+bool UEWN_WidgetNavigationConnector::TestFocus( EEWN_WidgetCursor WidgetCursor, bool bLoopIgnored ) const
 {
-	return ActiveIndex != INDEX_NONE ? WidgetNavigations[ActiveIndex]->TestFocus( WidgetCursor ) : false;
+	return ActiveIndex != INDEX_NONE ? WidgetNavigations[ActiveIndex]->TestFocus( WidgetCursor, bLoopIgnored ) : false;
 }
 
-void UEWN_WidgetNavigationConnector::ForEachWidgetNavigation( const TFunctionRef<void( UEWN_WidgetNavigation* )> Callback )
+void UEWN_WidgetNavigationConnector::ForEachWidgetNavigation( const TFunctionRef<void( UEWN_WidgetNavigation* )>& Callback )
 {
 	if ( IsNavigationEnabled() )
 	{

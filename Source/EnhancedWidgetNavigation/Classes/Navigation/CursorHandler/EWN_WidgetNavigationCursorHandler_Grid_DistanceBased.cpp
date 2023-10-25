@@ -12,7 +12,7 @@ class FCursorHandler_Grid::FDistanceBasedNav
 public:
 	explicit FDistanceBasedNav( FCursorHandler_Grid& Owner ) : OwnerHandler( Owner ) {}
 
-	int32 GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const
+	int32 GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor, bool bLoopIgnored ) const
 	{
 		int32 ResultIndex = CurrentIndex;
 
@@ -42,7 +42,7 @@ public:
 		{
 			ResultIndex = WidgetsWithNavigation[NearestWidget].Index;
 		}
-		else if ( OwnerHandler.IsLoopNavigation() )
+		else if ( OwnerHandler.IsLoopNavigation() && !bLoopIgnored )
 		{
 			if ( const UWidget* FarthestWidget =
 					 FHelper::FindFocusToOpposite( CurrentWidget, WidgetCursor, WidgetsWithNavigation ) )
@@ -60,8 +60,9 @@ void FCursorHandler_Grid::InitDistanceBased()
 	DistanceBasedNav = MakePimpl<FDistanceBasedNav>( *this );
 }
 
-int32 FCursorHandler_Grid::GetNextIndexFromDistanceBased( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const
+int32 FCursorHandler_Grid::GetNextIndexFromDistanceBased(
+	int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor, bool bLoopIgnored ) const
 {
-	return DistanceBasedNav->GetNextIndex( CurrentIndex, WidgetCursor );
+	return DistanceBasedNav->GetNextIndex( CurrentIndex, WidgetCursor, bLoopIgnored );
 }
 }	 // namespace EWN::WidgetNavigation

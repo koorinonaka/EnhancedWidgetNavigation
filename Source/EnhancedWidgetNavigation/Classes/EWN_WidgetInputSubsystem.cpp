@@ -244,32 +244,34 @@ ETriggerEvent UEWN_WidgetInputSubsystem::GetTriggerEvent( UInputAction* IA ) con
 	return ETriggerEvent::None;
 }
 
+UInputAction* UEWN_WidgetInputSubsystem::GetInputAction( const UObject* ContextObject, FName InputName ) const
+{
+	const auto* EnhancedInputSubsystem = GetLocalPlayerChecked()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+	check( EnhancedInputSubsystem );
+
+	auto* IPlayerInputExtension = Cast<IEWN_Interface_PlayerInputExtension>( EnhancedInputSubsystem->GetPlayerInput() );
+	check( IPlayerInputExtension );
+
+	if ( const FEWN_InputMappingOverrides* IMOverrides =
+			 IPlayerInputExtension->GetInputMappingOverrides().Find( GetTypeHash( FObjectKey( ContextObject ) ) ) )
+	{
+		if ( IMOverrides->InputActions.Contains( InputName ) )
+		{
+			return IMOverrides->InputActions[InputName];
+		}
+	}
+
+	const FEWN_InputMappingOverrides* IMOverrides =
+		IPlayerInputExtension->GetInputMappingOverrides().Find( GetTypeHash( FObjectKey( this ) ) );
+	check( IMOverrides );
+
+	return IMOverrides->InputActions.Contains( InputName ) ? IMOverrides->InputActions[InputName] : nullptr;
+}
+
 ETriggerEvent UEWN_WidgetInputSubsystem::GetTriggerEvent( const UObject* ContextObject, FName InputName ) const
 {
-	UInputAction* FoundIA = [&]
-	{
-		const auto* EnhancedInputSubsystem = GetLocalPlayerChecked()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
-		check( EnhancedInputSubsystem );
-
-		auto* IPlayerInputExtension = Cast<IEWN_Interface_PlayerInputExtension>( EnhancedInputSubsystem->GetPlayerInput() );
-		check( IPlayerInputExtension );
-
-		if ( const FEWN_InputMappingOverrides* IMOverrides =
-				 IPlayerInputExtension->GetInputMappingOverrides().Find( GetTypeHash( FObjectKey( ContextObject ) ) ) )
-		{
-			if ( IMOverrides->InputActions.Contains( InputName ) )
-			{
-				return IMOverrides->InputActions[InputName];
-			}
-		}
-
-		const FEWN_InputMappingOverrides* IMOverrides =
-			IPlayerInputExtension->GetInputMappingOverrides().Find( GetTypeHash( FObjectKey( this ) ) );
-		check( IMOverrides );
-
-		return IMOverrides->InputActions.Contains( InputName ) ? IMOverrides->InputActions[InputName] : nullptr;
-	}();
-	return FoundIA ? GetTriggerEvent( FoundIA ) : ETriggerEvent::None;
+	UInputAction* InputAction = GetInputAction( ContextObject, InputName );
+	return InputAction ? GetTriggerEvent( InputAction ) : ETriggerEvent::None;
 }
 
 bool UEWN_WidgetInputSubsystem::WasJustTriggered( const UObject* ContextObject, FName InputName ) const

@@ -35,8 +35,8 @@ public:
 
 protected:
 	virtual UWidget* GetCurrentWidget() const override;
-	virtual bool TestFocus( EEWN_WidgetCursor WidgetCursor ) const override;
-	virtual void ForEachWidgetNavigation( const TFunctionRef<void( UEWN_WidgetNavigation* )> Callback ) override;
+	virtual bool TestFocus( EEWN_WidgetCursor WidgetCursor, bool bLoopIgnored ) const override;
+	virtual void ForEachWidgetNavigation( const TFunctionRef<void( UEWN_WidgetNavigation* )>& Callback ) override;
 
 	virtual void InvalidateNavigation() override;
 
@@ -72,8 +72,10 @@ public:
 	void SetLoopNavigation( bool bNewFlag ) { bLoopNavigation = bNewFlag; }
 
 private:
-	bool MoveFocusOverride( IEWN_Interface_WidgetNavigation* INavigation, EEWN_WidgetCursor WidgetCursor, bool bFromOperation );
-	bool MoveFocusFallback( IEWN_Interface_WidgetNavigation* INavigation, EEWN_WidgetCursor WidgetCursor, bool bFromOperation );
+	bool MoveFocusOverride(
+		IEWN_Interface_WidgetNavigation* INavigation, EEWN_WidgetCursor WidgetCursor, bool bFromOperation, bool bLoopIgnored );
+	bool MoveFocusFallback(
+		IEWN_Interface_WidgetNavigation* INavigation, EEWN_WidgetCursor WidgetCursor, bool bFromOperation, bool bLoopIgnored );
 
 	void OnNavigationUpdated( IEWN_Interface_WidgetNavigation* INavigation, int32 OldIndex, int32 NewIndex, bool bFromOperation );
 

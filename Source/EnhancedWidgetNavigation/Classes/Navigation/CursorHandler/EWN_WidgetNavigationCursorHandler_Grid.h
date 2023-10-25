@@ -23,20 +23,20 @@ public:
 	}
 
 public:
-	virtual int32 GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const override;
+	virtual int32 GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor, bool bLoopIgnored ) const override;
 
 private:
 	class FSimpleNav;
 	TPimplPtr<FSimpleNav> SimpleNav;
 
 	void InitSimple();
-	int32 GetNextIndexFromSimple( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const;
+	int32 GetNextIndexFromSimple( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor, bool bLoopIgnored ) const;
 
 private:
 	class FDistanceBasedNav;
 	TPimplPtr<FDistanceBasedNav> DistanceBasedNav;
 
 	void InitDistanceBased();
-	int32 GetNextIndexFromDistanceBased( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const;
+	int32 GetNextIndexFromDistanceBased( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor, bool bLoopIgnored ) const;
 };
 }	 // namespace EWN::WidgetNavigation

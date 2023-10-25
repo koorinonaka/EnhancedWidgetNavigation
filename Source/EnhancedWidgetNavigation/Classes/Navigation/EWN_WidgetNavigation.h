@@ -32,13 +32,15 @@ class ENHANCEDWIDGETNAVIGATION_API UEWN_WidgetNavigation : public UObject, publi
 protected:
 	virtual void PostInitProperties() override;
 
+	void OnInputActionStarted( EEWN_WidgetInputType InputType );
+
 public:
 	virtual EEWN_WidgetInputType TickNavigation( float DeltaTime ) override;
 
 protected:
 	virtual UWidget* GetCurrentWidget() const override;
-	virtual bool TestFocus( EEWN_WidgetCursor WidgetCursor ) const override;
-	virtual void ForEachWidgetNavigation( const TFunctionRef<void( UEWN_WidgetNavigation* )> Callback ) override;
+	virtual bool TestFocus( EEWN_WidgetCursor WidgetCursor, bool bLoopIgnored ) const override;
+	virtual void ForEachWidgetNavigation( const TFunctionRef<void( UEWN_WidgetNavigation* )>& Callback ) override;
 
 	virtual void InvalidateNavigation() override;
 
@@ -81,11 +83,11 @@ protected:
 
 	int32 FindHoveredIndex() const;
 
-	bool MoveFocus( EEWN_WidgetCursor WidgetCursor, bool bFromOperation );
+	bool MoveFocus( EEWN_WidgetCursor WidgetCursor, bool bFromOperation, bool bLoopIgnored );
 	bool RestoreFocus( bool bFromOperation );
 
-	bool FocusIncrement( bool bFromOperation );
-	bool FocusDecrement( bool bFromOperation );
+	bool FocusIncrement( bool bFromOperation, bool bLoopIgnored );
+	bool FocusDecrement( bool bFromOperation, bool bLoopIgnored );
 
 	void UpdateFocusIndex( int32 NewIndex, bool bFromOperation );
 
@@ -141,4 +143,5 @@ private:
 	int32 LastValidFocusIndex = INDEX_NONE;
 	TWeakObjectPtr<UEWN_WidgetNavigationInputMappingContext> NavigationIMC;
 	TSharedPtr<EWN::WidgetNavigation::FCursorHandler> CursorHandler;
+	TMap<EEWN_WidgetInputType, uint32> FrameNumberOnStarted;
 };

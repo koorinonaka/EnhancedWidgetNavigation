@@ -16,6 +16,6 @@ public:
 	explicit FCursorHandler_Vertical( UEWN_WidgetNavigation* Navigation ) : FCursorHandler( Navigation ) {}
 
 public:
-	virtual int32 GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const override;
+	virtual int32 GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor, bool bLoopIgnored ) const override;
 };
 }	 // namespace EWN::WidgetNavigation

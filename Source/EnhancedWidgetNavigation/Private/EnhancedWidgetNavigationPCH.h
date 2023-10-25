@@ -31,7 +31,7 @@ FORCEINLINE static EnumType FindValueByName( FName EnumName )
 }
 
 template <typename EnumType>
-FORCEINLINE static void ForEach( const TFunctionRef<void( EnumType )> Callback )
+FORCEINLINE static void ForEach( const TFunctionRef<void( EnumType )>& Callback )
 {
 	static_assert( TIsEnum<EnumType>::Value, "Should only call this with enum types" );
 	const UEnum* EnumClass = StaticEnum<EnumType>();

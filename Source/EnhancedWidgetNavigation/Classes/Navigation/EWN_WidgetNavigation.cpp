@@ -2,9 +2,11 @@
 
 #include "EWN_WidgetNavigation.h"
 
+#include "Components/InputComponent.h"
 #include "Components/PanelWidget.h"
 #include "EWN_WidgetInputSettings.h"
 #include "EWN_WidgetInputSubsystem.h"
+#include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Interfaces/EWN_Interface_WidgetNavigationChild.h"
 #include "Navigation/CursorHandler/EWN_WidgetNavigationCursorHandler.h"
@@ -37,6 +39,36 @@ void UEWN_WidgetNavigation::PostInitProperties()
 	Super::PostInitProperties();
 
 	CursorHandler = EWN::WidgetNavigation::FCursorFactory::CreateHandler( this );
+
+	if ( const auto* OuterWidget = GetTypedOuter<UWidget>();
+		 const auto* WidgetInputSubsystem = UEWN_WidgetInputSubsystem::Get( GetTypedOuter<UWidget>() ) )
+	{
+		// TODO: SetInputMappingContext/ClearInputMappingContextでも同様にバインドする必要があるかも？
+		if ( const APlayerController* PC = OuterWidget->GetOwningPlayer(); !PC )
+		{
+			UE_LOG( LogTemp, Warning, TEXT( "widget %s do not use PlayerController as owner." ), *GetNameSafe( OuterWidget ) );
+		}
+		else if ( auto* InputComponent = Cast<UEnhancedInputComponent>( PC->InputComponent ); ensure( InputComponent ) )
+		{
+			EWN::Enum::ForEach<EEWN_WidgetInputType>(
+				[&]( const EEWN_WidgetInputType InputType )
+				{
+					if ( const UInputAction* InputAction =
+							 WidgetInputSubsystem->GetInputAction( this, *EWN::Enum::GetValueAsString( InputType ) ) )
+					{
+						// FInputActionInstanceからETriggerEvent::Startedが取得できないため、イベントをバインドする
+						InputComponent->BindAction(
+							InputAction, ETriggerEvent::Started, this, &ThisClass::OnInputActionStarted, InputType );
+					}
+				} );
+		}
+	}
+}
+
+void UEWN_WidgetNavigation::OnInputActionStarted( EEWN_WidgetInputType InputType )
+{
+	// ETriggerEvent::Startedイベントが発生したフレームを覚えておく
+	FrameNumberOnStarted.FindOrAdd( InputType ) = GFrameNumber;
 }
 
 void UEWN_WidgetNavigation::SetInputMappingContext( const FEWN_WidgetInputMappingContainer& InjectionSettings )
@@ -65,6 +97,12 @@ EEWN_WidgetInputType UEWN_WidgetNavigation::TickNavigation( float DeltaTime )
 
 	WidgetNavigationSubsystem->MarkOnThisFrame( this );
 
+	auto IsStartedOnThisFrame = [&]( EEWN_WidgetInputType InputType )
+	{
+		// Navigationがループするとき、ETriggerEvent::Started以外では処理を無視する
+		return FrameNumberOnStarted.FindOrAdd( InputType ) == GFrameNumber;
+	};
+
 	if ( auto WasJustTriggeredWithCancel =
 			 [&]( EEWN_WidgetInputType TriggerInput, EEWN_WidgetInputType CancelInput )
 		 {
@@ -74,42 +112,46 @@ EEWN_WidgetInputType UEWN_WidgetNavigation::TickNavigation( float DeltaTime )
 		 };
 		 WasJustTriggeredWithCancel( EEWN_WidgetInputType::Up, EEWN_WidgetInputType::Down ) )
 	{
-		if ( RestoreFocus( true ) || MoveFocus( EEWN_WidgetCursor::Up, true ) )
+		if ( RestoreFocus( true ) ||	//
+			 MoveFocus( EEWN_WidgetCursor::Up, true, !IsStartedOnThisFrame( EEWN_WidgetInputType::Up ) ) )
 		{
 			return EEWN_WidgetInputType::Up;
 		}
 	}
 	else if ( WasJustTriggeredWithCancel( EEWN_WidgetInputType::Down, EEWN_WidgetInputType::Up ) )
 	{
-		if ( RestoreFocus( true ) || MoveFocus( EEWN_WidgetCursor::Down, true ) )
+		if ( RestoreFocus( true ) ||
+			 MoveFocus( EEWN_WidgetCursor::Down, true, !IsStartedOnThisFrame( EEWN_WidgetInputType::Down ) ) )
 		{
 			return EEWN_WidgetInputType::Down;
 		}
 	}
 	else if ( WasJustTriggeredWithCancel( EEWN_WidgetInputType::Left, EEWN_WidgetInputType::Right ) )
 	{
-		if ( RestoreFocus( true ) || MoveFocus( EEWN_WidgetCursor::Left, true ) )
+		if ( RestoreFocus( true ) ||
+			 MoveFocus( EEWN_WidgetCursor::Left, true, !IsStartedOnThisFrame( EEWN_WidgetInputType::Left ) ) )
 		{
 			return EEWN_WidgetInputType::Left;
 		}
 	}
 	else if ( WasJustTriggeredWithCancel( EEWN_WidgetInputType::Right, EEWN_WidgetInputType::Left ) )
 	{
-		if ( RestoreFocus( true ) || MoveFocus( EEWN_WidgetCursor::Right, true ) )
+		if ( RestoreFocus( true ) ||
+			 MoveFocus( EEWN_WidgetCursor::Right, true, !IsStartedOnThisFrame( EEWN_WidgetInputType::Right ) ) )
 		{
 			return EEWN_WidgetInputType::Right;
 		}
 	}
 	else if ( WasJustTriggeredWithCancel( EEWN_WidgetInputType::Prev, EEWN_WidgetInputType::Next ) )
 	{
-		if ( RestoreFocus( true ) || FocusDecrement( true ) )
+		if ( RestoreFocus( true ) || FocusDecrement( true, !IsStartedOnThisFrame( EEWN_WidgetInputType::Prev ) ) )
 		{
 			return EEWN_WidgetInputType::Prev;
 		}
 	}
 	else if ( WasJustTriggeredWithCancel( EEWN_WidgetInputType::Next, EEWN_WidgetInputType::Prev ) )
 	{
-		if ( RestoreFocus( true ) || FocusIncrement( true ) )
+		if ( RestoreFocus( true ) || FocusIncrement( true, !IsStartedOnThisFrame( EEWN_WidgetInputType::Next ) ) )
 		{
 			return EEWN_WidgetInputType::Next;
 		}
@@ -189,7 +231,7 @@ int32 UEWN_WidgetNavigation::GetChildIndex( UWidget* Widget ) const
 	return ensure( PanelWidget ) ? PanelWidget->GetChildIndex( Widget ) : INDEX_NONE;
 }
 
-void UEWN_WidgetNavigation::ForEachWidgetNavigation( const TFunctionRef<void( UEWN_WidgetNavigation* )> Callback )
+void UEWN_WidgetNavigation::ForEachWidgetNavigation( const TFunctionRef<void( UEWN_WidgetNavigation* )>& Callback )
 {
 	if ( IsNavigationEnabled() )
 	{
@@ -229,27 +271,27 @@ bool UEWN_WidgetNavigation::WasJustTriggered( EEWN_WidgetInputType InputType ) c
 	return GetTriggerEvent( InputType ) == ETriggerEvent::Triggered;
 }
 
-bool UEWN_WidgetNavigation::MoveFocus( EEWN_WidgetCursor WidgetCursor, bool bFromOperation )
+bool UEWN_WidgetNavigation::MoveFocus( EEWN_WidgetCursor WidgetCursor, bool bFromOperation, bool bLoopIgnored )
 {
 	if ( CursorHandler )
 	{
-		if ( TryMoveFocusOverride( WidgetCursor, bFromOperation ) )
+		if ( TryMoveFocusOverride( WidgetCursor, bFromOperation, bLoopIgnored ) )
 		{
 			return true;
 		}
 
-		if ( const int32 NewIndex = CursorHandler->GetNextIndex( FocusIndex, WidgetCursor ); NewIndex != FocusIndex )
+		if ( const int32 NewIndex = CursorHandler->GetNextIndex( FocusIndex, WidgetCursor, bLoopIgnored ); NewIndex != FocusIndex )
 		{
 			UpdateFocusIndex( NewIndex, bFromOperation );
 			return true;
 		}
 
-		return !bIndependentNavigation && TryMoveFocusFallback( WidgetCursor, bFromOperation );
+		return !bIndependentNavigation && TryMoveFocusFallback( WidgetCursor, bFromOperation, bLoopIgnored );
 	}
 	return false;
 }
 
-bool UEWN_WidgetNavigation::TestFocus( EEWN_WidgetCursor WidgetCursor ) const
+bool UEWN_WidgetNavigation::TestFocus( EEWN_WidgetCursor WidgetCursor, bool bLoopIgnored ) const
 {
 	check( CursorHandler );
 
@@ -260,7 +302,7 @@ bool UEWN_WidgetNavigation::TestFocus( EEWN_WidgetCursor WidgetCursor ) const
 	MutableThis->bLoopNavigation = false;
 	FScopedFinalizer F( [&] { MutableThis->bLoopNavigation = bLoop; } );
 
-	return CursorHandler->GetNextIndex( FocusIndex, WidgetCursor ) != FocusIndex;
+	return CursorHandler->GetNextIndex( FocusIndex, WidgetCursor, bLoopIgnored ) != FocusIndex;
 }
 
 bool UEWN_WidgetNavigation::RestoreFocus( bool bFromOperation )
@@ -273,11 +315,11 @@ bool UEWN_WidgetNavigation::RestoreFocus( bool bFromOperation )
 	return false;
 }
 
-bool UEWN_WidgetNavigation::FocusIncrement( bool bFromOperation )
+bool UEWN_WidgetNavigation::FocusIncrement( bool bFromOperation, bool bLoopIgnored )
 {
 	if ( CursorHandler )
 	{
-		if ( const int32 NewIndex = CursorHandler->GetForwardIndex( FocusIndex ); NewIndex != FocusIndex )
+		if ( const int32 NewIndex = CursorHandler->GetForwardIndex( FocusIndex, bLoopIgnored ); NewIndex != FocusIndex )
 		{
 			UpdateFocusIndex( NewIndex, bFromOperation );
 			return true;
@@ -286,11 +328,11 @@ bool UEWN_WidgetNavigation::FocusIncrement( bool bFromOperation )
 	return false;
 }
 
-bool UEWN_WidgetNavigation::FocusDecrement( bool bFromOperation )
+bool UEWN_WidgetNavigation::FocusDecrement( bool bFromOperation, bool bLoopIgnored )
 {
 	if ( CursorHandler )
 	{
-		if ( const int32 NewIndex = CursorHandler->GetBackwardIndex( FocusIndex ); NewIndex != FocusIndex )
+		if ( const int32 NewIndex = CursorHandler->GetBackwardIndex( FocusIndex, bLoopIgnored ); NewIndex != FocusIndex )
 		{
 			UpdateFocusIndex( NewIndex, bFromOperation );
 			return true;
@@ -378,27 +420,26 @@ void UEWN_WidgetNavigation::ResetNavigation( bool bResetIndex )
 	{
 		UpdateFocusIndex( FindHoveredIndex(), false );
 	}
+	else if ( const int32 NewIndex = !bResetIndex ? FocusIndex : INDEX_NONE;
+			  IEWN_Interface_WidgetNavigationChild::IsNavigationFocusable( GetChildAt( NewIndex ) ) )
+	{
+		UpdateFocusIndex( NewIndex, false );
+	}
 	else
 	{
-		if ( const int32 NewIndex = !bResetIndex ? FocusIndex : INDEX_NONE;
-			 IEWN_Interface_WidgetNavigationChild::IsNavigationFocusable( GetChildAt( NewIndex ) ) )
+		const bool bFlag = bLoopNavigation;
+		bLoopNavigation = false;
 		{
-			UpdateFocusIndex( NewIndex, false );
-		}
-		else
-		{
-			const bool bFlag = bLoopNavigation;
-			bLoopNavigation = false;
+			// カーソルが無効だった場合は前後を探す
+			FocusIndex = NewIndex;
+
+			if ( constexpr bool bFromOperation = false, bLoopIgnored = false;
+				 !FocusIncrement( bFromOperation, bLoopIgnored ) && !FocusDecrement( bFromOperation, bLoopIgnored ) )
 			{
-				// カーソルが無効だった場合は前後を探す
-				FocusIndex = NewIndex;
-				if ( !FocusIncrement( false ) && !FocusDecrement( false ) )
-				{
-					UpdateFocusIndex( INDEX_NONE, false );
-				}
+				UpdateFocusIndex( INDEX_NONE, false );
 			}
-			bLoopNavigation = bFlag;
 		}
+		bLoopNavigation = bFlag;
 	}
 }
 

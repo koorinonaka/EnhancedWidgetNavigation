@@ -11,7 +11,7 @@ class FCursorHandler_Grid::FSimpleNav
 public:
 	explicit FSimpleNav( FCursorHandler_Grid& Owner ) : OwnerHandler( Owner ) {}
 
-	int32 GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const
+	int32 GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor, bool bLoopIgnored ) const
 	{
 		int32 ResultIndex = CurrentIndex;
 
@@ -44,29 +44,33 @@ public:
 		{
 		case EEWN_WidgetCursor::Up:
 		{
-			SearchWithDecrement( FromPoint.Y - 1, LargestPoint.Y, FromPoint.X, LargestPoint.X,
-				[&]( int32 SearchY, int32 SearchX ) { return ValidateSlot( FIntPoint( SearchX, SearchY ) ); } );
+			SearchWithDecrement(
+				FromPoint.Y - 1, LargestPoint.Y, FromPoint.X, LargestPoint.X,
+				[&]( int32 SearchY, int32 SearchX ) { return ValidateSlot( FIntPoint( SearchX, SearchY ) ); }, bLoopIgnored );
 		}
 		break;
 
 		case EEWN_WidgetCursor::Down:
 		{
-			SearchWithIncrement( FromPoint.Y + 1, LargestPoint.Y, FromPoint.X, LargestPoint.X,
-				[&]( int32 SearchY, int32 SearchX ) { return ValidateSlot( FIntPoint( SearchX, SearchY ) ); } );
+			SearchWithIncrement(
+				FromPoint.Y + 1, LargestPoint.Y, FromPoint.X, LargestPoint.X,
+				[&]( int32 SearchY, int32 SearchX ) { return ValidateSlot( FIntPoint( SearchX, SearchY ) ); }, bLoopIgnored );
 		}
 		break;
 
 		case EEWN_WidgetCursor::Left:
 		{
-			SearchWithDecrement( FromPoint.X - 1, LargestPoint.X, FromPoint.Y, LargestPoint.Y,
-				[&]( int32 SearchX, int32 SearchY ) { return ValidateSlot( FIntPoint( SearchX, SearchY ) ); } );
+			SearchWithDecrement(
+				FromPoint.X - 1, LargestPoint.X, FromPoint.Y, LargestPoint.Y,
+				[&]( int32 SearchX, int32 SearchY ) { return ValidateSlot( FIntPoint( SearchX, SearchY ) ); }, bLoopIgnored );
 		}
 		break;
 
 		case EEWN_WidgetCursor::Right:
 		{
-			SearchWithIncrement( FromPoint.X + 1, LargestPoint.X, FromPoint.Y, LargestPoint.Y,
-				[&]( int32 SearchX, int32 SearchY ) { return ValidateSlot( FIntPoint( SearchX, SearchY ) ); } );
+			SearchWithIncrement(
+				FromPoint.X + 1, LargestPoint.X, FromPoint.Y, LargestPoint.Y,
+				[&]( int32 SearchX, int32 SearchY ) { return ValidateSlot( FIntPoint( SearchX, SearchY ) ); }, bLoopIgnored );
 		}
 		break;
 
@@ -123,8 +127,8 @@ private:
 		}
 	}
 
-	void SearchWithIncrement(
-		int32 From1, int32 Max1, int32 From2, int32 Max2, const TFunctionRef<bool( int32, int32 )> Callback ) const
+	void SearchWithIncrement( int32 From1, int32 Max1, int32 From2, int32 Max2, const TFunctionRef<bool( int32, int32 )>& Callback,
+		bool bLoopIgnored ) const
 	{
 		for ( int32 i = From1; i <= Max1; ++i )
 		{
@@ -159,6 +163,11 @@ private:
 		}
 		else if ( OwnerHandler.IsLoopNavigation() )
 		{
+			if ( bLoopIgnored )
+			{
+				return;
+			}
+
 			for ( int32 i = 0; i < From1; ++i )
 			{
 				if ( Callback( i, From2 ) )
@@ -187,8 +196,8 @@ private:
 		}
 	}
 
-	void SearchWithDecrement(
-		int32 From1, int32 Max1, int32 From2, int32 Max2, const TFunctionRef<bool( int32, int32 )>& Callback ) const
+	void SearchWithDecrement( int32 From1, int32 Max1, int32 From2, int32 Max2, const TFunctionRef<bool( int32, int32 )>& Callback,
+		bool bLoopIgnored ) const
 	{
 		for ( int32 i = From1; i >= 0; --i )
 		{
@@ -223,6 +232,11 @@ private:
 		}
 		else if ( OwnerHandler.IsLoopNavigation() )
 		{
+			if ( bLoopIgnored )
+			{
+				return;
+			}
+
 			for ( int32 i = Max1; i > From1; --i )
 			{
 				if ( Callback( i, From2 ) )
@@ -257,8 +271,8 @@ void FCursorHandler_Grid::InitSimple()
 	SimpleNav = MakePimpl<FSimpleNav>( *this );
 }
 
-int32 FCursorHandler_Grid::GetNextIndexFromSimple( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const
+int32 FCursorHandler_Grid::GetNextIndexFromSimple( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor, bool bLoopIgnored ) const
 {
-	return SimpleNav->GetNextIndex( CurrentIndex, WidgetCursor );
+	return SimpleNav->GetNextIndex( CurrentIndex, WidgetCursor, bLoopIgnored );
 }
 }	 // namespace EWN::WidgetNavigation

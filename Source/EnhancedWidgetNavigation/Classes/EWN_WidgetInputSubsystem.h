@@ -30,6 +30,8 @@ public:
 	void InitPlayerInput( IEWN_Interface_PlayerInputExtension* IPlayerInputExtension );
 
 public:
+	UInputAction* GetInputAction( const UObject* ContextObject, FName InputName ) const;
+
 	ETriggerEvent GetTriggerEvent( UInputAction* IA ) const;
 	ETriggerEvent GetTriggerEvent( const UObject* ContextObject, FName InputName ) const;
 
