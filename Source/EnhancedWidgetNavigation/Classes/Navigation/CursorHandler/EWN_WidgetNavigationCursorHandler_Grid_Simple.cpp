@@ -150,6 +150,12 @@ private:
 					}
 				}
 			}
+
+			if ( bLoopIgnored )
+			{
+				return;
+			}
+
 			for ( int32 j = 0; j <= From2; ++j )
 			{
 				for ( int32 i = 0; i <= Max1; ++i )
@@ -219,6 +225,12 @@ private:
 					}
 				}
 			}
+
+			if ( bLoopIgnored )
+			{
+				return;
+			}
+
 			for ( int32 j = Max2; j >= From2; --j )
 			{
 				for ( int32 i = Max1; i >= 0; --i )
