@@ -35,3 +35,9 @@ See the [Tutorial](https://github.com/koorinonaka/EnhancedWidgetNavigation/wiki)
 
 ## License
 EnhancedWidgetNavigation is under [MIT license](https://en.wikipedia.org/wiki/MIT_License).
+
+## History
+
+### v1.1.0
+#### Modified loop processing when a key is held down.
+If keys are entered consecutively, the navigation loop is ignored and executed when the key is entered again.
