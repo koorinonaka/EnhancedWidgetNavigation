@@ -1,6 +1,7 @@
 // Copyright 2022 koorinonaka, All Rights Reserved.
 
 #include "EWN_WidgetNavigationCursorHandler_Grid.h"
+#include "Interfaces/EWN_Interface_WidgetNavigationChild.h"
 #include "Navigation/EWN_WidgetNavigationHelper.h"
 
 namespace EWN::WidgetNavigation

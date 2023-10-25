@@ -5,22 +5,22 @@
 #include "Components/PanelWidget.h"
 #include "CoreMinimal.h"
 #include "EWN_WidgetTypes.h"
-#include "Interfaces/EWN_Interface_WidgetNavigationChild.h"
 
 class UEWN_WidgetNavigation;
 
 namespace EWN::WidgetNavigation
 {
+class FCursorHandler;
 class FCursorFactory
 {
 public:
-	static TSharedPtr<class FCursorHandler> CreateHandler( UEWN_WidgetNavigation* Navigation );
+	static TSharedPtr<FCursorHandler> CreateHandler( UEWN_WidgetNavigation* Navigation );
 };
 
 class ENHANCEDWIDGETNAVIGATION_API FCursorHandler
 {
 public:
-	FCursorHandler( UEWN_WidgetNavigation* Navigation );
+	explicit FCursorHandler( UEWN_WidgetNavigation* Navigation );
 	virtual ~FCursorHandler() {}
 
 public:

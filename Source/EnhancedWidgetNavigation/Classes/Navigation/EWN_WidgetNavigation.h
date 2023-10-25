@@ -3,7 +3,6 @@
 #pragma once
 
 #include "EWN_WidgetTypes.h"
-#include "Framework/Application/NavigationConfig.h"
 #include "InputTriggers.h"
 #include "Interfaces/EWN_Interface_WidgetNavigation.h"
 

@@ -5,6 +5,7 @@
 #include "EWN_WidgetNavigationCursorHandler_Grid.h"
 #include "EWN_WidgetNavigationCursorHandler_Horizontal.h"
 #include "EWN_WidgetNavigationCursorHandler_Vertical.h"
+#include "Interfaces/EWN_Interface_WidgetNavigationChild.h"
 #include "Navigation/EWN_WidgetNavigation.h"
 
 namespace EWN::WidgetNavigation

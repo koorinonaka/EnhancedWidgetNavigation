@@ -2,7 +2,6 @@
 
 #include "EWN_WidgetNavigation.h"
 
-#include "Components/InputComponent.h"
 #include "Components/PanelWidget.h"
 #include "EWN_WidgetInputSettings.h"
 #include "EWN_WidgetInputSubsystem.h"
@@ -12,6 +11,8 @@
 #include "Navigation/CursorHandler/EWN_WidgetNavigationCursorHandler.h"
 #include "Navigation/EWN_WidgetNavigationHelper.h"
 #include "Navigation/EWN_WidgetNavigationSubsystem.h"
+
+using namespace EWN::WidgetNavigation;
 
 namespace EWN::Util
 {
@@ -38,7 +39,7 @@ void UEWN_WidgetNavigation::PostInitProperties()
 {
 	Super::PostInitProperties();
 
-	CursorHandler = EWN::WidgetNavigation::FCursorFactory::CreateHandler( this );
+	CursorHandler = FCursorFactory::CreateHandler( this );
 
 	if ( const auto* OuterWidget = GetTypedOuter<UWidget>();
 		 const auto* WidgetInputSubsystem = UEWN_WidgetInputSubsystem::Get( GetTypedOuter<UWidget>() ) )
@@ -160,14 +161,8 @@ EEWN_WidgetInputType UEWN_WidgetNavigation::TickNavigation( float DeltaTime )
 	{
 		return EEWN_WidgetInputType::Back;
 	}
-	else
+	else if ( const auto* WidgetInputSubsystem = UEWN_WidgetInputSubsystem::Get( GetTypedOuter<UWidget>() ) )
 	{
-		const auto* WidgetInputSubsystem = UEWN_WidgetInputSubsystem::Get( GetTypedOuter<UWidget>() );
-		if ( !WidgetInputSubsystem )
-		{
-			return EEWN_WidgetInputType::None;
-		}
-
 		if ( const int32 NewIndex =
 				 [&]( int32 CurrentIndex )
 			 {
@@ -241,15 +236,14 @@ void UEWN_WidgetNavigation::ForEachWidgetNavigation( const TFunctionRef<void( UE
 
 int32 UEWN_WidgetNavigation::FindHoveredIndex() const
 {
-	return EWN::WidgetNavigation::FHelper::FindPanelIndex(
-		GetTypedOuter<UPanelWidget>(), [&]( int32 i, UWidget* ChildWidget ) {	 //
-			return ChildWidget->IsHovered() && IEWN_Interface_WidgetNavigationChild::IsNavigationFocusable( ChildWidget );
-		} );
+	return FHelper::FindPanelIndex( GetTypedOuter<UPanelWidget>(), [&]( int32 i, UWidget* ChildWidget ) {	 //
+		return ChildWidget->IsHovered() && IEWN_Interface_WidgetNavigationChild::IsNavigationFocusable( ChildWidget );
+	} );
 }
 
 void UEWN_WidgetNavigation::ForEachFocusable( const TFunctionRef<void( int32, UWidget* )> Callback ) const
 {
-	EWN::WidgetNavigation::FHelper::ForEachPanelChildren( GetTypedOuter<UPanelWidget>(),
+	FHelper::ForEachPanelChildren( GetTypedOuter<UPanelWidget>(),
 		[&]( int32 i, UWidget* ChildWidget )
 		{
 			if ( IEWN_Interface_WidgetNavigationChild::IsNavigationFocusable( ChildWidget ) )
