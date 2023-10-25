@@ -2,20 +2,17 @@
 
 #include "EWN_EnhancedInputComponent.h"
 
-//
-#include "Engine/LocalPlayer.h"
-
-//
 #include "EWN_WidgetInputSubsystem.h"
+#include "Engine/LocalPlayer.h"
 #include "Interfaces/EWN_Interface_PlayerInputExtension.h"
 
 void UEWN_EnhancedInputComponent::OnRegister()
 {
 	Super::OnRegister();
 
-	if ( auto* OwnerPC = GetOwner<APlayerController>() )
+	if ( const auto* OwnerPC = GetOwner<APlayerController>() )
 	{
-		if ( auto* LocalPlayer = Cast<ULocalPlayer>( OwnerPC->Player ) )
+		if ( const auto* LocalPlayer = Cast<ULocalPlayer>( OwnerPC->Player ) )
 		{
 			if ( auto* WidgetInputSubsystem = LocalPlayer->GetSubsystem<UEWN_WidgetInputSubsystem>() )
 			{

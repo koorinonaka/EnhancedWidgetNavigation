@@ -2,7 +2,6 @@
 
 #include "EWN_MenuWidget.h"
 
-//
 #include "Navigation/EWN_WidgetNavigationSubsystem.h"
 
 void UEWN_MenuWidget::NativeConstruct()

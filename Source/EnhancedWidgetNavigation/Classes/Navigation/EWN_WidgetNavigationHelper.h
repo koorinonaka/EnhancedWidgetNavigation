@@ -2,10 +2,8 @@
 
 #pragma once
 
-#include "EWN_WidgetTypes.h"
-
-//
 #include "Components/PanelWidget.h"
+#include "EWN_WidgetTypes.h"
 
 namespace EWN::WidgetNavigation
 {
@@ -19,8 +17,8 @@ struct ENHANCEDWIDGETNAVIGATION_API FWidgetWithNavigation
 class ENHANCEDWIDGETNAVIGATION_API FHelper
 {
 public:
-	static int32 FindPanelIndex( UPanelWidget* PanelWidget, const TFunctionRef<bool( int32, UWidget* )> Callback );
-	static void ForEachPanelChildren( UPanelWidget* PanelWidget, const TFunctionRef<void( int32, UWidget* )> Callback );
+	static int32 FindPanelIndex( UPanelWidget* PanelWidget, const TFunctionRef<bool( int32, UWidget* )>& Callback );
+	static void ForEachPanelChildren( UPanelWidget* PanelWidget, const TFunctionRef<void( int32, UWidget* )>& Callback );
 
 	static FVector2D GetCursorPosition( const FGeometry& Geometry, EEWN_WidgetCursor WidgetCursor );
 

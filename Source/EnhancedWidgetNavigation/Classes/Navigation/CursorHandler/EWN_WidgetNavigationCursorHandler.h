@@ -2,12 +2,8 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-
-//
 #include "Components/PanelWidget.h"
-
-//
+#include "CoreMinimal.h"
 #include "EWN_WidgetTypes.h"
 #include "Interfaces/EWN_Interface_WidgetNavigationChild.h"
 
@@ -45,10 +41,10 @@ private:
 	TWeakObjectPtr<UEWN_WidgetNavigation> OuterNavigation;
 };
 
-class ENHANCEDWIDGETNAVIGATION_API FCursorHandler_Default : public FCursorHandler
+class ENHANCEDWIDGETNAVIGATION_API FCursorHandler_Default final : public FCursorHandler
 {
 public:
-	FCursorHandler_Default( UEWN_WidgetNavigation* Navigation ) : FCursorHandler( Navigation ) {}
+	explicit FCursorHandler_Default( UEWN_WidgetNavigation* Navigation ) : FCursorHandler( Navigation ) {}
 
 public:
 	virtual int32 GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const override { return CurrentIndex; }

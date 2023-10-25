@@ -1,8 +1,6 @@
 // Copyright 2022 koorinonaka, All Rights Reserved.
 
 #include "EWN_WidgetNavigationCursorHandler_Grid.h"
-
-//
 #include "Navigation/EWN_WidgetNavigationHelper.h"
 
 namespace EWN::WidgetNavigation
@@ -12,7 +10,7 @@ class FCursorHandler_Grid::FDistanceBasedNav
 	FCursorHandler_Grid& OwnerHandler;
 
 public:
-	FDistanceBasedNav( FCursorHandler_Grid& Owner ) : OwnerHandler( Owner ) {}
+	explicit FDistanceBasedNav( FCursorHandler_Grid& Owner ) : OwnerHandler( Owner ) {}
 
 	int32 GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const
 	{
@@ -40,13 +38,14 @@ public:
 			} );
 
 		// fallback if MoveFocus fails
-		if ( UWidget* NearestWidget = FHelper::FindFocusToNearest( CurrentWidget, WidgetCursor, WidgetsWithNavigation ) )
+		if ( const UWidget* NearestWidget = FHelper::FindFocusToNearest( CurrentWidget, WidgetCursor, WidgetsWithNavigation ) )
 		{
 			ResultIndex = WidgetsWithNavigation[NearestWidget].Index;
 		}
 		else if ( OwnerHandler.IsLoopNavigation() )
 		{
-			if ( UWidget* FarthestWidget = FHelper::FindFocusToOpposite( CurrentWidget, WidgetCursor, WidgetsWithNavigation ) )
+			if ( const UWidget* FarthestWidget =
+					 FHelper::FindFocusToOpposite( CurrentWidget, WidgetCursor, WidgetsWithNavigation ) )
 			{
 				ResultIndex = WidgetsWithNavigation[FarthestWidget].Index;
 			}

@@ -2,10 +2,7 @@
 
 #pragma once
 
-//
 #include "EnhancedPlayerInput.h"
-
-//
 #include "Interfaces/EWN_Interface_PlayerInputExtension.h"
 
 #include "EWN_EnhancedPlayerInput.generated.h"

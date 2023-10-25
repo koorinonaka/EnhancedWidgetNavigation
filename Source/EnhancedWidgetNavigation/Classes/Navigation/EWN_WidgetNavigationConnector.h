@@ -3,13 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-
-//
-#include "UObject/ObjectKey.h"
-
-//
 #include "EWN_WidgetTypes.h"
 #include "Interfaces/EWN_Interface_WidgetNavigation.h"
+#include "UObject/ObjectKey.h"
 
 #include "EWN_WidgetNavigationConnector.generated.h"
 
@@ -20,7 +16,7 @@ class ENHANCEDWIDGETNAVIGATION_API UEWN_WidgetNavigationConnector : public UObje
 
 	struct FWidgetNavigationOverride
 	{
-		TObjectKey<class UObject> NavigationObject;
+		TObjectKey<UObject> NavigationObject;
 		EEWN_WidgetCursor WidgetCursor = EEWN_WidgetCursor::None;
 
 		FORCEINLINE bool operator==( const FWidgetNavigationOverride& Other ) const
@@ -30,7 +26,7 @@ class ENHANCEDWIDGETNAVIGATION_API UEWN_WidgetNavigationConnector : public UObje
 
 		friend uint32 GetTypeHash( const FWidgetNavigationOverride& Row )
 		{
-			return GetTypeHash( Row.NavigationObject ) ^ GetTypeHash( (uint8) Row.WidgetCursor );
+			return GetTypeHash( Row.NavigationObject ) ^ GetTypeHash( static_cast<uint8>( Row.WidgetCursor ) );
 		}
 	};
 
@@ -40,7 +36,7 @@ public:
 protected:
 	virtual UWidget* GetCurrentWidget() const override;
 	virtual bool TestFocus( EEWN_WidgetCursor WidgetCursor ) const override;
-	virtual void ForEachWidgetNavigation( const TFunctionRef<void( class UEWN_WidgetNavigation* )> Callback ) override;
+	virtual void ForEachWidgetNavigation( const TFunctionRef<void( UEWN_WidgetNavigation* )> Callback ) override;
 
 	virtual void InvalidateNavigation() override;
 
@@ -86,7 +82,7 @@ private:
 	TArray<TScriptInterface<IEWN_Interface_WidgetNavigation>> WidgetNavigations;
 
 	int32 ActiveIndex = INDEX_NONE;
-	TMultiMap<FWidgetNavigationOverride, TWeakObjectPtr<UObject>> WidgetNavigationOverrides;
+	TMultiMap<FWidgetNavigationOverride, TWeakObjectPtr<>> WidgetNavigationOverrides;
 
 	bool bLoopNavigation = false;
 };

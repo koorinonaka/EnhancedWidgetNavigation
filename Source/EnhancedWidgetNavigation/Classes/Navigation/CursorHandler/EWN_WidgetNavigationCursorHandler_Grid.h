@@ -2,23 +2,21 @@
 
 #pragma once
 
-#include "EWN_WidgetNavigationCursorHandler.h"
-
-//
 #include "Components/GridPanel.h"
 #include "Components/GridSlot.h"
 #include "Components/UniformGridPanel.h"
 #include "Components/UniformGridSlot.h"
+#include "EWN_WidgetNavigationCursorHandler.h"
 
 namespace EWN::WidgetNavigation
 {
-class ENHANCEDWIDGETNAVIGATION_API FCursorHandler_Grid : public FCursorHandler
+class ENHANCEDWIDGETNAVIGATION_API FCursorHandler_Grid final : public FCursorHandler
 {
 public:
 	static bool IsGrid( UPanelWidget* PanelWidget );
 
 public:
-	FCursorHandler_Grid( UEWN_WidgetNavigation* Navigation ) : FCursorHandler( Navigation )
+	explicit FCursorHandler_Grid( UEWN_WidgetNavigation* Navigation ) : FCursorHandler( Navigation )
 	{
 		InitSimple();
 		InitDistanceBased();

@@ -2,12 +2,10 @@
 
 #include "EWN_WidgetInputSettings.h"
 
-//
 #include "InputMappingContext.h"
 
 #if WITH_EDITOR
-#include "IMessageLogListing.h"
-#include "MessageLogModule.h"
+#include "Logging/MessageLog.h"
 #endif
 
 template <typename T>
@@ -58,7 +56,8 @@ void UEWN_WidgetInputSettings::TryLoadObjects()
 	{
 		FMessageLog AssetCheckLog( "AssetCheck" );
 
-		FText Message( NSLOCTEXT( "EWN", "WidgetInputConfigNotFound", "WidgetInputConfig not specified (or failed to load)." ) );
+		const FText Message(
+			NSLOCTEXT( "EWN", "WidgetInputConfigNotFound", "WidgetInputConfig not specified (or failed to load)." ) );
 		AssetCheckLog.Error( Message );
 
 		AssetCheckLog.Notify( Message, EMessageSeverity::Error, true );
@@ -72,13 +71,13 @@ UInputMappingContext* UEWN_WidgetInputSettings::GetOptionalInputMappingContext()
 }
 
 UInputMappingContext* UEWN_WidgetInputSettings::BuildInputMappingContext(
-	const TFunctionRef<void( FName, UInputAction* )> Callback ) const
+	const TFunctionRef<void( FName, UInputAction* )>& Callback ) const
 {
 	return WidgetInputConfig ? BuildInputMappingContext( WidgetInputConfig->InputMappingDefault, Callback ) : nullptr;
 }
 
 UInputMappingContext* UEWN_WidgetInputSettings::BuildInputMappingContext(
-	const FEWN_WidgetInputMappingContainer& InjectionSettings, const TFunctionRef<void( FName, UInputAction* )> Callback ) const
+	const FEWN_WidgetInputMappingContainer& InjectionSettings, const TFunctionRef<void( FName, UInputAction* )>& Callback ) const
 {
 	auto* NewIMC = NewObject<UInputMappingContext>();
 
@@ -117,6 +116,8 @@ UInputMappingContext* UEWN_WidgetInputSettings::BuildInputMappingContext(
 			NewMapping.Triggers.Emplace( NewObject<UInputTriggerPressed>() );
 		}
 		break;
+
+		default:;
 		}
 
 		Callback( InputMapping.InputName, NewInputAction );

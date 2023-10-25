@@ -4,7 +4,6 @@
 
 #include "Blueprint/UserWidget.h"
 
-// Interfaces
 #include "Interfaces/EWN_Interface_WidgetNavigationChild.h"
 
 #include "EWN_NavigationButton.generated.h"
@@ -32,6 +31,7 @@ public:
 
 private:
 	bool bFocused = false;
+	bool bPressed = false;
 	bool bWasJustClicked = false;
 	uint32 FrameNumberOnClicked = 0;
 };

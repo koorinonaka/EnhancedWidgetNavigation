@@ -9,19 +9,19 @@ class FCursorHandler_Grid::FSimpleNav
 	FCursorHandler_Grid& OwnerHandler;
 
 public:
-	FSimpleNav( FCursorHandler_Grid& Owner ) : OwnerHandler( Owner ) {}
+	explicit FSimpleNav( FCursorHandler_Grid& Owner ) : OwnerHandler( Owner ) {}
 
 	int32 GetNextIndex( int32 CurrentIndex, EEWN_WidgetCursor WidgetCursor ) const
 	{
 		int32 ResultIndex = CurrentIndex;
 
-		UPanelWidget* PanelWidget = OwnerHandler.GetPanelWidget();
+		const UPanelWidget* PanelWidget = OwnerHandler.GetPanelWidget();
 		if ( !PanelWidget )
 		{
 			return ResultIndex;
 		}
 
-		FIntPoint FromPoint = GetGridPoint( CurrentIndex );
+		const FIntPoint FromPoint = GetGridPoint( CurrentIndex );
 
 		TMap<FIntPoint, UWidget*> GridWidgets;
 		FIntPoint LargestPoint = FIntPoint::ZeroValue;
@@ -29,7 +29,7 @@ public:
 
 		auto ValidateSlot = [&]( const FIntPoint& Address )
 		{
-			if ( UWidget* FoundWidget = GridWidgets.FindRef( Address ) )
+			if ( const UWidget* FoundWidget = GridWidgets.FindRef( Address ) )
 			{
 				if ( IEWN_Interface_WidgetNavigationChild::IsNavigationFocusable( FoundWidget ) )
 				{
@@ -69,6 +69,8 @@ public:
 				[&]( int32 SearchX, int32 SearchY ) { return ValidateSlot( FIntPoint( SearchX, SearchY ) ); } );
 		}
 		break;
+
+		default:;
 		}
 
 		return ResultIndex;
@@ -77,9 +79,9 @@ public:
 private:
 	FIntPoint GetGridPoint( int32 Index ) const
 	{
-		if ( UPanelWidget* PanelWidget = OwnerHandler.GetPanelWidget() )
+		if ( const UPanelWidget* PanelWidget = OwnerHandler.GetPanelWidget() )
 		{
-			UWidget* ChildWidget = PanelWidget->GetChildAt( Index );
+			const UWidget* ChildWidget = PanelWidget->GetChildAt( Index );
 			if ( auto* GridSlot = Cast<UGridSlot>( ChildWidget->Slot ) )
 			{
 #if EWN_UE_VERSION_OR_LATER( 5, 1 )
@@ -88,7 +90,7 @@ private:
 				return FIntPoint( GridSlot->Column, GridSlot->Row );
 #endif
 			}
-			else if ( auto* UniformGridSlot = Cast<UUniformGridSlot>( ChildWidget->Slot ) )
+			if ( auto* UniformGridSlot = Cast<UUniformGridSlot>( ChildWidget->Slot ) )
 			{
 #if EWN_UE_VERSION_OR_LATER( 5, 1 )
 				return FIntPoint( UniformGridSlot->GetColumn(), UniformGridSlot->GetRow() );
@@ -105,9 +107,9 @@ private:
 		OutWidgets.Empty();
 		OutLargestPoint = FIntPoint::ZeroValue;
 
-		if ( UPanelWidget* PanelWidget = OwnerHandler.GetPanelWidget() )
+		if ( const UPanelWidget* PanelWidget = OwnerHandler.GetPanelWidget() )
 		{
-			int32 ChildrenCount = PanelWidget->GetChildrenCount();
+			const int32 ChildrenCount = PanelWidget->GetChildrenCount();
 			for ( int32 i = 0; i < ChildrenCount; ++i )
 			{
 				FIntPoint GridPoint = GetGridPoint( i );
@@ -167,17 +169,17 @@ private:
 		}
 		else
 		{
-			int32 MaxLoop = FMath::Max( From2, Max2 - From2 );
+			const int32 MaxLoop = FMath::Max( From2, Max2 - From2 );
 			for ( int32 i = 1; i <= MaxLoop; ++i )
 			{
-				int32 PrevI = From2 - i;
-				int32 NextI = From2 + i;
+				const int32 PrevI = From2 - i;
+				const int32 NextI = From2 + i;
 
 				if ( PrevI >= 0 && Callback( From1, PrevI ) )
 				{
 					return;
 				}
-				else if ( NextI <= Max2 && Callback( From1, NextI ) )
+				if ( NextI <= Max2 && Callback( From1, NextI ) )
 				{
 					return;
 				}
@@ -186,7 +188,7 @@ private:
 	}
 
 	void SearchWithDecrement(
-		int32 From1, int32 Max1, int32 From2, int32 Max2, const TFunctionRef<bool( int32, int32 )> Callback ) const
+		int32 From1, int32 Max1, int32 From2, int32 Max2, const TFunctionRef<bool( int32, int32 )>& Callback ) const
 	{
 		for ( int32 i = From1; i >= 0; --i )
 		{
@@ -231,17 +233,17 @@ private:
 		}
 		else
 		{
-			int32 MaxLoop = FMath::Max( From2, Max2 - From2 );
+			const int32 MaxLoop = FMath::Max( From2, Max2 - From2 );
 			for ( int32 i = 1; i <= MaxLoop; ++i )
 			{
-				int32 PrevI = From2 - i;
-				int32 NextI = From2 + i;
+				const int32 PrevI = From2 - i;
+				const int32 NextI = From2 + i;
 
 				if ( PrevI >= 0 && Callback( From1, PrevI ) )
 				{
 					return;
 				}
-				else if ( NextI <= Max2 && Callback( From1, NextI ) )
+				if ( NextI <= Max2 && Callback( From1, NextI ) )
 				{
 					return;
 				}

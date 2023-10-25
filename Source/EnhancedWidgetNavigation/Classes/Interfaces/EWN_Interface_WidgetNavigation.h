@@ -4,7 +4,6 @@
 
 #include "UObject/Interface.h"
 
-//
 #include "EWN_WidgetTypes.h"
 
 #include "EWN_Interface_WidgetNavigation.generated.h"
@@ -35,8 +34,8 @@ public:
 	virtual void InvalidateNavigation() = 0;
 
 public:
-	void SetMoveFocusOverride( FMoveFocusDelegate Delegate ) { MoveFocusOverrideDelegate = Delegate; }
-	void SetMoveFocusFallback( FMoveFocusDelegate Delegate ) { MoveFocusFallbackDelegate = Delegate; }
+	void SetMoveFocusOverride( const FMoveFocusDelegate& Delegate ) { MoveFocusOverrideDelegate = Delegate; }
+	void SetMoveFocusFallback( const FMoveFocusDelegate& Delegate ) { MoveFocusFallbackDelegate = Delegate; }
 
 protected:
 	bool TryMoveFocusOverride( EEWN_WidgetCursor WidgetCursor, bool bFromOperation );

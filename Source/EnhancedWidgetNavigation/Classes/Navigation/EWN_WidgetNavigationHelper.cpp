@@ -4,15 +4,14 @@
 
 namespace EWN::WidgetNavigation
 {
-int32 FHelper::FindPanelIndex( UPanelWidget* PanelWidget, const TFunctionRef<bool( int32, UWidget* )> Callback )
+int32 FHelper::FindPanelIndex( UPanelWidget* PanelWidget, const TFunctionRef<bool( int32, UWidget* )>& Callback )
 {
 	if ( ensure( PanelWidget ) )
 	{
-		int32 ChildrenCount = PanelWidget->GetChildrenCount();
+		const int32 ChildrenCount = PanelWidget->GetChildrenCount();
 		for ( int32 i = 0; i < ChildrenCount; ++i )
 		{
-			UWidget* ChildWidget = PanelWidget->GetChildAt( i );
-			if ( Callback( i, ChildWidget ) )
+			if ( UWidget* ChildWidget = PanelWidget->GetChildAt( i ); Callback( i, ChildWidget ) )
 			{
 				return i;
 			}
@@ -22,11 +21,11 @@ int32 FHelper::FindPanelIndex( UPanelWidget* PanelWidget, const TFunctionRef<boo
 	return INDEX_NONE;
 }
 
-void FHelper::ForEachPanelChildren( UPanelWidget* PanelWidget, const TFunctionRef<void( int32, UWidget* )> Callback )
+void FHelper::ForEachPanelChildren( UPanelWidget* PanelWidget, const TFunctionRef<void( int32, UWidget* )>& Callback )
 {
 	if ( ensure( PanelWidget ) )
 	{
-		int32 ChildrenCount = PanelWidget->GetChildrenCount();
+		const int32 ChildrenCount = PanelWidget->GetChildrenCount();
 		for ( int32 i = 0; i < ChildrenCount; ++i )
 		{
 			Callback( i, PanelWidget->GetChildAt( i ) );
@@ -37,7 +36,7 @@ void FHelper::ForEachPanelChildren( UPanelWidget* PanelWidget, const TFunctionRe
 FVector2D FHelper::GetCursorPosition( const FGeometry& Geometry, EEWN_WidgetCursor WidgetCursor )
 {
 	FVector2D Position = Geometry.GetAbsolutePosition();
-	FVector2D Size = Geometry.GetAbsoluteSize();
+	const FVector2D Size = Geometry.GetAbsoluteSize();
 
 	switch ( WidgetCursor )
 	{
@@ -54,7 +53,6 @@ FVector2D FHelper::GetCursorPosition( const FGeometry& Geometry, EEWN_WidgetCurs
 UWidget* FHelper::FindFocusToNearest(
 	UWidget* CurrentWidget, EEWN_WidgetCursor WidgetCursor, const TMap<UWidget*, FWidgetWithNavigation>& WidgetsWithNavigation )
 {
-	float Nearest = FLT_MAX;
 	UWidget* FoundWidget = nullptr;
 
 	const FVector2D& SourcePosition = GetCursorPosition( CurrentWidget->GetCachedGeometry(), WidgetCursor );
@@ -62,8 +60,8 @@ UWidget* FHelper::FindFocusToNearest(
 	FVector2D SourceP1, SourceP2, SourceP3, SourceP4;
 	{
 		const FGeometry& Geometry = CurrentWidget->GetCachedGeometry();
-		FVector2D Position = Geometry.GetAbsolutePosition();
-		FVector2D Size = Geometry.GetAbsoluteSize();
+		const FVector2D Position = Geometry.GetAbsolutePosition();
+		const FVector2D Size = Geometry.GetAbsoluteSize();
 
 		SourceP1 = Position;
 		SourceP2 = Position + FVector2D( Size.X, 0.f );
@@ -85,9 +83,9 @@ UWidget* FHelper::FindFocusToNearest(
 		[&]( UWidget* Widget )
 		{
 			const FWidgetWithNavigation& WidgetInfo = WidgetsWithNavigation[Widget];
-			FVector2D SourceToTarget = WidgetInfo.Position - SourcePosition;
+			const FVector2D SourceToTarget = WidgetInfo.Position - SourcePosition;
 
-			bool bMatchCursor = [&]
+			const bool bMatchCursor = [&]
 			{
 				bool bResult = false;
 				switch ( WidgetCursor )
@@ -96,6 +94,7 @@ UWidget* FHelper::FindFocusToNearest(
 				case EEWN_WidgetCursor::Down: bResult = SourceToTarget.Y > 0.f; break;
 				case EEWN_WidgetCursor::Left: bResult = SourceToTarget.X < 0.f; break;
 				case EEWN_WidgetCursor::Right: bResult = SourceToTarget.X > 0.f; break;
+				default:;
 				}
 				return bResult;
 			}();
@@ -107,8 +106,8 @@ UWidget* FHelper::FindFocusToNearest(
 				FVector2D TargetP1, TargetP2, TargetP3, TargetP4;
 				{
 					const FGeometry& Geometry = Widget->GetCachedGeometry();
-					FVector2D Position = Geometry.GetAbsolutePosition();
-					FVector2D Size = Geometry.GetAbsoluteSize();
+					const FVector2D Position = Geometry.GetAbsolutePosition();
+					const FVector2D Size = Geometry.GetAbsoluteSize();
 
 					TargetP1 = Position;
 					TargetP2 = Position + FVector2D( Size.X, 0.f );
@@ -136,6 +135,8 @@ UWidget* FHelper::FindFocusToNearest(
 													  ( TargetP1.Y < SourceP3.Y + 1.f && SourceP3.Y - 1.f < TargetP3.Y );
 					}
 					break;
+
+					default:;
 					}
 				}
 			}
@@ -153,7 +154,7 @@ UWidget* FHelper::FindFocusToNearest(
 				{
 					return true;
 				}
-				else if ( !SortInfoA.bExtLinesIntersect && SortInfoB.bExtLinesIntersect )
+				if ( !SortInfoA.bExtLinesIntersect && SortInfoB.bExtLinesIntersect )
 				{
 					return false;
 				}
@@ -177,10 +178,10 @@ UWidget* FHelper::FindFocusToOpposite(
 
 	// step1: カーソルと反対側の一番遠いWidgetを探す
 	float Farthest = 0.f;
-	for ( UWidget* Widget : Widgets )
+	for ( const UWidget* Widget : Widgets )
 	{
 		const FWidgetWithNavigation& WidgetInfo = WidgetsWithNavigation[Widget];
-		FVector2D SourceToTarget = WidgetInfo.Position - SourcePosition;
+		const FVector2D SourceToTarget = WidgetInfo.Position - SourcePosition;
 
 		float Score = 0.f;
 
@@ -190,6 +191,7 @@ UWidget* FHelper::FindFocusToOpposite(
 		case EEWN_WidgetCursor::Down: Score = SourceToTarget.Y < 0.f ? SourceToTarget.Y : 0.f; break;
 		case EEWN_WidgetCursor::Left: Score = SourceToTarget.X > 0.f ? SourceToTarget.X : 0.f; break;
 		case EEWN_WidgetCursor::Right: Score = SourceToTarget.X < 0.f ? SourceToTarget.X : 0.f; break;
+		default:;
 		}
 
 		if ( FMath::Abs( Farthest ) < FMath::Abs( Score ) )
@@ -206,6 +208,7 @@ UWidget* FHelper::FindFocusToOpposite(
 	case EEWN_WidgetCursor::Down: BasePosition = FVector2D( SourcePosition.X, SourcePosition.Y + Farthest ); break;
 	case EEWN_WidgetCursor::Left: BasePosition = FVector2D( SourcePosition.X + Farthest, SourcePosition.Y ); break;
 	case EEWN_WidgetCursor::Right: BasePosition = FVector2D( SourcePosition.X + Farthest, SourcePosition.Y ); break;
+	default:;
 	}
 
 	// step3: 基準点から一番近いWidgetを選択
@@ -214,8 +217,7 @@ UWidget* FHelper::FindFocusToOpposite(
 	{
 		const FWidgetWithNavigation& WidgetInfo = WidgetsWithNavigation[Widget];
 
-		float DistSquared = FVector2D::DistSquared( WidgetInfo.Position, BasePosition );
-		if ( DistSquared < Nearest )
+		if ( const float DistSquared = FVector2D::DistSquared( WidgetInfo.Position, BasePosition ); DistSquared < Nearest )
 		{
 			FoundWidget = Widget;
 			Nearest = DistSquared;

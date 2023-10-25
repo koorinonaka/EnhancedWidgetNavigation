@@ -26,6 +26,8 @@ int32 FCursorHandler_Horizontal::GetNextIndex( int32 CurrentIndex, EEWN_WidgetCu
 		ResultIndex = GetForwardIndex( CurrentIndex );
 	}
 	break;
+
+	default:;
 	}
 
 	return ResultIndex;

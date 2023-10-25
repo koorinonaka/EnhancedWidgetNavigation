@@ -2,13 +2,9 @@
 
 #pragma once
 
-#include "Framework/Application/NavigationConfig.h"
-
-//
-#include "InputTriggers.h"
-
-//
 #include "EWN_WidgetTypes.h"
+#include "Framework/Application/NavigationConfig.h"
+#include "InputTriggers.h"
 #include "Interfaces/EWN_Interface_WidgetNavigation.h"
 
 #include "EWN_WidgetNavigation.generated.h"
@@ -18,6 +14,8 @@ namespace EWN::WidgetNavigation
 class FCursorHandler;
 }
 
+class UEWN_WidgetNavigationInputMappingContext;
+
 UCLASS( Blueprintable )
 class ENHANCEDWIDGETNAVIGATION_API UEWN_WidgetNavigation : public UObject, public IEWN_Interface_WidgetNavigation
 {
@@ -26,9 +24,9 @@ class ENHANCEDWIDGETNAVIGATION_API UEWN_WidgetNavigation : public UObject, publi
 	friend class EWN::WidgetNavigation::FCursorHandler;
 	friend class UEWN_WidgetNavigationConnector;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams( FFocusDelegate, class UEWN_WidgetNavigation*, Navigation,	//
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams( FFocusDelegate, UEWN_WidgetNavigation*, Navigation,	  //
 		int32, OldIndex, int32, NewIndex, bool, bFromOperation );
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FAcceptDelegate, class UEWN_WidgetNavigation*, Navigation,	//
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FAcceptDelegate, UEWN_WidgetNavigation*, Navigation,	  //
 		int32, Index );
 
 protected:
@@ -38,8 +36,8 @@ public:
 	virtual EEWN_WidgetInputType TickNavigation( float DeltaTime ) override;
 
 protected:
-	virtual UWidget* GetCurrentWidget() const;
-	virtual bool TestFocus( EEWN_WidgetCursor WidgetCursor ) const;
+	virtual UWidget* GetCurrentWidget() const override;
+	virtual bool TestFocus( EEWN_WidgetCursor WidgetCursor ) const override;
 	virtual void ForEachWidgetNavigation( const TFunctionRef<void( UEWN_WidgetNavigation* )> Callback ) override;
 
 	virtual void InvalidateNavigation() override;
@@ -141,6 +139,6 @@ protected:
 private:
 	int32 FocusIndex = INDEX_NONE;
 	int32 LastValidFocusIndex = INDEX_NONE;
-	TWeakObjectPtr<class UEWN_WidgetNavigationInputMappingContext> NavigationIMC;
-	TSharedPtr<class EWN::WidgetNavigation::FCursorHandler> CursorHandler;
+	TWeakObjectPtr<UEWN_WidgetNavigationInputMappingContext> NavigationIMC;
+	TSharedPtr<EWN::WidgetNavigation::FCursorHandler> CursorHandler;
 };

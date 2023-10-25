@@ -2,30 +2,27 @@
 
 #include "EWN_WidgetInputSubsystem.h"
 
-//
 #include "Components/Widget.h"
+#include "EWN_WidgetInputSettings.h"
 #include "Engine/LocalPlayer.h"
+#include "Engine/World.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedPlayerInput.h"
 #include "Framework/Application/IInputProcessor.h"
 #include "Framework/Application/SlateApplication.h"
+#include "Interfaces/EWN_Interface_PlayerInputExtension.h"
 #include "UObject/ObjectKey.h"
 
-//
-#include "EWN_WidgetInputSettings.h"
-#include "Interfaces/EWN_Interface_PlayerInputExtension.h"
-
 #if WITH_EDITOR
-#include "IMessageLogListing.h"
 #include "Logging/MessageLog.h"
 #endif
 
-class FEWN_WidgetInputProcessor : public IInputProcessor
+class FEWN_WidgetInputProcessor final : public IInputProcessor
 {
 	friend class UEWN_WidgetInputSubsystem;
 
 public:
-	FEWN_WidgetInputProcessor( UEWN_WidgetInputSubsystem& InInputSubsystem ) : InputSubsystem( InInputSubsystem ) {}
+	explicit FEWN_WidgetInputProcessor( UEWN_WidgetInputSubsystem& InInputSubsystem ) : InputSubsystem( InInputSubsystem ) {}
 
 protected:
 	virtual void Tick( const float DeltaTime, FSlateApplication& SlateApp, TSharedRef<ICursor> Cursor ) override
@@ -35,8 +32,8 @@ protected:
 
 	virtual bool HandleKeyDownEvent( FSlateApplication& SlateApp, const FKeyEvent& InKeyEvent ) override
 	{
-		const EEWN_WidgetInputMethod InputMethod = GetInputMethod( InKeyEvent.GetKey() );
-		if ( IsRelevantInput( SlateApp, InKeyEvent, InputMethod ) )
+		if ( const EEWN_WidgetInputMethod InputMethod = GetInputMethod( InKeyEvent.GetKey() );
+			 IsRelevantInput( SlateApp, InKeyEvent, InputMethod ) )
 		{
 			RefreshCurrentInputMethod( InputMethod );
 		}
@@ -46,8 +43,8 @@ protected:
 
 	virtual bool HandleAnalogInputEvent( FSlateApplication& SlateApp, const FAnalogInputEvent& InAnalogInputEvent ) override
 	{
-		const EEWN_WidgetInputMethod InputMethod = GetInputMethod( InAnalogInputEvent.GetKey() );
-		if ( IsRelevantInput( SlateApp, InAnalogInputEvent, InputMethod ) )
+		if ( const EEWN_WidgetInputMethod InputMethod = GetInputMethod( InAnalogInputEvent.GetKey() );
+			 IsRelevantInput( SlateApp, InAnalogInputEvent, InputMethod ) )
 		{
 			RefreshCurrentInputMethod( InputMethod );
 		}
@@ -57,8 +54,8 @@ protected:
 
 	virtual bool HandleMouseMoveEvent( FSlateApplication& SlateApp, const FPointerEvent& InPointerEvent ) override
 	{
-		const EEWN_WidgetInputMethod InputMethod = GetInputMethod( InPointerEvent );
-		if ( IsRelevantInput( SlateApp, InPointerEvent, InputMethod ) )
+		if ( const EEWN_WidgetInputMethod InputMethod = GetInputMethod( InPointerEvent );
+			 IsRelevantInput( SlateApp, InPointerEvent, InputMethod ) )
 		{
 			if ( !InPointerEvent.GetCursorDelta().IsNearlyZero() )
 			{
@@ -71,8 +68,8 @@ protected:
 
 	virtual bool HandleMouseButtonDownEvent( FSlateApplication& SlateApp, const FPointerEvent& InPointerEvent ) override
 	{
-		const EEWN_WidgetInputMethod InputMethod = GetInputMethod( InPointerEvent );
-		if ( IsRelevantInput( SlateApp, InPointerEvent, InputMethod ) )
+		if ( const EEWN_WidgetInputMethod InputMethod = GetInputMethod( InPointerEvent );
+			 IsRelevantInput( SlateApp, InPointerEvent, InputMethod ) )
 		{
 			RefreshCurrentInputMethod( InputMethod );
 		}
@@ -82,8 +79,8 @@ protected:
 
 	virtual bool HandleMouseButtonDoubleClickEvent( FSlateApplication& SlateApp, const FPointerEvent& InPointerEvent ) override
 	{
-		const EEWN_WidgetInputMethod InputMethod = GetInputMethod( InPointerEvent );
-		if ( IsRelevantInput( SlateApp, InPointerEvent, InputMethod ) )
+		if ( const EEWN_WidgetInputMethod InputMethod = GetInputMethod( InPointerEvent );
+			 IsRelevantInput( SlateApp, InPointerEvent, InputMethod ) )
 		{
 			RefreshCurrentInputMethod( InputMethod );
 		}
@@ -93,7 +90,7 @@ protected:
 
 private:
 	bool IsRelevantInput(
-		FSlateApplication& SlateApp, const FInputEvent& InputEvent, const EEWN_WidgetInputMethod DesiredInputMethod )
+		const FSlateApplication& SlateApp, const FInputEvent& InputEvent, const EEWN_WidgetInputMethod DesiredInputMethod ) const
 	{
 		if ( SlateApp.IsActive() || SlateApp.GetHandleDeviceInputWhenApplicationNotActive() )
 		{
@@ -147,7 +144,7 @@ private:
 		InputSubsystem.SetCurrentInputMethod( InputMethod );
 	}
 
-	EEWN_WidgetInputMethod GetInputMethod( const FKey& Key )
+	EEWN_WidgetInputMethod GetInputMethod( const FKey& Key ) const
 	{
 		if ( Key.IsGamepadKey() )
 		{
@@ -157,7 +154,7 @@ private:
 		return EEWN_WidgetInputMethod::Keyboard;
 	}
 
-	EEWN_WidgetInputMethod GetInputMethod( const FPointerEvent& PointerEvent )
+	EEWN_WidgetInputMethod GetInputMethod( const FPointerEvent& PointerEvent ) const
 	{
 		if ( PointerEvent.IsTouchEvent() )
 		{
@@ -173,7 +170,7 @@ private:
 
 UEWN_WidgetInputSubsystem* UEWN_WidgetInputSubsystem::Get( UWidget* Widget )
 {
-	ULocalPlayer* OwningLP = Widget ? Widget->GetOwningLocalPlayer() : nullptr;
+	const ULocalPlayer* OwningLP = Widget ? Widget->GetOwningLocalPlayer() : nullptr;
 	return OwningLP ? OwningLP->GetSubsystem<ThisClass>() : nullptr;
 }
 
@@ -222,7 +219,7 @@ void UEWN_WidgetInputSubsystem::InitPlayerInput( IEWN_Interface_PlayerInputExten
 	{
 		FMessageLog AssetCheckLog( "AssetCheck" );
 
-		FText Message(
+		const FText Message(
 			NSLOCTEXT( "EWN", "NoSupportEnhancedInput", "PlayerInput does not implement IEWN_Interface_PlayerInputExtension." ) );
 		AssetCheckLog.Error( Message );
 
@@ -233,10 +230,10 @@ void UEWN_WidgetInputSubsystem::InitPlayerInput( IEWN_Interface_PlayerInputExten
 
 ETriggerEvent UEWN_WidgetInputSubsystem::GetTriggerEvent( UInputAction* IA ) const
 {
-	auto* EnhancedInputSubsystem = GetLocalPlayerChecked()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+	const auto* EnhancedInputSubsystem = GetLocalPlayerChecked()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
 	check( EnhancedInputSubsystem );
 
-	if ( UEnhancedPlayerInput* EnhancedPI = EnhancedInputSubsystem->GetPlayerInput() )
+	if ( const UEnhancedPlayerInput* EnhancedPI = EnhancedInputSubsystem->GetPlayerInput() )
 	{
 		if ( const FInputActionInstance* IAInstance = EnhancedPI->FindActionInstanceData( IA ) )
 		{
@@ -251,7 +248,7 @@ ETriggerEvent UEWN_WidgetInputSubsystem::GetTriggerEvent( const UObject* Context
 {
 	UInputAction* FoundIA = [&]
 	{
-		auto* EnhancedInputSubsystem = GetLocalPlayerChecked()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+		const auto* EnhancedInputSubsystem = GetLocalPlayerChecked()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
 		check( EnhancedInputSubsystem );
 
 		auto* IPlayerInputExtension = Cast<IEWN_Interface_PlayerInputExtension>( EnhancedInputSubsystem->GetPlayerInput() );
@@ -333,8 +330,7 @@ void UEWN_WidgetInputSubsystem::SetCurrentInputMethod( EEWN_WidgetInputMethod Ne
 
 void UEWN_WidgetInputSubsystem::BroadcastInputMethodChanged()
 {
-	UWorld* World = GetWorld();
-	if ( World && !World->bIsTearingDown )
+	if ( const UWorld* World = GetWorld(); World && !World->bIsTearingDown )
 	{
 		OnInputMethodChangedDelegate.Broadcast( CurrentMode );
 	}

@@ -4,7 +4,6 @@
 
 #include "UObject/Interface.h"
 
-//
 #include "EWN_WidgetTypes.h"
 
 #include "EWN_Interface_PlayerInputExtension.generated.h"

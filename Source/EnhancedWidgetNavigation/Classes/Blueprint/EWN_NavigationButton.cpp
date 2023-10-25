@@ -2,14 +2,13 @@
 
 #include "EWN_NavigationButton.h"
 
-//
 #include "Interfaces/EWN_Interface_PlayerInputExtension.h"
 
 void UEWN_NavigationButton::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	if ( APlayerController* PC = GetOwningPlayer() )
+	if ( const APlayerController* PC = GetOwningPlayer() )
 	{
 		if ( auto* IPlayerInputExt = Cast<IEWN_Interface_PlayerInputExtension>( PC->PlayerInput ) )
 		{
@@ -21,7 +20,7 @@ void UEWN_NavigationButton::NativeConstruct()
 
 void UEWN_NavigationButton::NativeDestruct()
 {
-	if ( APlayerController* PC = GetOwningPlayer() )
+	if ( const APlayerController* PC = GetOwningPlayer() )
 	{
 		if ( auto* IPlayerInputExt = Cast<IEWN_Interface_PlayerInputExtension>( PC->PlayerInput ) )
 		{
@@ -46,8 +45,7 @@ FReply UEWN_NavigationButton::NativeOnMouseButtonUp( const FGeometry& InGeometry
 	// then the default behavior of the button is to release mouse capture.
 	if ( Reply.GetMouseCaptor().IsValid() == false && HasMouseCapture() )
 	{
-		bool bEventOverButton = IsHovered();
-		if ( bEventOverButton )
+		if ( IsHovered() )
 		{
 			FrameNumberOnClicked = GFrameNumber;
 		}

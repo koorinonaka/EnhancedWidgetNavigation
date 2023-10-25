@@ -6,6 +6,11 @@
 
 #include "EWN_WidgetTypes.generated.h"
 
+class UInputAction;
+class UInputMappingContext;
+class UInputModifier;
+class UInputTrigger;
+
 UENUM( BlueprintType )
 enum class EEWN_WidgetInputMethod : uint8
 {
@@ -48,10 +53,10 @@ struct ENHANCEDWIDGETNAVIGATION_API FEWN_WidgetInputKeyMapping
 	FKey Key;
 
 	UPROPERTY( EditAnywhere, Category = "User Interface|Navigation", Instanced, AdvancedDisplay )
-	TArray<class UInputTrigger*> Triggers;
+	TArray<TObjectPtr<UInputTrigger>> Triggers;
 
 	UPROPERTY( EditAnywhere, Category = "User Interface|Navigation", Instanced, AdvancedDisplay )
-	TArray<class UInputModifier*> Modifiers;
+	TArray<TObjectPtr<UInputModifier>> Modifiers;
 };
 
 USTRUCT( BlueprintType )
@@ -66,10 +71,10 @@ struct ENHANCEDWIDGETNAVIGATION_API FEWN_WidgetInputMapping
 	TArray<FEWN_WidgetInputKeyMapping> KeyMappings;
 
 	UPROPERTY( EditAnywhere, Category = "User Interface|Navigation", Instanced, AdvancedDisplay )
-	TArray<class UInputTrigger*> Triggers;
+	TArray<TObjectPtr<UInputTrigger>> Triggers;
 
 	UPROPERTY( EditAnywhere, Category = "User Interface|Navigation", Instanced, AdvancedDisplay )
-	TArray<class UInputModifier*> Modifiers;
+	TArray<TObjectPtr<UInputModifier>> Modifiers;
 };
 
 USTRUCT( BlueprintType )
@@ -87,8 +92,8 @@ struct ENHANCEDWIDGETNAVIGATION_API FEWN_InputMappingOverrides
 	GENERATED_BODY()
 
 	UPROPERTY( Transient )
-	TObjectPtr<class UInputMappingContext> InputMappingContext;
+	TObjectPtr<UInputMappingContext> InputMappingContext;
 
 	UPROPERTY( Transient )
-	TMap<FName, TObjectPtr<class UInputAction>> InputActions;
+	TMap<FName, TObjectPtr<UInputAction>> InputActions;
 };

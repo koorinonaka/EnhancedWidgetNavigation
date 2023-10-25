@@ -2,15 +2,13 @@
 
 #pragma once
 
+#include "EWN_WidgetTypes.h"
+#include "InputTriggers.h"
 #include "Subsystems/LocalPlayerSubsystem.h"
 
-//
-#include "InputTriggers.h"
-
-//
-#include "EWN_WidgetTypes.h"
-
 #include "EWN_WidgetInputSubsystem.generated.h"
+
+class IEWN_Interface_PlayerInputExtension;
 
 UCLASS()
 class ENHANCEDWIDGETNAVIGATION_API UEWN_WidgetInputSubsystem : public ULocalPlayerSubsystem
@@ -29,10 +27,10 @@ protected:
 	virtual void Deinitialize() override;
 
 public:
-	void InitPlayerInput( class IEWN_Interface_PlayerInputExtension* IPlayerInputExtension );
+	void InitPlayerInput( IEWN_Interface_PlayerInputExtension* IPlayerInputExtension );
 
 public:
-	ETriggerEvent GetTriggerEvent( class UInputAction* IA ) const;
+	ETriggerEvent GetTriggerEvent( UInputAction* IA ) const;
 	ETriggerEvent GetTriggerEvent( const UObject* ContextObject, FName InputName ) const;
 
 	UFUNCTION( BlueprintCallable, Category = "User Interface|Navigation", meta = ( DefaultToSelf = "ContextObject" ) )
@@ -56,6 +54,6 @@ public:
 	FInputMethodDelegate OnInputMethodChangedDelegate;
 
 private:
-	TSharedPtr<class FEWN_WidgetInputProcessor> InputProcessor;
+	TSharedPtr<FEWN_WidgetInputProcessor> InputProcessor;
 	EEWN_WidgetInputMethod CurrentMode;
 };

@@ -2,8 +2,8 @@
 
 #include "EWN_WidgetInputTriggers.h"
 
-//
 #include "EnhancedPlayerInput.h"
+#include "GameFramework/PlayerController.h"
 
 ETriggerState UEWN_WidgetInputTriggerTimed::UpdateState_Implementation(
 	const UEnhancedPlayerInput* PlayerInput, FInputActionValue ModifiedValue, float DeltaTime )
@@ -44,8 +44,8 @@ FString UEWN_WidgetInputTriggerPressedAndPulse::GetDebugState() const
 {
 	if ( HeldDuration )
 	{
-		float Threshold = FirstDelay + ( Interval * TriggerCount );
-		FString IntervalString = FString::Printf( TEXT( "Interval:%.2f/%.2f" ),	   //
+		const float Threshold = FirstDelay + ( Interval * TriggerCount );
+		const FString IntervalString = FString::Printf( TEXT( "Interval:%.2f/%.2f" ),	 //
 			HeldDuration / Threshold, TriggerCount < 1 ? FirstDelay : Interval );
 		return FString::Printf( TEXT( "Triggeres:%d, %s" ), TriggerCount, *IntervalString );
 	}
@@ -64,14 +64,10 @@ ETriggerState UEWN_WidgetInputTriggerPressedAndPulse::UpdateState_Implementation
 			++TriggerCount;
 			State = ETriggerState::Triggered;
 		}
-		else
+		else if ( const float Threshold = FirstDelay + Interval * TriggerCount; Threshold < HeldDuration )
 		{
-			float Threshold = FirstDelay + Interval * TriggerCount;
-			if ( Threshold < HeldDuration )
-			{
-				++TriggerCount;
-				State = ETriggerState::Triggered;
-			}
+			++TriggerCount;
+			State = ETriggerState::Triggered;
 		}
 	}
 	else

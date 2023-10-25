@@ -2,13 +2,10 @@
 
 #include "EWN_WidgetNavigation.h"
 
-//
 #include "Components/PanelWidget.h"
-#include "EnhancedInputSubsystems.h"
-
-//
 #include "EWN_WidgetInputSettings.h"
 #include "EWN_WidgetInputSubsystem.h"
+#include "EnhancedInputSubsystems.h"
 #include "Interfaces/EWN_Interface_WidgetNavigationChild.h"
 #include "Navigation/CursorHandler/EWN_WidgetNavigationCursorHandler.h"
 #include "Navigation/EWN_WidgetNavigationHelper.h"
@@ -18,20 +15,19 @@ namespace EWN::Util
 {
 UEnhancedInputLocalPlayerSubsystem* GetEnhancedInputSubsystem( UWidget* Widget )
 {
-	ULocalPlayer* LP = Widget ? Widget->GetOwningLocalPlayer() : nullptr;
+	const ULocalPlayer* LP = Widget ? Widget->GetOwningLocalPlayer() : nullptr;
 	return LP ? LP->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>() : nullptr;
 };
 }	 // namespace EWN::Util
 
 class FScopedFinalizer
 {
-private:
 	TFunction<void()> Callback;
 
 public:
-	explicit FScopedFinalizer( const TFunction<void()> f ) : Callback( f ) {}
-	FScopedFinalizer( FScopedFinalizer const& ) = delete;
-	void operator=( FScopedFinalizer const& ) = delete;
+	explicit FScopedFinalizer( const TFunction<void()>& F ) : Callback( F ) {}
+	FScopedFinalizer( const FScopedFinalizer& ) = delete;
+	void operator=( const FScopedFinalizer& ) = delete;
 
 	~FScopedFinalizer() noexcept( false ) { Callback(); };
 };
@@ -69,14 +65,14 @@ EEWN_WidgetInputType UEWN_WidgetNavigation::TickNavigation( float DeltaTime )
 
 	WidgetNavigationSubsystem->MarkOnThisFrame( this );
 
-	auto WasJustTriggeredWithCancel = [&]( EEWN_WidgetInputType TriggerInput, EEWN_WidgetInputType CancelInput )
-	{
-		ETriggerEvent CancelEvent = GetTriggerEvent( CancelInput );
-		bool bCancelled = CancelEvent == ETriggerEvent::Triggered || CancelEvent == ETriggerEvent::Ongoing;
-		return !bCancelled && WasJustTriggered( TriggerInput );
-	};
-
-	if ( WasJustTriggeredWithCancel( EEWN_WidgetInputType::Up, EEWN_WidgetInputType::Down ) )
+	if ( auto WasJustTriggeredWithCancel =
+			 [&]( EEWN_WidgetInputType TriggerInput, EEWN_WidgetInputType CancelInput )
+		 {
+			 const ETriggerEvent CancelEvent = GetTriggerEvent( CancelInput );
+			 const bool bCancelled = CancelEvent == ETriggerEvent::Triggered || CancelEvent == ETriggerEvent::Ongoing;
+			 return !bCancelled && WasJustTriggered( TriggerInput );
+		 };
+		 WasJustTriggeredWithCancel( EEWN_WidgetInputType::Up, EEWN_WidgetInputType::Down ) )
 	{
 		if ( RestoreFocus( true ) || MoveFocus( EEWN_WidgetCursor::Up, true ) )
 		{
@@ -124,46 +120,48 @@ EEWN_WidgetInputType UEWN_WidgetNavigation::TickNavigation( float DeltaTime )
 	}
 	else
 	{
-		auto* WidgetInputSubsystem = UEWN_WidgetInputSubsystem::Get( GetTypedOuter<UWidget>() );
+		const auto* WidgetInputSubsystem = UEWN_WidgetInputSubsystem::Get( GetTypedOuter<UWidget>() );
 		if ( !WidgetInputSubsystem )
 		{
 			return EEWN_WidgetInputType::None;
 		}
 
-		int32 NewIndex = [&]( int32 CurrentIndex )
-		{
-			int32 ResultIndex = CurrentIndex;
+		if ( const int32 NewIndex =
+				 [&]( int32 CurrentIndex )
+			 {
+				 int32 ResultIndex = CurrentIndex;
 
-			bool bCheckHovered = bMouseEnabled && WidgetInputSubsystem->GetCurrentInputMethod() == EEWN_WidgetInputMethod::Mouse;
-			if ( bCheckHovered )
-			{
-				bool bValidHovered = [&]
-				{
-					if ( CurrentIndex != INDEX_NONE )
-					{
-						UWidget* ChildWidget = GetChildAt( CurrentIndex );
-						return ChildWidget && ChildWidget->IsHovered();
-					}
-					return false;
-				}();
-				if ( !bValidHovered )
-				{
-					// Focusが外れた
-					ResultIndex = FindHoveredIndex();
-				}
-			}
+				 bool bCheckHovered =
+					 bMouseEnabled && WidgetInputSubsystem->GetCurrentInputMethod() == EEWN_WidgetInputMethod::Mouse;
+				 if ( bCheckHovered )
+				 {
+					 const bool bValidHovered = [&]
+					 {
+						 if ( CurrentIndex != INDEX_NONE )
+						 {
+							 const UWidget* ChildWidget = GetChildAt( CurrentIndex );
+							 return ChildWidget && ChildWidget->IsHovered();
+						 }
+						 return false;
+					 }();
+					 if ( !bValidHovered )
+					 {
+						 // Focusが外れた
+						 ResultIndex = FindHoveredIndex();
+					 }
+				 }
 
-			return ResultIndex;
-		}( FocusIndex );
-		if ( NewIndex != FocusIndex )
+				 return ResultIndex;
+			 }( FocusIndex );
+			 NewIndex != FocusIndex )
 		{
 			UpdateFocusIndex( NewIndex, true );
 		}
 
 		if ( FocusIndex != INDEX_NONE )
 		{
-			UWidget* ChildWidget = GetChildAt( FocusIndex );
-			if ( IEWN_Interface_WidgetNavigationChild::IsNavigationAcceptable( ChildWidget ) )
+			if ( UWidget* ChildWidget = GetChildAt( FocusIndex );
+				 IEWN_Interface_WidgetNavigationChild::IsNavigationAcceptable( ChildWidget ) )
 			{
 				if ( ( WasJustTriggered( EEWN_WidgetInputType::Accept ) ||
 						 IEWN_Interface_WidgetNavigationChild::WasJustNavigationClicked( ChildWidget ) ) )
@@ -181,13 +179,13 @@ EEWN_WidgetInputType UEWN_WidgetNavigation::TickNavigation( float DeltaTime )
 
 UWidget* UEWN_WidgetNavigation::GetChildAt( int32 Index ) const
 {
-	auto* PanelWidget = GetTypedOuter<UPanelWidget>();
+	const auto* PanelWidget = GetTypedOuter<UPanelWidget>();
 	return ensure( PanelWidget ) ? PanelWidget->GetChildAt( Index ) : nullptr;
 }
 
 int32 UEWN_WidgetNavigation::GetChildIndex( UWidget* Widget ) const
 {
-	auto* PanelWidget = GetTypedOuter<UPanelWidget>();
+	const auto* PanelWidget = GetTypedOuter<UPanelWidget>();
 	return ensure( PanelWidget ) ? PanelWidget->GetChildIndex( Widget ) : INDEX_NONE;
 }
 
@@ -201,8 +199,10 @@ void UEWN_WidgetNavigation::ForEachWidgetNavigation( const TFunctionRef<void( UE
 
 int32 UEWN_WidgetNavigation::FindHoveredIndex() const
 {
-	return EWN::WidgetNavigation::FHelper::FindPanelIndex( GetTypedOuter<UPanelWidget>(), [&]( int32 i, UWidget* ChildWidget )
-		{ return ChildWidget->IsHovered() && IEWN_Interface_WidgetNavigationChild::IsNavigationFocusable( ChildWidget ); } );
+	return EWN::WidgetNavigation::FHelper::FindPanelIndex(
+		GetTypedOuter<UPanelWidget>(), [&]( int32 i, UWidget* ChildWidget ) {	 //
+			return ChildWidget->IsHovered() && IEWN_Interface_WidgetNavigationChild::IsNavigationFocusable( ChildWidget );
+		} );
 }
 
 void UEWN_WidgetNavigation::ForEachFocusable( const TFunctionRef<void( int32, UWidget* )> Callback ) const
@@ -219,7 +219,7 @@ void UEWN_WidgetNavigation::ForEachFocusable( const TFunctionRef<void( int32, UW
 
 ETriggerEvent UEWN_WidgetNavigation::GetTriggerEvent( EEWN_WidgetInputType InputType ) const
 {
-	auto* WidgetInputSubsystem = UEWN_WidgetInputSubsystem::Get( GetTypedOuter<UWidget>() );
+	const auto* WidgetInputSubsystem = UEWN_WidgetInputSubsystem::Get( GetTypedOuter<UWidget>() );
 	return WidgetInputSubsystem ? WidgetInputSubsystem->GetTriggerEvent( this, *EWN::Enum::GetValueAsString( InputType ) )
 								: ETriggerEvent::None;
 }
@@ -238,8 +238,7 @@ bool UEWN_WidgetNavigation::MoveFocus( EEWN_WidgetCursor WidgetCursor, bool bFro
 			return true;
 		}
 
-		int32 NewIndex = CursorHandler->GetNextIndex( FocusIndex, WidgetCursor );
-		if ( NewIndex != FocusIndex )
+		if ( const int32 NewIndex = CursorHandler->GetNextIndex( FocusIndex, WidgetCursor ); NewIndex != FocusIndex )
 		{
 			UpdateFocusIndex( NewIndex, bFromOperation );
 			return true;
@@ -257,7 +256,7 @@ bool UEWN_WidgetNavigation::TestFocus( EEWN_WidgetCursor WidgetCursor ) const
 	ThisClass* MutableThis = const_cast<ThisClass*>( this );
 
 	// temporarily turn off navigation
-	bool bLoop = MutableThis->bLoopNavigation;
+	const bool bLoop = MutableThis->bLoopNavigation;
 	MutableThis->bLoopNavigation = false;
 	FScopedFinalizer F( [&] { MutableThis->bLoopNavigation = bLoop; } );
 
@@ -278,8 +277,7 @@ bool UEWN_WidgetNavigation::FocusIncrement( bool bFromOperation )
 {
 	if ( CursorHandler )
 	{
-		int32 NewIndex = CursorHandler->GetForwardIndex( FocusIndex );
-		if ( NewIndex != FocusIndex )
+		if ( const int32 NewIndex = CursorHandler->GetForwardIndex( FocusIndex ); NewIndex != FocusIndex )
 		{
 			UpdateFocusIndex( NewIndex, bFromOperation );
 			return true;
@@ -292,8 +290,7 @@ bool UEWN_WidgetNavigation::FocusDecrement( bool bFromOperation )
 {
 	if ( CursorHandler )
 	{
-		int32 NewIndex = CursorHandler->GetBackwardIndex( FocusIndex );
-		if ( NewIndex != FocusIndex )
+		if ( const int32 NewIndex = CursorHandler->GetBackwardIndex( FocusIndex ); NewIndex != FocusIndex )
 		{
 			UpdateFocusIndex( NewIndex, bFromOperation );
 			return true;
@@ -304,22 +301,21 @@ bool UEWN_WidgetNavigation::FocusDecrement( bool bFromOperation )
 
 void UEWN_WidgetNavigation::UpdateFocusIndex( int32 NewIndex, bool bFromOperation )
 {
-	auto* PanelWidget = GetTypedOuter<UPanelWidget>();
-	if ( ensure( PanelWidget ) )
+	if ( const auto* PanelWidget = GetTypedOuter<UPanelWidget>(); ensure( PanelWidget ) )
 	{
-		UWidget* FocusWidget = PanelWidget->GetChildAt( NewIndex );
-		if ( IEWN_Interface_WidgetNavigationChild::ImplementsInterface( FocusWidget ) )
+		if ( const UWidget* FocusWidget = PanelWidget->GetChildAt( NewIndex );
+			 IEWN_Interface_WidgetNavigationChild::ImplementsInterface( FocusWidget ) )
 		{
 			check( IEWN_Interface_WidgetNavigationChild::IsNavigationFocusable( FocusWidget ) );
 		}
 
-		int32 OldIndex = FocusIndex;
+		const int32 OldIndex = FocusIndex;
 
-		int32 ChildrenCount = PanelWidget->GetChildrenCount();
+		const int32 ChildrenCount = PanelWidget->GetChildrenCount();
 		for ( int32 i = 0; i < ChildrenCount; ++i )
 		{
-			UWidget* ChildWidget = PanelWidget->GetChildAt( i );
-			if ( IEWN_Interface_WidgetNavigationChild::ImplementsInterface( ChildWidget ) )
+			if ( UWidget* ChildWidget = PanelWidget->GetChildAt( i );
+				 IEWN_Interface_WidgetNavigationChild::ImplementsInterface( ChildWidget ) )
 			{
 				bool bShouldUpdate = OldIndex == INDEX_NONE || NewIndex == INDEX_NONE;
 				bShouldUpdate |= ( OldIndex != NewIndex && ( OldIndex == i || NewIndex == i ) );	// 更新があった場合だけ通知
@@ -352,8 +348,7 @@ UWidget* UEWN_WidgetNavigation::GetCurrentWidget() const
 
 void UEWN_WidgetNavigation::MoveWithMouseCursor()
 {
-	int32 FoundIndex = FindHoveredIndex();
-	if ( FoundIndex != INDEX_NONE )
+	if ( const int32 FoundIndex = FindHoveredIndex(); FoundIndex != INDEX_NONE )
 	{
 		UpdateFocusIndex( FoundIndex, true );
 	}
@@ -366,14 +361,13 @@ void UEWN_WidgetNavigation::InvalidateNavigation()
 
 void UEWN_WidgetNavigation::ResetNavigation( bool bResetIndex )
 {
-	auto* OuterWidget = GetTypedOuter<UWidget>();
-	if ( OuterWidget && OuterWidget->IsDesignTime() )
+	if ( const auto* OuterWidget = GetTypedOuter<UWidget>(); OuterWidget && OuterWidget->IsDesignTime() )
 	{
 		UpdateFocusIndex( 0, false );
 		return;
 	}
 
-	auto* WidgetInputSubsystem = UEWN_WidgetInputSubsystem::Get( GetTypedOuter<UWidget>() );
+	const auto* WidgetInputSubsystem = UEWN_WidgetInputSubsystem::Get( GetTypedOuter<UWidget>() );
 	if ( !WidgetInputSubsystem )
 	{
 		return;
@@ -386,15 +380,14 @@ void UEWN_WidgetNavigation::ResetNavigation( bool bResetIndex )
 	}
 	else
 	{
-		int32 NewIndex = !bResetIndex ? FocusIndex : INDEX_NONE;
-
-		if ( IEWN_Interface_WidgetNavigationChild::IsNavigationFocusable( GetChildAt( NewIndex ) ) )
+		if ( const int32 NewIndex = !bResetIndex ? FocusIndex : INDEX_NONE;
+			 IEWN_Interface_WidgetNavigationChild::IsNavigationFocusable( GetChildAt( NewIndex ) ) )
 		{
 			UpdateFocusIndex( NewIndex, false );
 		}
 		else
 		{
-			bool bFlag = bLoopNavigation;
+			const bool bFlag = bLoopNavigation;
 			bLoopNavigation = false;
 			{
 				// カーソルが無効だった場合は前後を探す

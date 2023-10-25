@@ -26,6 +26,8 @@ int32 FCursorHandler_Vertical::GetNextIndex( int32 CurrentIndex, EEWN_WidgetCurs
 		ResultIndex = GetForwardIndex( CurrentIndex );
 	}
 	break;
+
+	default:;
 	}
 
 	return ResultIndex;

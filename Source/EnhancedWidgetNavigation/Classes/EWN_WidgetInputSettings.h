@@ -2,13 +2,9 @@
 
 #pragma once
 
-#include "Engine/DeveloperSettings.h"
-
-//
-#include "Engine/DataAsset.h"
-
-//
 #include "EWN_WidgetTypes.h"
+#include "Engine/DataAsset.h"
+#include "Engine/DeveloperSettings.h"
 
 #include "EWN_WidgetInputSettings.generated.h"
 
@@ -21,7 +17,7 @@ class ENHANCEDWIDGETNAVIGATION_API UEWN_WidgetInputConfig : public UDataAsset
 
 protected:
 	UPROPERTY( EditDefaultsOnly, Category = "User Interface|Navigation" )
-	TObjectPtr<class UInputMappingContext> IMC_Options;
+	TObjectPtr<UInputMappingContext> IMC_Options;
 
 	UPROPERTY( EditDefaultsOnly, Category = "User Interface|Navigation" )
 	FEWN_WidgetInputMappingContainer InputMappingDefault;
@@ -39,11 +35,11 @@ protected:
 #endif
 
 public:
-	class UInputMappingContext* GetOptionalInputMappingContext() const;
+	UInputMappingContext* GetOptionalInputMappingContext() const;
 
-	class UInputMappingContext* BuildInputMappingContext( const TFunctionRef<void( FName, class UInputAction* )> Callback ) const;
-	class UInputMappingContext* BuildInputMappingContext( const FEWN_WidgetInputMappingContainer& InjectionSettings,
-		const TFunctionRef<void( FName, class UInputAction* )> Callback ) const;
+	UInputMappingContext* BuildInputMappingContext( const TFunctionRef<void( FName, UInputAction* )>& Callback ) const;
+	UInputMappingContext* BuildInputMappingContext( const FEWN_WidgetInputMappingContainer& InjectionSettings,
+		const TFunctionRef<void( FName, UInputAction* )>& Callback ) const;
 
 public:
 	virtual void TryLoadObjects();
