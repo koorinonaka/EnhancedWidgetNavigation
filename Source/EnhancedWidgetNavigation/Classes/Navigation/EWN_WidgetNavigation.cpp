@@ -14,15 +14,6 @@
 
 using namespace EWN::WidgetNavigation;
 
-namespace EWN::Util
-{
-UEnhancedInputLocalPlayerSubsystem* GetEnhancedInputSubsystem( UWidget* Widget )
-{
-	const ULocalPlayer* LP = Widget ? Widget->GetOwningLocalPlayer() : nullptr;
-	return LP ? LP->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>() : nullptr;
-};
-}	 // namespace EWN::Util
-
 class FScopedFinalizer
 {
 	TFunction<void()> Callback;
