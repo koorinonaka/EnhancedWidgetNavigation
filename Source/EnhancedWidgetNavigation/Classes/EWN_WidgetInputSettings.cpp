@@ -2,25 +2,11 @@
 
 #include "EWN_WidgetInputSettings.h"
 
-#include "InputMappingContext.h"
-
 #if WITH_EDITOR
 #include "Logging/MessageLog.h"
 #endif
 
-template <typename T>
-void DeepCopyPtrArray( const TArray<T*>& From, TArray<T*>& To )
-{
-	To.Empty( From.Num() );
-
-	for ( T* ToDuplicate : From )
-	{
-		if ( ToDuplicate )
-		{
-			To.Add( DuplicateObject<T>( ToDuplicate, nullptr ) );
-		}
-	}
-}
+#include "InputMappingContext.h"
 
 #if WITH_EDITOR
 #define LOCTEXT_NAMESPACE "EWN_WidgetInputSettings"
@@ -91,14 +77,18 @@ UInputMappingContext* UEWN_WidgetInputSettings::BuildInputMappingContext(
 
 		auto* NewInputAction = NewObject<UInputAction>( NewIMC );
 		NewInputAction->bConsumeInput = false;
-		DeepCopyPtrArray<UInputModifier>( InputMapping.Modifiers, NewInputAction->Modifiers );
-		DeepCopyPtrArray<UInputTrigger>( InputMapping.Triggers, NewInputAction->Triggers );
+		Algo::Transform( InputMapping.Modifiers, NewInputAction->Modifiers,	   //
+			[&]( const auto& Row ) { return DuplicateObject( Row, NewInputAction ); } );
+		Algo::Transform( InputMapping.Triggers, NewInputAction->Triggers,	 //
+			[&]( const auto& Row ) { return DuplicateObject( Row, NewInputAction ); } );
 
 		for ( const FEWN_WidgetInputKeyMapping& KeyMapping : InputMapping.KeyMappings )
 		{
 			FEnhancedActionKeyMapping& NewMapping = NewIMC->MapKey( NewInputAction, KeyMapping.Key );
-			DeepCopyPtrArray<UInputModifier>( KeyMapping.Modifiers, NewMapping.Modifiers );
-			DeepCopyPtrArray<UInputTrigger>( KeyMapping.Triggers, NewMapping.Triggers );
+			Algo::Transform( KeyMapping.Modifiers, NewMapping.Modifiers,	//
+				[&]( const auto& Row ) { return DuplicateObject( Row, NewIMC ); } );
+			Algo::Transform( KeyMapping.Triggers, NewMapping.Triggers,	  //
+				[&]( const auto& Row ) { return DuplicateObject( Row, NewIMC ); } );
 		}
 
 		switch ( EWN::Enum::FindValueByName<EEWN_WidgetInputType>( InputMapping.InputName ) )

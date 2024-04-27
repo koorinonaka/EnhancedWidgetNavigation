@@ -4,6 +4,7 @@
 
 #include "EWN_WidgetInputSubsystem.h"
 #include "Engine/LocalPlayer.h"
+#include "GameFramework/PlayerInput.h"
 #include "Interfaces/EWN_Interface_PlayerInputExtension.h"
 
 void UEWN_EnhancedInputComponent::OnRegister()

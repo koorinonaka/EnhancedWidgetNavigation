@@ -3,6 +3,7 @@
 #include "EWN_NavigationButton.h"
 
 #include "Interfaces/EWN_Interface_PlayerInputExtension.h"
+#include "GameFramework/PlayerInput.h"
 
 void UEWN_NavigationButton::NativeConstruct()
 {

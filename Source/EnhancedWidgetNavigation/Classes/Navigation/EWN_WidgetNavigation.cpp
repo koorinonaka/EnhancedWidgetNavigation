@@ -14,18 +14,6 @@
 
 using namespace EWN::WidgetNavigation;
 
-class FScopedFinalizer
-{
-	TFunction<void()> Callback;
-
-public:
-	explicit FScopedFinalizer( const TFunction<void()>& F ) : Callback( F ) {}
-	FScopedFinalizer( const FScopedFinalizer& ) = delete;
-	void operator=( const FScopedFinalizer& ) = delete;
-
-	~FScopedFinalizer() noexcept( false ) { Callback(); };
-};
-
 void UEWN_WidgetNavigation::PostInitProperties()
 {
 	Super::PostInitProperties();
@@ -285,7 +273,10 @@ bool UEWN_WidgetNavigation::TestFocus( EEWN_WidgetCursor WidgetCursor, bool bLoo
 	// temporarily turn off navigation
 	const bool bLoop = MutableThis->bLoopNavigation;
 	MutableThis->bLoopNavigation = false;
-	FScopedFinalizer F( [&] { MutableThis->bLoopNavigation = bLoop; } );
+	ON_SCOPE_EXIT
+	{
+		MutableThis->bLoopNavigation = bLoop;
+	};
 
 	return CursorHandler->GetNextIndex( FocusIndex, WidgetCursor, bLoopIgnored ) != FocusIndex;
 }
