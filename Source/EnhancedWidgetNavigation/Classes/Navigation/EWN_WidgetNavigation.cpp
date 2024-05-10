@@ -28,7 +28,7 @@ void UEWN_WidgetNavigation::PostInitProperties()
 		{
 			UE_LOG( LogTemp, Warning, TEXT( "widget %s do not use PlayerController as owner." ), *GetNameSafe( OuterWidget ) );
 		}
-		else if ( auto* InputComponent = Cast<UEnhancedInputComponent>( PC->InputComponent ); ensure( InputComponent ) )
+		else if ( auto* InputComponent = Cast<UEnhancedInputComponent>( PC->InputComponent ) )
 		{
 			EWN::Enum::ForEach<EEWN_WidgetInputType>(
 				[&]( const EEWN_WidgetInputType InputType )
@@ -42,6 +42,18 @@ void UEWN_WidgetNavigation::PostInitProperties()
 					}
 				} );
 		}
+#if WITH_EDITOR
+		else if ( GIsEditor )
+		{
+			FMessageLog AssetCheckLog( "AssetCheck" );
+
+			const FText Message(
+				NSLOCTEXT( "EWN", "InvalidInputComponent", "failed cast InputComponent to UEnhancedInputComponent." ) );
+			AssetCheckLog.Error( Message );
+
+			AssetCheckLog.Notify( Message, EMessageSeverity::Error, true );
+		}
+#endif
 	}
 }
 

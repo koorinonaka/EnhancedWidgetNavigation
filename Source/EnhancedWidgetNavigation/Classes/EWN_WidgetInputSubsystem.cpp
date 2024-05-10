@@ -164,7 +164,6 @@ private:
 		return EEWN_WidgetInputMethod::Mouse;
 	}
 
-private:
 	UEWN_WidgetInputSubsystem& InputSubsystem;
 };
 
@@ -194,16 +193,16 @@ void UEWN_WidgetInputSubsystem::Deinitialize()
 
 void UEWN_WidgetInputSubsystem::InitPlayerInput( IEWN_Interface_PlayerInputExtension* IPlayerInputExtension )
 {
-	auto* EnhancedInputSubsystem = GetLocalPlayerChecked()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
-	check( EnhancedInputSubsystem );
-
 	if ( IPlayerInputExtension )
 	{
-		FEWN_InputMappingOverrides& IMOverrides =
-			IPlayerInputExtension->GetInputMappingOverrides().Emplace( GetTypeHash( FObjectKey( this ) ) );
+		auto* EnhancedInputSubsystem = GetLocalPlayerChecked()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+		check( EnhancedInputSubsystem );
 
 		auto* WidgetInputSettings = GetDefault<UEWN_WidgetInputSettings>();
 		check( WidgetInputSettings );
+
+		FEWN_InputMappingOverrides& IMOverrides =
+			IPlayerInputExtension->GetInputMappingOverrides().Emplace( GetTypeHash( FObjectKey( this ) ) );
 
 		IMOverrides.InputMappingContext = WidgetInputSettings->BuildInputMappingContext(
 			[&]( FName InputName, UInputAction* IA ) { IMOverrides.InputActions.Emplace( InputName, IA ); } );
@@ -220,7 +219,7 @@ void UEWN_WidgetInputSubsystem::InitPlayerInput( IEWN_Interface_PlayerInputExten
 		FMessageLog AssetCheckLog( "AssetCheck" );
 
 		const FText Message(
-			NSLOCTEXT( "EWN", "NoSupportEnhancedInput", "PlayerInput does not implement IEWN_Interface_PlayerInputExtension." ) );
+			NSLOCTEXT( "EWN", "InvalidPlayerInput", "PlayerInput does not implement IEWN_Interface_PlayerInputExtension." ) );
 		AssetCheckLog.Error( Message );
 
 		AssetCheckLog.Notify( Message, EMessageSeverity::Error, true );
@@ -250,7 +249,10 @@ UInputAction* UEWN_WidgetInputSubsystem::GetInputAction( const UObject* ContextO
 	check( EnhancedInputSubsystem );
 
 	auto* IPlayerInputExtension = Cast<IEWN_Interface_PlayerInputExtension>( EnhancedInputSubsystem->GetPlayerInput() );
-	check( IPlayerInputExtension );
+	if ( !IPlayerInputExtension )
+	{
+		return nullptr;
+	}
 
 	if ( const FEWN_InputMappingOverrides* IMOverrides =
 			 IPlayerInputExtension->GetInputMappingOverrides().Find( GetTypeHash( FObjectKey( ContextObject ) ) ) )
@@ -261,11 +263,13 @@ UInputAction* UEWN_WidgetInputSubsystem::GetInputAction( const UObject* ContextO
 		}
 	}
 
-	const FEWN_InputMappingOverrides* IMOverrides =
-		IPlayerInputExtension->GetInputMappingOverrides().Find( GetTypeHash( FObjectKey( this ) ) );
-	check( IMOverrides );
+	if ( const FEWN_InputMappingOverrides* IMOverrides =
+			 IPlayerInputExtension->GetInputMappingOverrides().Find( GetTypeHash( FObjectKey( this ) ) ) )
+	{
+		return IMOverrides->InputActions.Contains( InputName ) ? IMOverrides->InputActions[InputName] : nullptr;
+	}
 
-	return IMOverrides->InputActions.Contains( InputName ) ? IMOverrides->InputActions[InputName] : nullptr;
+	return nullptr;
 }
 
 ETriggerEvent UEWN_WidgetInputSubsystem::GetTriggerEvent( const UObject* ContextObject, FName InputName ) const
@@ -288,7 +292,10 @@ void UEWN_WidgetInputSubsystem::SetInputMappingContext(
 	check( EnhancedInputSubsystem );
 
 	auto* IPlayerInputExtension = Cast<IEWN_Interface_PlayerInputExtension>( EnhancedInputSubsystem->GetPlayerInput() );
-	check( IPlayerInputExtension );
+	if ( !IPlayerInputExtension )
+	{
+		return;
+	}
 
 	FEWN_InputMappingOverrides& IMOverrides =
 		IPlayerInputExtension->GetInputMappingOverrides().Emplace( GetTypeHash( FObjectKey( ContextObject ) ) );
@@ -307,7 +314,10 @@ void UEWN_WidgetInputSubsystem::ClearInputMappingContext( const UObject* Context
 	check( EnhancedInputSubsystem );
 
 	auto* IPlayerInputExtension = Cast<IEWN_Interface_PlayerInputExtension>( EnhancedInputSubsystem->GetPlayerInput() );
-	check( IPlayerInputExtension );
+	if ( !IPlayerInputExtension )
+	{
+		return;
+	}
 
 	if ( const FEWN_InputMappingOverrides* IMOverrides =
 			 IPlayerInputExtension->GetInputMappingOverrides().Find( GetTypeHash( FObjectKey( ContextObject ) ) ) )

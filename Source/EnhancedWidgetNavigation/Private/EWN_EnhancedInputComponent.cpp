@@ -15,10 +15,10 @@ void UEWN_EnhancedInputComponent::OnRegister()
 	{
 		if ( const auto* LocalPlayer = Cast<ULocalPlayer>( OwnerPC->Player ) )
 		{
-			if ( auto* WidgetInputSubsystem = LocalPlayer->GetSubsystem<UEWN_WidgetInputSubsystem>() )
-			{
-				WidgetInputSubsystem->InitPlayerInput( Cast<IEWN_Interface_PlayerInputExtension>( OwnerPC->PlayerInput ) );
-			}
+			auto* WidgetInputSubsystem = LocalPlayer->GetSubsystem<UEWN_WidgetInputSubsystem>();
+			check( WidgetInputSubsystem );
+
+			WidgetInputSubsystem->InitPlayerInput( Cast<IEWN_Interface_PlayerInputExtension>( OwnerPC->PlayerInput ) );
 		}
 	}
 }
