@@ -86,24 +86,27 @@ private:
 	{
 		if ( const UPanelWidget* PanelWidget = OwnerHandler.GetPanelWidget() )
 		{
-			const UWidget* ChildWidget = PanelWidget->GetChildAt( Index );
-			if ( auto* GridSlot = Cast<UGridSlot>( ChildWidget->Slot ) )
+			if ( const UWidget* ChildWidget = PanelWidget->GetChildAt( Index ) )
 			{
+				if ( auto* GridSlot = Cast<UGridSlot>( ChildWidget->Slot ) )
+				{
 #if EWN_UE_VERSION_OR_LATER( 5, 1 )
-				return FIntPoint( GridSlot->GetColumn(), GridSlot->GetRow() );
+					return FIntPoint( GridSlot->GetColumn(), GridSlot->GetRow() );
 #else
-				return FIntPoint( GridSlot->Column, GridSlot->Row );
+					return FIntPoint( GridSlot->Column, GridSlot->Row );
 #endif
-			}
-			if ( auto* UniformGridSlot = Cast<UUniformGridSlot>( ChildWidget->Slot ) )
-			{
+				}
+				if ( auto* UniformGridSlot = Cast<UUniformGridSlot>( ChildWidget->Slot ) )
+				{
 #if EWN_UE_VERSION_OR_LATER( 5, 1 )
-				return FIntPoint( UniformGridSlot->GetColumn(), UniformGridSlot->GetRow() );
+					return FIntPoint( UniformGridSlot->GetColumn(), UniformGridSlot->GetRow() );
 #else
-				return FIntPoint( UniformGridSlot->Column, UniformGridSlot->Row );
+					return FIntPoint( UniformGridSlot->Column, UniformGridSlot->Row );
 #endif
+				}
 			}
 		}
+
 		return FIntPoint::ZeroValue;
 	}
 
