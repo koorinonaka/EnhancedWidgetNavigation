@@ -39,14 +39,14 @@ public:
 			} );
 
 		// fallback if MoveFocus fails
-		if ( const UWidget* NearestWidget = FHelper::FindFocusToNearest( CurrentWidget, WidgetCursor, WidgetsWithNavigation ) )
+		if ( const UWidget* NearestWidget = FHelper::FindFocusToNearest( *CurrentWidget, WidgetCursor, WidgetsWithNavigation ) )
 		{
 			ResultIndex = WidgetsWithNavigation[NearestWidget].Index;
 		}
 		else if ( OwnerHandler.IsLoopNavigation() && !bLoopIgnored )
 		{
 			if ( const UWidget* FarthestWidget =
-					 FHelper::FindFocusToOpposite( CurrentWidget, WidgetCursor, WidgetsWithNavigation ) )
+					 FHelper::FindFocusToOpposite( *CurrentWidget, WidgetCursor, WidgetsWithNavigation ) )
 			{
 				ResultIndex = WidgetsWithNavigation[FarthestWidget].Index;
 			}

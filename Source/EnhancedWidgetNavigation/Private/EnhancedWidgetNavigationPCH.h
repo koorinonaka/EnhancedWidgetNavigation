@@ -2,12 +2,8 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Runtime/Launch/Resources/Version.h"
+#include "EnhancedWidgetNavigationVersion.h"
 #include "UObject/Class.h"
-
-#define EWN_UE_VERSION_OR_LATER( Major, Minor ) \
-	ENGINE_MAJOR_VERSION > Major || ( ENGINE_MAJOR_VERSION == Major && ENGINE_MINOR_VERSION >= Minor )
 
 namespace EWN::Enum
 {
@@ -21,7 +17,7 @@ FORCEINLINE static FString GetValueAsString( EnumType EnumValue )
 }
 
 template <typename EnumType>
-FORCEINLINE static EnumType FindValueByName( FName EnumName )
+FORCEINLINE static EnumType FindValueByName( const FName EnumName )
 {
 	static_assert( TIsEnum<EnumType>::Value, "Should only call this with enum types" );
 	const UEnum* EnumClass = StaticEnum<EnumType>();

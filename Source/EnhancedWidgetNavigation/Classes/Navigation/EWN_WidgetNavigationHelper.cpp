@@ -4,7 +4,7 @@
 
 namespace EWN::WidgetNavigation
 {
-int32 FHelper::FindPanelIndex( UPanelWidget* PanelWidget, const TFunctionRef<bool( int32, UWidget* )>& Callback )
+int32 FHelper::FindPanelIndex( const UPanelWidget* PanelWidget, const TFunctionRef<bool( int32, UWidget* )>& Callback )
 {
 	if ( ensure( PanelWidget ) )
 	{
@@ -21,7 +21,7 @@ int32 FHelper::FindPanelIndex( UPanelWidget* PanelWidget, const TFunctionRef<boo
 	return INDEX_NONE;
 }
 
-void FHelper::ForEachPanelChildren( UPanelWidget* PanelWidget, const TFunctionRef<void( int32, UWidget* )>& Callback )
+void FHelper::ForEachPanelChildren( const UPanelWidget* PanelWidget, const TFunctionRef<void( int32, UWidget* )>& Callback )
 {
 	if ( ensure( PanelWidget ) )
 	{
@@ -33,7 +33,7 @@ void FHelper::ForEachPanelChildren( UPanelWidget* PanelWidget, const TFunctionRe
 	}
 }
 
-FVector2D FHelper::GetCursorPosition( const FGeometry& Geometry, EEWN_WidgetCursor WidgetCursor )
+FVector2D FHelper::GetCursorPosition( const FGeometry& Geometry, const EEWN_WidgetCursor WidgetCursor )
 {
 	FVector2D Position = Geometry.GetAbsolutePosition();
 	const FVector2D Size = Geometry.GetAbsoluteSize();
@@ -50,16 +50,16 @@ FVector2D FHelper::GetCursorPosition( const FGeometry& Geometry, EEWN_WidgetCurs
 	return Position;
 }
 
-UWidget* FHelper::FindFocusToNearest(
-	UWidget* CurrentWidget, EEWN_WidgetCursor WidgetCursor, const TMap<UWidget*, FWidgetWithNavigation>& WidgetsWithNavigation )
+UWidget* FHelper::FindFocusToNearest( const UWidget& CurrentWidget, const EEWN_WidgetCursor WidgetCursor,
+	const TMap<UWidget*, FWidgetWithNavigation>& WidgetsWithNavigation )
 {
 	UWidget* FoundWidget = nullptr;
 
-	const FVector2D& SourcePosition = GetCursorPosition( CurrentWidget->GetCachedGeometry(), WidgetCursor );
+	const FVector2D& SourcePosition = GetCursorPosition( CurrentWidget.GetCachedGeometry(), WidgetCursor );
 
 	FVector2D SourceP1, SourceP2, SourceP3, SourceP4;
 	{
-		const FGeometry& Geometry = CurrentWidget->GetCachedGeometry();
+		const FGeometry& Geometry = CurrentWidget.GetCachedGeometry();
 		const FVector2D Position = Geometry.GetAbsolutePosition();
 		const FVector2D Size = Geometry.GetAbsoluteSize();
 
@@ -166,12 +166,12 @@ UWidget* FHelper::FindFocusToNearest(
 	return FoundWidget;
 }
 
-UWidget* FHelper::FindFocusToOpposite(
-	UWidget* CurrentWidget, EEWN_WidgetCursor WidgetCursor, const TMap<UWidget*, FWidgetWithNavigation>& WidgetsWithNavigation )
+UWidget* FHelper::FindFocusToOpposite( const UWidget& CurrentWidget, const EEWN_WidgetCursor WidgetCursor,
+	const TMap<UWidget*, FWidgetWithNavigation>& WidgetsWithNavigation )
 {
 	UWidget* FoundWidget = nullptr;
 
-	const FVector2D& SourcePosition = GetCursorPosition( CurrentWidget->GetCachedGeometry(), WidgetCursor );
+	const FVector2D& SourcePosition = GetCursorPosition( CurrentWidget.GetCachedGeometry(), WidgetCursor );
 
 	TArray<UWidget*> Widgets;
 	WidgetsWithNavigation.GetKeys( Widgets );

@@ -17,14 +17,14 @@ struct ENHANCEDWIDGETNAVIGATION_API FWidgetWithNavigation
 class ENHANCEDWIDGETNAVIGATION_API FHelper
 {
 public:
-	static int32 FindPanelIndex( UPanelWidget* PanelWidget, const TFunctionRef<bool( int32, UWidget* )>& Callback );
-	static void ForEachPanelChildren( UPanelWidget* PanelWidget, const TFunctionRef<void( int32, UWidget* )>& Callback );
+	static int32 FindPanelIndex( const UPanelWidget* PanelWidget, const TFunctionRef<bool( int32, UWidget* )>& Callback );
+	static void ForEachPanelChildren( const UPanelWidget* PanelWidget, const TFunctionRef<void( int32, UWidget* )>& Callback );
 
 	static FVector2D GetCursorPosition( const FGeometry& Geometry, EEWN_WidgetCursor WidgetCursor );
 
-	static UWidget* FindFocusToNearest( UWidget* CurrentWidget, EEWN_WidgetCursor WidgetCursor,
+	static UWidget* FindFocusToNearest( const UWidget& CurrentWidget, EEWN_WidgetCursor WidgetCursor,
 		const TMap<UWidget*, FWidgetWithNavigation>& WidgetsWithNavigation );
-	static UWidget* FindFocusToOpposite( UWidget* CurrentWidget, EEWN_WidgetCursor WidgetCursor,
+	static UWidget* FindFocusToOpposite( const UWidget& CurrentWidget, EEWN_WidgetCursor WidgetCursor,
 		const TMap<UWidget*, FWidgetWithNavigation>& WidgetsWithNavigation );
 };
 }	 // namespace EWN::WidgetNavigation

@@ -171,7 +171,7 @@ bool UEWN_WidgetNavigationConnector::MoveFocusOverride(
 		}
 
 		// find the closest widget in registered navigation
-		if ( const UWidget* NearestWidget = FHelper::FindFocusToNearest( CurrentWidget, WidgetCursor, WidgetsWithNavigation ) )
+		if ( const UWidget* NearestWidget = FHelper::FindFocusToNearest( *CurrentWidget, WidgetCursor, WidgetsWithNavigation ) )
 		{
 			const FWidgetWithNavigation& WidgetInfo = WidgetsWithNavigation[NearestWidget];
 			WidgetInfo.Navigation->UpdateFocusIndex( WidgetInfo.Index, bFromOperation );
@@ -216,7 +216,7 @@ bool UEWN_WidgetNavigationConnector::MoveFocusFallback(
 		} );
 
 	// fallback if MoveFocus fails
-	if ( const UWidget* NearestWidget = FHelper::FindFocusToNearest( CurrentWidget, WidgetCursor, WidgetsWithNavigation ) )
+	if ( const UWidget* NearestWidget = FHelper::FindFocusToNearest( *CurrentWidget, WidgetCursor, WidgetsWithNavigation ) )
 	{
 		const FWidgetWithNavigation& WidgetInfo = WidgetsWithNavigation[NearestWidget];
 		WidgetInfo.Navigation->UpdateFocusIndex( WidgetInfo.Index, bFromOperation );
@@ -224,7 +224,7 @@ bool UEWN_WidgetNavigationConnector::MoveFocusFallback(
 	}
 	if ( bLoopNavigation && !bLoopIgnored )
 	{
-		if ( const UWidget* FarthestWidget = FHelper::FindFocusToOpposite( CurrentWidget, WidgetCursor, WidgetsWithNavigation ) )
+		if ( const UWidget* FarthestWidget = FHelper::FindFocusToOpposite( *CurrentWidget, WidgetCursor, WidgetsWithNavigation ) )
 		{
 			const FWidgetWithNavigation& WidgetInfo = WidgetsWithNavigation[FarthestWidget];
 			WidgetInfo.Navigation->UpdateFocusIndex( WidgetInfo.Index, bFromOperation );

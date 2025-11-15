@@ -95,14 +95,22 @@ UInputMappingContext* UEWN_WidgetInputSettings::BuildInputMappingContext(
 		{
 		case EEWN_WidgetInputType::Accept:
 		{
+#if EWN_UE_VERSION_OR_LATER( 5, 7 )
+			FEnhancedActionKeyMapping& NewMapping = NewIMC->MapKey( NewInputAction, EKeys::Virtual_Gamepad_Accept.GetVirtualKey() );
+#else
 			FEnhancedActionKeyMapping& NewMapping = NewIMC->MapKey( NewInputAction, EKeys::Virtual_Accept );
+#endif
 			NewMapping.Triggers.Emplace( NewObject<UInputTriggerPressed>() );
 		}
 		break;
 
 		case EEWN_WidgetInputType::Back:
 		{
+#if EWN_UE_VERSION_OR_LATER( 5, 7 )
+			FEnhancedActionKeyMapping& NewMapping = NewIMC->MapKey( NewInputAction, EKeys::Virtual_Gamepad_Back.GetVirtualKey() );
+#else
 			FEnhancedActionKeyMapping& NewMapping = NewIMC->MapKey( NewInputAction, EKeys::Virtual_Back );
+#endif
 			NewMapping.Triggers.Emplace( NewObject<UInputTriggerPressed>() );
 		}
 		break;
