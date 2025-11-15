@@ -50,6 +50,15 @@ FVector2D FHelper::GetCursorPosition( const FGeometry& Geometry, const EEWN_Widg
 	return Position;
 }
 
+namespace
+{
+struct FWidgetSortInfo
+{
+	float DistSquared = 0.f;
+	bool bExtLinesIntersect = false;
+};
+}
+
 UWidget* FHelper::FindFocusToNearest( const UWidget& CurrentWidget, const EEWN_WidgetCursor WidgetCursor,
 	const TMap<UWidget*, FWidgetWithNavigation>& WidgetsWithNavigation )
 {
@@ -69,11 +78,6 @@ UWidget* FHelper::FindFocusToNearest( const UWidget& CurrentWidget, const EEWN_W
 		SourceP4 = Position + FVector2D( Size.X, Size.Y );
 	}
 
-	struct FWidgetSortInfo
-	{
-		float DistSquared = 0.f;
-		bool bExtLinesIntersect = false;
-	};
 	TMap<TObjectPtr<UWidget>, FWidgetSortInfo> SortInfoMap;
 
 	TArray<UWidget*> Widgets;
